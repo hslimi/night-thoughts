@@ -3,7 +3,7 @@ title: "Memory Mosaics: The AI That Learns Faster by Reading Less"
 datePublished: 2026-10-08T23:15:20.746Z
 cuid: cmv05mpzm000007jz0cp652da
 slug: memory-mosaics-the-ai-that-learns-faster-by-reading-less
-cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/4118e0f6-fa45-472d-8131-0ab0f7bc80c4.jpg
+cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/a54d189e-7455-49e0-8a56-1f3745a805d1.jpg
 tags: ai, machine-learning, research, meta, llm
 
 ---
