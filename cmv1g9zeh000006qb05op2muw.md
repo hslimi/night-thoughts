@@ -298,8 +298,6 @@ Edit the QwenPaw config to point to your MLX Manager API:
 vim ~/.qwenpaw/config.json
 ```
 
-In vim, press `i` to enter insert mode, make your changes, then press `Esc` and type `:wq` to save and exit.
-
 Find the `model` section and set:
 
 ```json
@@ -329,10 +327,12 @@ Open `http://localhost:8088` to access the QwenPaw web console.
 
 ### 5.5 Make QwenPaw Persistent (launchd)
 
-Create a launchd plist so QwenPaw starts automatically on login:
+Create a launchd plist so QwenPaw starts automatically on login. The heredoc below is **unquoted** (`<< EOF`, not `<< 'EOF'`), so the shell expands `$HOME` to your actual home directory when the file is written:
 
 ```bash
-cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << 'EOF'
+mkdir -p ~/.qwenpaw/logs
+
+cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -341,7 +341,7 @@ cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << 'EOF'
   <string>com.qwenpaw.app</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/YOUR_USERNAME/.qwenpaw/bin/qwenpaw</string>
+    <string>$HOME/.qwenpaw/bin/qwenpaw</string>
     <string>app</string>
   </array>
   <key>RunAtLoad</key>
@@ -349,17 +349,23 @@ cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << 'EOF'
   <key>KeepAlive</key>
   <true/>
   <key>WorkingDirectory</key>
-  <string>/Users/YOUR_USERNAME</string>
+  <string>$HOME</string>
   <key>StandardOutPath</key>
-  <string>/Users/YOUR_USERNAME/.qwenpaw/logs/qwenpaw.log</string>
+  <string>$HOME/.qwenpaw/logs/qwenpaw.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/YOUR_USERNAME/.qwenpaw/logs/qwenpaw.error.log</string>
+  <string>$HOME/.qwenpaw/logs/qwenpaw.error.log</string>
 </dict>
 </plist>
 EOF
 ```
 
-Replace `YOUR_USERNAME` with your actual macOS username (`whoami` to check).
+Verify the paths resolved correctly (they should show your real username, not `$HOME`):
+
+```bash
+grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist
+```
+
+**Expected output:** The `<string>` lines should contain e.g. `/Users/yourname/.qwenpaw/bin/qwenpaw`.
 
 Load it:
 
