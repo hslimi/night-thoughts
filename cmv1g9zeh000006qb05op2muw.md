@@ -20,13 +20,16 @@ Run this in Terminal to disable all sleep modes permanently:
 sudo pmset -a disablesleep 1 sleep 0 disksleep 0 displaysleep 0 standby 0 autopoweroff 0 powernap 0
 ```
 
-**Expected output:** You'll be prompted for your password. After entry, no confirmation message appears — that's normal. Verify with:
+**Expected output:** You'll be prompted for your password. After entry, no confirmation message appears — that's normal.
+
+Verify with:
 
 ```bash
 pmset -g
 ```
 
 **Expected output:**
+
 ```
 System-wide power settings:
 Currently in use:
@@ -43,7 +46,7 @@ Currently in use:
 sudo systemsetup -setremotelogin on
 ```
 
-**Expected output:** `setremotelogin: remote login is now on`  
+**Expected output:** `setremotelogin: remote login is now on`
 
 Verify:
 
@@ -79,64 +82,86 @@ nohup ./mac-server-mode >/dev/null 2>&1 &
 
 A ⚡ icon appears in your menu bar. Press `Ctrl + Option + Cmd + S` to toggle server mode (screen off, system awake).
 
----
+## Part 2: Install uv & Python 3.11
 
-## Part 2: Install Homebrew & Python
+### 2.1 Install uv
 
-### 2.1 Install Homebrew (if not already installed)
+`uv` is a fast, all-in-one Python package and version manager written in Rust. Install it via the official one-liner:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-**Expected output:** Installation progress bars, then `==> Installation successful!`
+**Expected output:** Installation progress bars, then a success message.
 
-Add Homebrew to your PATH (follow the on-screen instructions, typically):
-
-```bash
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
-```
-
-Verify:
+After installation, restart your shell or source your profile:
 
 ```bash
-brew --version
-```
-
-**Expected output:** `Homebrew 4.x.x`
-
-### 2.2 Install Python 3.12
-
-MLX Manager requires Python 3.11 or 3.12.
-
-```bash
-brew install python@3.12
+source ~/.zshrc
 ```
 
 Verify:
 
 ```bash
-python3.12 --version
+uv --version
 ```
 
-**Expected output:** `Python 3.12.x`
+**Expected output:** `uv 0.x.x`
+
+### 2.2 Install Python 3.11 with uv
+
+MLX Manager requires Python 3.11 or 3.12. Install Python 3.11 as a uv-managed Python:
+
+```bash
+uv python install 3.11
+```
+
+**Expected output:** Download progress, then `Installed Python 3.11.x`
+
+Verify:
+
+```bash
+uv python list | grep 3.11
+```
+
+**Expected output:** Shows the installed Python 3.11 version.
+
+### 2.3 Create a Virtual Environment for MLX
+
+Create a dedicated virtual environment using Python 3.11:
+
+```bash
+uv venv --python 3.11 ~/.mlx-venv
+```
+
+Activate it:
+
+```bash
+source ~/.mlx-venv/bin/activate
+```
+
+Verify the Python version inside the venv:
+
+```bash
+python --version
+```
+
+**Expected output:** `Python 3.11.x`
 
 > **Critical:** Ensure you are NOT using a Rosetta (x86) Python. Run this check:
 > ```bash
-> python3.12 -c "import platform; print(platform.processor())"
+> python -c "import platform; print(platform.processor())"
 > ```
 > **Expected output:** `arm` — if you see `i386`, you have the wrong Python.
-
----
 
 ## Part 3: Install MLX Framework
 
 MLX is Apple's native machine learning framework for Apple Silicon.
 
+With your virtual environment activated:
+
 ```bash
-python3.12 -m pip install --upgrade pip
-python3.12 -m pip install mlx mlx-lm
+uv pip install mlx mlx-lm
 ```
 
 **Expected output:** `Successfully installed mlx-x.x.x mlx-lm-x.x.x ...`
@@ -144,12 +169,10 @@ python3.12 -m pip install mlx mlx-lm
 Verify:
 
 ```bash
-python3.12 -c "import mlx; print(mlx.__version__)"
+python -c "import mlx; print(mlx.__version__)"
 ```
 
 **Expected output:** `0.x.x`
-
----
 
 ## Part 4: Install MLX Manager (Web UI + Background Service)
 
@@ -162,7 +185,7 @@ brew tap tumma72/mlx-manager https://github.com/tumma72/mlx-manager
 brew install mlx-manager
 ```
 
-**Expected output:** `🍺  /opt/homebrew/Cellar/mlx-manager/x.x.x: ...`
+**Expected output:** `/opt/homebrew/Cellar/mlx-manager/x.x.x: ...`
 
 ### 4.2 Start the Web UI
 
@@ -171,6 +194,7 @@ mlx-manager serve
 ```
 
 **Expected output:**
+
 ```
 INFO:     Started server process [xxxxx]
 INFO:     Waiting for application startup.
@@ -193,10 +217,11 @@ mlx-manager install-service
 ```
 
 **Expected output:**
+
 ```
 ✅ launchd service installed: com.mlx-manager.server
-   Service will auto-start on login.
-   Use `mlx-manager status` to check.
+Service will auto-start on login.
+Use `mlx-manager status` to check.
 ```
 
 Verify it's running:
@@ -227,11 +252,10 @@ curl http://localhost:10242/v1/models
 ```
 
 **Expected output:**
+
 ```json
 {"object":"list","data":[{"id":"mlx-community/Qwen3.5-4B-8bit","object":"model"}]}
 ```
-
----
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
@@ -244,6 +268,7 @@ curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash
 ```
 
 **Expected output:**
+
 ```
 ✅ QwenPaw installed successfully to ~/.qwenpaw
 ✅ uv Python environment created
@@ -259,6 +284,7 @@ qwenpaw init --defaults
 ```
 
 **Expected output:**
+
 ```
 ✅ Configuration initialized at ~/.qwenpaw/config.json
 ✅ Default model backend configured
@@ -294,6 +320,7 @@ qwenpaw app
 ```
 
 **Expected output:**
+
 ```
 QwenPaw Console running at http://127.0.0.1:8088/
 ```
@@ -310,23 +337,23 @@ cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << 'EOF'
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key>
-    <string>com.qwenpaw.app</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/Users/YOUR_USERNAME/.qwenpaw/bin/qwenpaw</string>
-        <string>app</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>WorkingDirectory</key>
-    <string>/Users/YOUR_USERNAME</string>
-    <key>StandardOutPath</key>
-    <string>/Users/YOUR_USERNAME/.qwenpaw/logs/qwenpaw.log</string>
-    <key>StandardErrorPath</key>
-    <string>/Users/YOUR_USERNAME/.qwenpaw/logs/qwenpaw.error.log</string>
+  <key>Label</key>
+  <string>com.qwenpaw.app</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/YOUR_USERNAME/.qwenpaw/bin/qwenpaw</string>
+    <string>app</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>WorkingDirectory</key>
+  <string>/Users/YOUR_USERNAME</string>
+  <key>StandardOutPath</key>
+  <string>/Users/YOUR_USERNAME/.qwenpaw/logs/qwenpaw.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/YOUR_USERNAME/.qwenpaw/logs/qwenpaw.error.log</string>
 </dict>
 </plist>
 EOF
@@ -346,9 +373,7 @@ Verify:
 launchctl list | grep qwenpaw
 ```
 
-**Expected output:** `-	0	com.qwenpaw.app`
-
----
+**Expected output:** `- 0 com.qwenpaw.app`
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -382,11 +407,11 @@ curl -s http://localhost:8088/
 
 All should return healthy responses without any manual intervention.
 
----
-
 ## Part 7: Remote Access from Anywhere with Tailscale & MagicDNS
 
-Tailscale creates a secure mesh VPN between your devices, giving each one a stable private IP address that works from any network — even behind CGNAT or corporate firewalls, with no port forwarding required. **MagicDNS** is Tailscale's built-in DNS feature that lets you reach your server by its machine name (e.g., `my-mac`) instead of remembering IP addresses. This section sets up MagicDNS as the primary access method for all your services.
+Tailscale creates a secure mesh VPN between your devices, giving each one a stable private IP address that works from any network — even behind CGNAT or corporate firewalls, with no port forwarding required.
+
+**MagicDNS** is Tailscale's built-in DNS feature that lets you reach your server by its machine name (e.g., `my-mac`) instead of remembering IP addresses. This section sets up MagicDNS as the primary access method for all your services.
 
 ### 7.1 Install Tailscale on Your Mac Server
 
@@ -394,9 +419,11 @@ Tailscale creates a secure mesh VPN between your devices, giving each one a stab
 brew install --cask tailscale
 ```
 
-**Expected output:** `🍺  tailscale was successfully installed!`
+**Expected output:** `tailscale was successfully installed!`
 
-Open the Tailscale app from your Applications folder or menu bar, and sign in with Google, GitHub, Microsoft, or email. Once authenticated, the Tailscale icon appears in your menu bar and shows a green "Connected" status.
+Open the Tailscale app from your Applications folder or menu bar, and sign in with Google, GitHub, Microsoft, or email.
+
+Once authenticated, the Tailscale icon appears in your menu bar and shows a green "Connected" status.
 
 > **Note:** The `--cask` version provides the GUI app and includes the `tailscale` CLI command automatically. For a headless server setup, this is the recommended approach.
 
@@ -425,24 +452,24 @@ MagicDNS and HTTPS Certificates are required for secure, name-based access to yo
 
 Once MagicDNS is enabled, you can reach your Mac server by its machine name. There are two ways to find the name:
 
-**Method 1 — Menu Bar (Easiest):**
-Click the Tailscale icon in your Mac's menu bar. Your machine name appears under "This Device".
+**Method 1 — Menu Bar (Easiest):** Click the Tailscale icon in your Mac's menu bar. Your machine name appears under "This Device".
 
 **Method 2 — Terminal:**
+
 ```bash
 tailscale status
 ```
 
 **Expected output:**
+
 ```
-100.101.102.10   my-mac          your-email@example.com  macOS  -
-100.101.102.11   my-laptop       your-email@example.com  macOS  -
+100.101.102.10   my-mac        your-email@example.com  macOS  -
+100.101.102.11   my-laptop     your-email@example.com  macOS  -
 ```
 
 Your MagicDNS name is the second column (e.g., `my-mac`).
 
-**Method 3 — Admin Console:**
-Go to [console.tailscale.com/admin/machines](https://console.tailscale.com/admin/machines), find your Mac in the list, and copy the machine name.
+**Method 3 — Admin Console:** Go to [console.tailscale.com/admin/machines](https://console.tailscale.com/admin/machines), find your Mac in the list, and copy the machine name.
 
 > **Tip:** You can rename your device to something memorable (like `ai-server`) by editing the machine name in the admin console. The MagicDNS entry will update automatically.
 
@@ -455,6 +482,7 @@ ping my-mac
 ```
 
 **Expected output:**
+
 ```
 PING my-mac (100.101.102.10): 56 data bytes
 64 bytes from 100.101.102.10: icmp_seq=0 ttl=64 time=12.3 ms
@@ -473,6 +501,7 @@ ssh your-username@my-mac
 ```
 
 **Expected output:**
+
 ```
 The authenticity of host 'my-mac (100.101.102.10)' can't be established.
 ED25519 key fingerprint is SHA256:...
@@ -493,7 +522,9 @@ On your Mac server, run:
 tailscale set --ssh
 ```
 
-**Expected output:** No output (success). Verify with:
+**Expected output:** No output (success).
+
+Verify with:
 
 ```bash
 tailscale status --json | grep -i ssh
@@ -522,9 +553,12 @@ ssh your-username@my-mac
 
 ### 7.8 Secure Remote Access to Web UIs with HTTPS via MagicDNS
 
-Your MLX Manager (port 8080) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic. **With MagicDNS enabled, you access these services by name instead of IP.** Tailscale Serve keeps your web UIs bound to localhost while giving your tailnet an HTTPS MagicDNS hostname.
+Your MLX Manager (port 8080) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
+
+**With MagicDNS enabled, you access these services by name instead of IP.** Tailscale Serve keeps your web UIs bound to localhost while giving your tailnet an HTTPS MagicDNS hostname.
 
 **Exposing your web UIs:**
+
 Run these commands on your Mac server:
 
 ```bash
@@ -533,9 +567,9 @@ tailscale serve --bg --https=443 http://localhost:8088
 ```
 
 **Expected output:**
+
 ```
 Available within your tailnet:
-
 https://my-mac.your-tailnet.ts.net/
 |-- proxy http://localhost:8080
 ```
@@ -543,11 +577,12 @@ https://my-mac.your-tailnet.ts.net/
 Tailscale will print the HTTPS MagicDNS URL for your services.
 
 **Accessing your services using MagicDNS:**
+
 Open the HTTPS URL provided by Tailscale in your browser from any device on your tailnet:
 
 ```
-https://my-mac.your-tailnet.ts.net  (for MLX Manager)
-https://my-mac.your-tailnet.ts.net  (for QwenPaw)
+https://my-mac.your-tailnet.ts.net (for MLX Manager)
+https://my-mac.your-tailnet.ts.net (for QwenPaw)
 ```
 
 Your connection will be fully encrypted, and the browser will show a valid HTTPS certificate (padlock icon). No port forwarding, no firewall changes, and no certificate warnings.
@@ -559,6 +594,7 @@ tailscale serve status
 ```
 
 **Expected output:**
+
 ```
 https://my-mac.your-tailnet.ts.net
 |-- / proxy http://localhost:8080
@@ -572,6 +608,7 @@ https://my-mac.your-tailnet.ts.net
 If you need to share your services with someone outside your tailnet (e.g., a client reviewing a prototype), Tailscale Funnel exposes a local port to the public internet over a stable HTTPS URL — without port forwarding, DNS records, or a public IP address.
 
 **Enabling Funnel:**
+
 1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the admin console.
 2. Ensure **MagicDNS** and **HTTPS Certificates** are enabled (both are required for Funnel).
 3. Under the **Funnel** section, turn on Funnel. You need to be an Owner, Admin, or Network admin.
@@ -583,9 +620,9 @@ tailscale funnel 8080
 ```
 
 **Expected output:**
+
 ```
 Available on the internet:
-
 https://my-mac.your-tailnet.ts.net/
 |-- proxy http://127.0.0.1:8080
 ```
@@ -608,19 +645,17 @@ ping my-mac
 
 If the ping succeeds, Tailscale and MagicDNS are active and your server is reachable by name.
 
----
-
 ## Troubleshooting Quick Reference
 
 | Symptom | Fix |
-|---|---|
+|---------|-----|
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `mlx-manager` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach MLX | Confirm MLX Manager is running: `curl http://localhost:10242/v1/models` |
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window in MLX Manager |
 | Port conflicts | Change MLX Manager port with `MLX_MANAGER_DEFAULT_PORT_START` env var |
 | MagicDNS name doesn't resolve | Verify MagicDNS is enabled in the Tailscale admin console under DNS settings; check Tailscale is running on both devices |
-| `ts.net` URL doesn't resolve | MagicDNS may be off for that resolver; enable it, or use `curl --resolve <name>:443:<tailscale-ip>` |
+| `ts.net` URL doesn't resolve | MagicDNS may be off for that resolver; enable it, or use `curl --resolve :443:` |
 | SSH over Tailscale times out | Verify Remote Login is enabled (`sudo systemsetup -getremotelogin`); check Tailscale SSH policy in admin console |
 | HTTPS URL gives certificate error | Verify HTTPS Certificates are enabled in the Tailscale admin console under DNS settings |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations; ensure the target services are running locally |
