@@ -211,9 +211,49 @@ python -c "import mlx; print(mlx.__version__)"
 
 ## Part 4: Install MLX Manager (Web UI + Background Service)
 
-MLX Manager provides a browser-based interface for downloading MLX models from Hugging Face and running them as persistent services.
+MLX Manager provides a browser-based interface for downloading MLX models from Hugging Face and running them as persistent services. It is distributed via a Homebrew tap, so we need to install Homebrew first.
 
-### 4.1 Install
+### 4.1 Install Homebrew
+
+Homebrew is the missing package manager for macOS. Install it with the official one-liner:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+**Expected output:** Installation progress messages, followed by:
+
+```
+==> Installation successful!
+
+==> Homebrew has enabled anonymous aggregate formulae and cask analytics.
+...
+==> Next steps:
+- Run these commands in your terminal to add Homebrew to your PATH:
+    echo >> ~/.zprofile
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Follow the printed **Next steps** to add Homebrew to your `PATH` (Apple Silicon uses `/opt/homebrew`; Intel uses `/usr/local`):
+
+```bash
+echo >> ~/.zprofile
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Verify:
+
+```bash
+brew --version
+```
+
+**Expected output:** `Homebrew 4.x.x`
+
+> **Note:** If Homebrew is already installed, this command will detect it and skip installation. You can safely run it again.
+
+### 4.2 Install MLX Manager via Homebrew
 
 ```bash
 brew tap tumma72/mlx-manager https://github.com/tumma72/mlx-manager
@@ -222,7 +262,7 @@ brew install mlx-manager
 
 **Expected output:** `/opt/homebrew/Cellar/mlx-manager/x.x.x: ...`
 
-### 4.2 Start the Web UI
+### 4.3 Start the Web UI
 
 ```bash
 mlx-manager serve
@@ -239,11 +279,11 @@ INFO:     Uvicorn running on http://0.0.0.0:8080
 
 Open `http://localhost:8080` in your browser (or `http://your-mac-ip:8080` from another device).
 
-### 4.3 Create Your Account
+### 4.4 Create Your Account
 
 On first visit, you'll see a registration page. The **first user automatically becomes admin**. Create your account and log in.
 
-### 4.4 Install as Persistent launchd Service
+### 4.5 Install as Persistent launchd Service
 
 This is the key step for always-on operation. Stop the foreground server first (`Ctrl+C`), then:
 
@@ -267,7 +307,7 @@ mlx-manager status
 
 **Expected output:** Shows the service as `running` with a PID.
 
-### 4.5 Download & Deploy a Model
+### 4.6 Download & Deploy a Model
 
 1. In the web UI, click **Browse** to search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
 2. Click **Download** — watch the progress bar
@@ -693,6 +733,7 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `systemsetup: Turning Remote Login on or off requires Full Disk Access privileges` | Grant Terminal Full Disk Access in System Settings → Privacy & Security → Full Disk Access, then **quit and reopen Terminal** |
 | `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
+| `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `mlx-manager` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach MLX | Confirm MLX Manager is running: `curl http://localhost:10242/v1/models` |
