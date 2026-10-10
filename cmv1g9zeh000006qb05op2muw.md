@@ -32,15 +32,50 @@ pmset -g
 
 ```
 System-wide power settings:
+ SleepDisabled		1
 Currently in use:
- hibernatemode        0
+ standby              0
+ Sleep On Power Button 1
+ autorestartatconnect 0
+ autorestart          0
+ SleepServices        0
  powernap             0
+ networkoversleep     0
+ disksleep            0
+ sleep                0 (sleep prevented by powerd, bluetoothd)
+ ttyskeepawake        1
  displaysleep         0
- sleep                0
- disablesleep         1
+ tcpkeepalive         1
+ powermode            0
+ womp                 1
 ```
 
+> **Note:** On macOS Ventura (13) and later, `pmset` reports the disablesleep setting as `SleepDisabled 1` instead of `disablesleep 1`. This is expected — it means the same thing.
+>
+> The annotation `(sleep prevented by powerd, bluetoothd)` next to `sleep 0` is **informational, not an error**. It simply means that in addition to your `pmset` settings, system daemons are also actively preventing sleep. Your server will stay awake.
+
 ### 1.2 Enable SSH (Remote Login)
+
+On macOS Catalina (10.15) and later, the `systemsetup` command requires **Full Disk Access** to toggle Remote Login. Running it without that permission will fail with:
+
+```
+setremotelogin: Turning Remote Login on or off requires Full Disk Access privileges.
+```
+
+This is a macOS security feature (TCC), and `sudo` alone does not bypass it. Follow these steps to fix it permanently.
+
+**Step 1: Grant Full Disk Access to Terminal**
+
+1. Open **System Settings**.
+2. Go to **Privacy & Security** → **Full Disk Access**.
+3. Click the **+** button.
+4. Navigate to **Applications** → **Utilities** and select **Terminal.app** (or your terminal of choice, e.g., iTerm).
+5. Toggle Terminal **on** in the list.
+6. **Quit Terminal completely** (`Cmd+Q`) and reopen it. The permission only takes effect for new sessions.
+
+**Step 2: Enable Remote Login**
+
+Now run the command. It will succeed without the permission error:
 
 ```bash
 sudo systemsetup -setremotelogin on
@@ -655,6 +690,9 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 
 | Symptom | Fix |
 |---------|-----|
+| `systemsetup: Turning Remote Login on or off requires Full Disk Access privileges` | Grant Terminal Full Disk Access in System Settings → Privacy & Security → Full Disk Access, then **quit and reopen Terminal** |
+| `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
+| `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `mlx-manager` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach MLX | Confirm MLX Manager is running: `curl http://localhost:10242/v1/models` |
