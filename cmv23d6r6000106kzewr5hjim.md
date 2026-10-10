@@ -3,6 +3,7 @@ title: "Building an AI Trading Team on Your Mac: A Deep Dive into TradingAgents 
 datePublished: 2026-10-10T07:47:29.044Z
 cuid: cmv23d6r6000106kzewr5hjim
 slug: building-an-ai-trading-team-on-your-mac-a-deep-dive-into-tradingagents-with-gemini-3
+cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/50e84288-2f90-4a75-b504-c9edbe928689.jpg
 tags: ai, python, trading, llm, langchain
 
 ---
@@ -14,12 +15,17 @@ TradingAgents is an open-source multi-agent LLM framework that simulates a real-
 Built on **LangGraph** for stateful orchestration, the framework supports multiple LLM providers including Google Gemini, OpenAI, Anthropic, and more. This guide walks you through a complete production-grade setup on a Mac Mini M5: **Gemini 3** as the inference backend, **LangGraph Studio** for visual debugging, **uv** for Python environment management, and **yfinance** for market data.
 
 **What you'll build:**
-- A Python 3.11 virtual environment managed by `uv`
-- TradingAgents with Gemini 3 Pro and Gemini 3 Flash
-- LangGraph Studio for step-by-step visual debugging
-- Checkpoint/resume support so long analyses survive interruptions
-- A first live analysis run on a ticker of your choice
 
+*   A Python 3.11 virtual environment managed by `uv`
+    
+*   TradingAgents with Gemini 3 Pro and Gemini 3 Flash
+    
+*   LangGraph Studio for step-by-step visual debugging
+    
+*   Checkpoint/resume support so long analyses survive interruptions
+    
+*   A first live analysis run on a ticker of your choice
+    
 
 ## Architecture: How the Virtual Trading Firm Works
 
@@ -28,7 +34,7 @@ TradingAgents mirrors a real trading firm's organizational structure, implemente
 **Four-layer workflow:**
 
 | Layer | Agents | Role | Think Level |
-|-------|--------|------|-------------|
+| --- | --- | --- | --- |
 | **Analyst Team** | Fundamentals, Sentiment, News, Technical | Gather data, produce initial reports | Quick Think |
 | **Researcher Debate** | Bull Researcher ↔ Bear Researcher | Structured debate on analyst findings | Deep Think |
 | **Trading** | Trader Agent | Composes reports into a trading plan | Deep Think |
@@ -39,14 +45,13 @@ Each analyst runs a conditional tool-call loop: the agent calls a data tool (e.g
 **What runs where:**
 
 | Layer | Location | Description |
-|-------|----------|-------------|
+| --- | --- | --- |
 | LangGraph orchestration | **Local** (Mac Mini) | State graph compilation, node routing, checkpoint persistence |
 | TradingAgents framework | **Local** | Agent definitions, tool nodes, memory logs |
 | yfinance data fetching | **Local** (network) | HTTP requests to Yahoo Finance APIs |
 | Gemini inference | **Remote** (Google Cloud) | The actual LLM reasoning — each agent node sends a prompt to Gemini |
 
 When you call `ta.propagate("NVDA", date)`, LangGraph compiles the graph locally, then streams execution node by node. Each agent node makes a remote API call to Gemini for reasoning, merges the response back into the shared `AgentState`, and LangGraph routes to the next node based on conditional logic.
-
 
 ## Why Gemini 3
 
@@ -58,9 +63,10 @@ When you call `ta.propagate("NVDA", date)`, LangGraph compiles the graph locally
 
 **Model selection for this project:**
 
-- **Deep Think** — `gemini-3.8-flash` : Our most intelligent Flash model, engineered for long-horizon software engineering, autonomous agents, and complex enterprise workflows. Used for the Researcher debate, Trader, and Risk Management agents.
-- **Quick Think** — `gemini-3.1-flash-lite` : Frontier-class performance rivaling larger models at a fraction of the cost. Used for the four Analyst agents, which are high-throughput data gathering tasks.
-
+*   **Deep Think** — `gemini-3.8-flash` : Our most intelligent Flash model, engineered for long-horizon software engineering, autonomous agents, and complex enterprise workflows. Used for the Researcher debate, Trader, and Risk Management agents.
+    
+*   **Quick Think** — `gemini-3.1-flash-lite` : Frontier-class performance rivaling larger models at a fraction of the cost. Used for the four Analyst agents, which are high-throughput data gathering tasks.
+    
 
 ## Step-by-Step Setup
 
@@ -81,7 +87,8 @@ brew --version
 ```
 
 **Expected output:**
-```
+
+```plaintext
 Homebrew 4.x.x
 ```
 
@@ -100,7 +107,8 @@ uv --version
 ```
 
 **Expected output:**
-```
+
+```plaintext
 uv 0.x.x
 ```
 
@@ -113,7 +121,8 @@ uv venv --python 3.11
 ```
 
 **Expected result:**
-```
+
+```plaintext
 Using CPython 3.11.x
 Creating virtual environment at: .venv
 Activate with: source .venv/bin/activate
@@ -148,7 +157,8 @@ python -c "from langgraph.graph import StateGraph; print('LangGraph OK')"
 ```
 
 **Expected output:**
-```
+
+```plaintext
 TradingAgents OK
 LangGraph OK
 ```
@@ -259,7 +269,8 @@ python verify_setup.py
 ```
 
 **Expected output:**
-```
+
+```plaintext
 Gemini endpoint verified
 Initializing Graph...
 Graph initialized successfully.
@@ -338,7 +349,6 @@ Then, on resume, the framework prints `Resuming from step N for <TICKER> on <dat
 
 **CLI alternative:** If you use the TradingAgents CLI, pass `--checkpoint` as a command-line argument.
 
-
 ## LangGraph Studio: Visual Debugging
 
 LangGraph Studio gives you a live, interactive view of the graph as it executes. You can set breakpoints, inspect state at any node, view exact prompts sent to Gemini, and debug failures without re-running the entire pipeline. For the official reference, see the [LangGraph Studio documentation](https://docs.langchain.com/langsmith/quick-start-studio).
@@ -377,7 +387,8 @@ langgraph dev
 ```
 
 **Expected output:**
-```
+
+```plaintext
 Server started at http://localhost:2024
 ```
 
@@ -386,7 +397,7 @@ Open Studio in your browser. Safari and Brave block plain HTTP on localhost — 
 ### What Studio Gives You
 
 | Feature | What It Does |
-|---------|--------------|
+| --- | --- |
 | **Interactive graph visualization** | See all nodes and edges rendered as a live graph |
 | **Step-by-step execution** | Pause at any node, inspect input state, then resume |
 | **State inspection** | View the full `AgentState` at any point — messages, reports, debate counts |
@@ -426,7 +437,6 @@ langgraph dev --debug-port 5678
 
 Then attach VS Code or PyCharm to port 5678.
 
-
 ## Data Vendors: yfinance and Alternatives
 
 TradingAgents ships with **yfinance** as the default data vendor. It requires no API keys and covers core stock APIs, technical indicators, fundamentals, and news.
@@ -445,7 +455,7 @@ config["data_vendors"] = {
 **Supported alternatives:**
 
 | Vendor | Category | API Key Required | Notes |
-|--------|----------|-----------------|-------|
+| --- | --- | --- | --- |
 | `alpha_vantage` | Core stock, fundamentals | Yes | Free tier: 25 requests/day |
 | `sec_edgar` | Fundamentals | No | SEC asks callers to identify themselves |
 | `fred` | Macro data | Yes | Federal Reserve economic data |
@@ -460,11 +470,10 @@ config["data_vendors"]["fundamental_data"] = "sec_edgar,yfinance"
 
 You can specify comma-separated fallback chains. If the first vendor is unavailable, the system automatically tries the next in the chain.
 
-
 ## Risks and Limitations
 
 | Risk | Severity | Mitigation |
-|------|----------|------------|
+| --- | --- | --- |
 | **Gemini rate limits** | High | Free tier is 15 RPM. A single trade run can exceed this. Enable billing or throttle with `max_debate_rounds = 1` |
 | **yfinance single point of failure** | Medium | Web scraping tool, subject to Yahoo page changes. Use fallback chains |
 | **Context growth during debate** | Medium | Set `max_debate_rounds` and `max_risk_discuss_rounds` conservatively for long runs |
@@ -472,19 +481,27 @@ You can specify comma-separated fallback chains. If the first vendor is unavaila
 
 **Important disclaimer:** TradingAgents is designed for research purposes. Trading performance may vary based on many factors, including the chosen backbone language models, model temperature, trading periods, and data quality. It is not intended as financial, investment, or trading advice.
 
-
 ## Conclusion
 
 You now have a fully operational multi-agent trading firm running on your Mac Mini M5. The architecture is:
 
-- **LangGraph** runs locally, orchestrating the entire workflow
-- **Gemini 3** provides remote inference — `gemini-3.8-flash` for deep reasoning, `gemini-3.1-flash-lite` for high-throughput analysts
-- **yfinance** fetches market data with no API keys required
-- **LangGraph Studio** gives you step-by-step visual debugging
-- **Checkpoint/resume** ensures long analyses survive interruptions
+*   **LangGraph** runs locally, orchestrating the entire workflow
+    
+*   **Gemini 3** provides remote inference — `gemini-3.8-flash` for deep reasoning, `gemini-3.1-flash-lite` for high-throughput analysts
+    
+*   **yfinance** fetches market data with no API keys required
+    
+*   **LangGraph Studio** gives you step-by-step visual debugging
+    
+*   **Checkpoint/resume** ensures long analyses survive interruptions
+    
 
 **Next steps:**
-- Experiment with different Gemini model combinations for Quick Think and Deep Think
-- Add fallback data vendors (SEC EDGAR for fundamentals, Alpha Vantage for stock data)
-- Integrate with the Telegram bot wrapper for remote triggering
-- Add a local Ollama model for offline capability
+
+*   Experiment with different Gemini model combinations for Quick Think and Deep Think
+    
+*   Add fallback data vendors (SEC EDGAR for fundamentals, Alpha Vantage for stock data)
+    
+*   Integrate with the Telegram bot wrapper for remote triggering
+    
+*   Add a local Ollama model for offline capability
