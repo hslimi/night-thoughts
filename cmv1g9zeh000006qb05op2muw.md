@@ -24,8 +24,8 @@ Everything in this guide was verified on the following setup. If your versions a
 | **mlx-lm** | 0.28.x | LLM extensions for MLX |
 | **oMLX** | latest via `jundot/omlx` | Inference server + admin dashboard |
 | **QwenPaw** | latest via `agentscope.io` | Agent framework + web console |
-| **Caddy** | 2.x | Reverse proxy for custom domain routing |
-| **Tailscale** | latest via `--cask` | Mesh VPN + custom domain certificates |
+| **Caddy** | 2.x | Reverse proxy + authentication layer |
+| **Tailscale** | latest via `--cask` | Mesh VPN + TLS termination |
 
 > **Note:** Version numbers above reflect the state of the ecosystem when this guide was written. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
 
@@ -506,14 +506,21 @@ QwenPaw HTTP 200
 
 All three services should return healthy responses without any manual intervention.
 
-## Part 7: Remote Access from Anywhere with a Custom Domain
+## Part 7: Remote Access from Anywhere with Tailscale Serve + Caddy
 
-This part sets up secure HTTPS access to both oMLX and QwenPaw from anywhere in the world, using your **own custom domain** rather than Tailscale's default `.ts.net` hostname. You'll get clean, port-free URLs like:
+This part sets up secure HTTPS access to both oMLX and QwenPaw from anywhere in the world, using Tailscale's built-in `*.ts.net` hostname. **Caddy** runs locally as a reverse proxy to route each service and provide a single authentication entry point.
 
-- `https://omlx.yourdomain.com`
-- `https://qwenpaw.yourdomain.com`
+The architecture:
 
-The architecture: **Tailscale** provides the encrypted mesh network and provisions TLS certificates for your custom domain; **Caddy** runs locally as a reverse proxy to route each subdomain to the correct service.
+```
+Client (tailnet) → Tailscale Serve (TLS, port 443)
+                       ↓
+                   Caddy (localhost:9080)
+                    ├── /        → oMLX (localhost:8000)
+                    └── /qwenpaw → QwenPaw (localhost:8088)
+```
+
+Tailscale terminates TLS using its auto-provisioned certificates. Caddy owns all path routing on a single port.
 
 ### 7.0 Create a Tailscale Account
 
@@ -524,7 +531,9 @@ If you don't already have a Tailscale account, sign up first. It's free for pers
 3. After signing in, you'll be asked to choose **Business use** or **Personal use**. Pick Personal for a home server setup.
 4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin).
 
-> **Note:** If you sign up with a public email domain (e.g., `@gmail.com`), you're automatically placed on the **Personal** plan, which includes up to **6 free users** and **100 devices**. That's more than enough for this guide.
+> **Note:** If you sign up with a public email domain (e.g., `@gmail.com`) or GitHub, you're placed on a **shared-domain tailnet** on the Personal plan — 6 free users, 100 devices, and 50 tagged devices. That's more than enough for this guide.
+
+> **Important:** Shared-domain tailnets **cannot** use custom domains (the Domains page in the admin console will show "You are not authorized to access this page"). This guide does not require custom domains — Tailscale's built-in `*.ts.net` hostname works for everything below.
 
 > **Tip:** The same account must be used on every device you want on your tailnet. If you sign in with Google on your Mac server, sign in with Google on your laptop too — otherwise they won't see each other.
 
@@ -554,48 +563,25 @@ echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >>
 
 ```
 100.97.x.x    my-mac-mini     user@example.com  macOS    -
-100.88.x.x    night-thoughts  user@example.com  macOS    offline, last seen 2d ago
+100.88.x.x    my-laptop       user@example.com  macOS    -
 ```
 
 If you see your machine list, the CLI is working and you can proceed.
 
 > **Tip:** Your machine name may be long and awkward to type. You can rename it to something memorable like `night-thoughts` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
 
-### 7.2 Configure Your Custom Domain in Tailscale
+### 7.2 Enable HTTPS Certificates
 
-Tailscale can provision TLS certificates for your own domain, but you must first prove ownership by adding a TXT record at your DNS provider.
+Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can terminate TLS on port 443.
 
-**Step 1: Add your domain to Tailscale**
+1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
+2. Under the **HTTPS Certificates** section, click **Enable HTTPS**.
 
-1. Go to the [**Domains page**](https://login.tailscale.com/admin/settings/domains) of the Tailscale admin console.
-2. Click **Add domain** and enter your domain (e.g., `yourdomain.com`).
-3. Tailscale will display a **TXT record** with a **Name** and **Value**.
-
-> **Note:** The Domains page is **not available** for shared-domain tailnets — those signed in with a public email like `@gmail.com` or via GitHub. If you see no Domains page, you're on a shared-domain tailnet. You'll need to sign up with a custom domain email to use this feature, or use the default `.ts.net` hostname instead.
-
-**Step 2: Add the TXT record at your registrar**
-
-Sign into your domain registrar (Cloudflare, Namecheap, Route 53, etc.) and create a new **TXT record** using the Name and Value shown in the Tailscale console. Set the TTL to **3600**.
-
-The Name is a `_tailscale-challenge` subdomain of your domain. For example:
-
-| Type | Name | Value | TTL |
-|------|------|-------|-----|
-| `TXT` | `_tailscale-challenge.yourdomain.com` | `<value provided by Tailscale>` | 3600 |
-
-> **Note:** Some DNS providers automatically append your domain to the record name. For those, enter only `_tailscale-challenge` in the Name field — do not include `.yourdomain.com`.
-
-**Step 3: Verify the domain**
-
-Return to the Tailscale admin console and click **Close**. Your domain will show as **Pending verification** until Tailscale detects the TXT record. It may take up to a few hours for DNS propagation.
-
-Once verified, you'll receive a confirmation email, and your domain will be marked as **Claimed**. Leave the TXT record in place — Tailscale periodically re-checks it.
-
-> **Important:** Enabling custom domains publishes your domain name on a public ledger (Certificate Transparency). If your domain name contains sensitive information, consider using a randomized tailnet name instead.
+> **Note:** This is separate from custom domains. Enabling HTTPS certificates for your `*.ts.net` hostname works on **all** plans, including shared-domain tailnets. You will **not** see a Domains section on shared-domain tailnets — that's expected and does not block anything in this guide.
 
 ### 7.3 Install Caddy
 
-Caddy is a lightweight reverse proxy that will route each subdomain to the correct local service.
+Caddy is the reverse proxy that routes each service and provides a single entry point. Install it via Homebrew:
 
 ```bash
 brew install caddy
@@ -611,25 +597,25 @@ caddy version
 
 **Expected output:** `v2.x.x`
 
-### 7.4 Configure Caddy for Subdomain Routing
+### 7.4 Configure Caddy for Path Routing
 
-Create a Caddyfile that routes `omlx.yourdomain.com` to oMLX and `qwenpaw.yourdomain.com` to QwenPaw.
-
-Write the configuration in one command (replace `yourdomain.com` with your actual domain):
+Create a Caddyfile that routes `/qwenpaw` to the QwenPaw console and everything else to oMLX. The `handle_path` directive **strips the prefix** before forwarding, so QwenPaw receives requests at `/` as it expects.
 
 ```bash
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
-omlx.yourdomain.com {
-    reverse_proxy localhost:8000
-}
+:9080 {
+    handle_path /qwenpaw/* {
+        reverse_proxy localhost:8088
+    }
 
-qwenpaw.yourdomain.com {
-    reverse_proxy localhost:8088
+    handle {
+        reverse_proxy localhost:8000
+    }
 }
 EOF
 ```
 
-> **Important:** Replace `yourdomain.com` in both blocks with your actual domain. This is the domain you added to Tailscale in §7.2.
+> **Why oMLX gets the root path?** oMLX's admin dashboard lives at `/admin` and references assets with absolute paths like `/static/...`. Mounting it at `/` means those paths resolve correctly without any rewriting. QwenPaw is mounted at `/qwenpaw`; Caddy's `handle_path` strips that prefix before forwarding, so QwenPaw receives requests at `/` as it expects.
 
 Verify the Caddyfile syntax:
 
@@ -661,13 +647,11 @@ brew services list | grep caddy
 caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 ```
 
-Caddy is now listening on port 80, ready to receive traffic from Tailscale.
-
-> **Note:** Caddy does **not** terminate TLS here — Tailscale handles that. Caddy receives plain HTTP from Tailscale's local proxy and routes based on the `Host` header.
+Caddy is now listening on port 9080, ready to receive traffic from Tailscale.
 
 ### 7.6 Point Tailscale Serve at Caddy
 
-Now tell Tailscale to forward all HTTPS traffic on port 443 to Caddy on port 80, which will route based on hostname.
+Now tell Tailscale to forward all HTTPS traffic on port 443 to Caddy on port 9080.
 
 First, clear any existing serve configuration:
 
@@ -675,10 +659,10 @@ First, clear any existing serve configuration:
 tailscale serve reset
 ```
 
-Then set up the proxy to Caddy's HTTP listener:
+Then set up the proxy to Caddy:
 
 ```bash
-tailscale serve --bg --https=443 http://localhost:80
+tailscale serve --bg --https=443 http://localhost:9080
 ```
 
 Verify the serve configuration:
@@ -690,51 +674,115 @@ tailscale serve status
 **Expected output:**
 
 ```
-https://yourdomain.com
-|-- / proxy http://localhost:80
+https://night-thoughts.your-tailnet.ts.net (tailnet only)
+|-- / proxy http://localhost:9080
 ```
 
-Tailscale is now terminating TLS for `*.yourdomain.com` and forwarding all requests to Caddy, which routes them to oMLX or QwenPaw based on the subdomain.
-
-> **Note:** Caddy's **admin API** (a separate internal endpoint) listens on port 2019 — that is **not** the port Tailscale should proxy to. The correct target is Caddy's HTTP listener on port 80.
+Tailscale is now terminating TLS for your `*.ts.net` hostname and forwarding all requests to Caddy, which routes them based on path.
 
 ### 7.7 Access Your Services
 
-From any device on your tailnet, open:
+From any device on your tailnet — laptop, phone, tablet — open:
 
-- **oMLX admin dashboard:** `https://omlx.yourdomain.com/admin`
-- **QwenPaw web console:** `https://qwenpaw.yourdomain.com`
+- **oMLX admin dashboard:** `https://night-thoughts.your-tailnet.ts.net/admin`
+- **oMLX API:** `https://night-thoughts.your-tailnet.ts.net/v1/models`
+- **QwenPaw web console:** `https://night-thoughts.your-tailnet.ts.net/qwenpaw`
 
-No ports. No path prefixes. Clean HTTPS URLs with valid certificates.
+Replace `night-thoughts.your-tailnet.ts.net` with your actual MagicDNS name, which you can find by running `tailscale status` — the second column of the row for your Mac server.
 
-> **Note:** You must be signed into Tailscale on the client device. These URLs are only reachable from within your tailnet — the public internet cannot reach them.
+No ports in the URL. Valid HTTPS certificates. Reachable from anywhere in the world, as long as the client device is signed into Tailscale.
 
-### 7.8 Authentication Layer
+> **Note:** These URLs are only reachable from within your tailnet. The public internet cannot reach them — that's a feature, not a limitation.
 
-Tailscale handles network-level access control — only devices on your tailnet can connect. However, both services still have their own authentication:
+### 7.8 Enable QwenPaw Authentication
 
-| Service | Authentication |
-|---------|----------------|
-| **oMLX** | Your `omlx-night-thoughts` API key (set in §4.3) |
-| **QwenPaw** | Console login (if enabled) |
+Tailscale controls network-level access, but **anyone on your tailnet can reach QwenPaw**. Enabling QwenPaw's built-in web authentication adds a login prompt at the application layer.
 
-For oMLX, the API key protects the `/v1/*` endpoints. The admin dashboard at `/admin` may prompt for a session login on first visit.
+QwenPaw uses three environment variables to enable auth. When all three are set, QwenPaw automatically creates the admin account on first startup — no manual registration step is needed.
 
-For QwenPaw, if you want to require authentication when accessing from outside, set the following environment variables in the launchd plist (§5.4):
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `QWENPAW_AUTH_ENABLED` | `false` | Set to `true` to require login |
+| `QWENPAW_AUTH_USERNAME` | `admin` | Console login username |
+| `QWENPAW_AUTH_PASSWORD` | *(empty)* | **Required** when auth is enabled |
 
-```xml
-<key>EnvironmentVariables</key>
+Rewrite the plist with the auth variables added, then reload the service. Replace `your-secure-password` with a strong password of your choice:
+
+```bash
+launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null
+
+mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
 <dict>
-  <key>QWENPAW_AUTH_ENABLED</key>
-  <string>true</string>
-  <key>QWENPAW_AUTH_USERNAME</key>
-  <string>your-username</string>
-  <key>QWENPAW_AUTH_PASSWORD</key>
-  <string>your-password</string>
+  <key>Label</key>
+  <string>com.qwenpaw.app</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>$HOME/.qwenpaw/bin/qwenpaw</string>
+    <string>app</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>WorkingDirectory</key>
+  <string>$HOME</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>QWENPAW_LOG_MAX_SIZE</key>
+    <string>2MiB</string>
+    <key>QWENPAW_LOG_MAX_BACKUPS</key>
+    <string>2</string>
+    <key>QWENPAW_AUTH_ENABLED</key>
+    <string>true</string>
+    <key>QWENPAW_AUTH_USERNAME</key>
+    <string>admin</string>
+    <key>QWENPAW_AUTH_PASSWORD</key>
+    <string>your-secure-password</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/dev/null</string>
+  <key>StandardErrorPath</key>
+  <string>/dev/null</string>
 </dict>
+</plist>
+EOF
 ```
 
-Then reload the plist as shown in §5.4.
+> **Important:** Replace `your-secure-password` with your own strong password before running. The `<string>` value is written literally into the plist file.
+
+Reload the service:
+
+```bash
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl list | grep qwenpaw
+```
+
+**Expected output:**
+
+```
+-   0   com.qwenpaw.app
+```
+
+Verify auth is active by checking that the console redirects to a login page:
+
+```bash
+curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
+```
+
+**Expected output:**
+
+```
+QwenPaw HTTP 200
+```
+
+> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://night-thoughts.your-tailnet.ts.net/qwenpaw` in a browser to confirm you're prompted for credentials.
+
+> **Default credentials note:** If you set `QWENPAW_AUTH_USERNAME=admin` and forget the password, reset it with:
+> ```bash
+> source ~/.zshrc && qwenpaw auth reset-password
+> ```
 
 ### 7.9 Verify Everything Survives Reboot
 
@@ -756,22 +804,26 @@ brew services list | grep -E "omlx|caddy" && launchctl list | grep qwenpaw && ta
 omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 -   0   com.qwenpaw.app
-https://yourdomain.com
-|-- / proxy http://localhost:80
+https://night-thoughts.your-tailnet.ts.net (tailnet only)
+|-- / proxy http://localhost:9080
 ```
 
 All services should return healthy responses without any manual intervention.
+
+> **Note:** Tailscale Serve configurations persist across reboots automatically. You don't need to re-run the `tailscale serve` commands after a restart.
 
 ### 7.10 Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
-| `omlx.yourdomain.com` returns 404 | Verify Caddy is running (`brew services list \| grep caddy`) and the Caddyfile has the correct subdomain blocks. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
-| Certificate error on custom domain | Verify the `_tailscale-challenge` TXT record is correctly set at your registrar. Wait 5–10 minutes for DNS propagation, then check Tailscale admin console for domain verification status. |
-| `tailscale serve status` shows no configuration | Run `tailscale serve --bg --https=443 http://localhost:80` again. Ensure HTTPS certificates are enabled in the Tailscale admin console. |
-| Caddy won't start | Check for port conflicts on 80 or 443: `sudo lsof -i :80` and `sudo lsof -i :443`. Stop any conflicting service (e.g., a local web server) before starting Caddy. |
-| Custom domain shows "not verified" in Tailscale | DNS records haven't propagated yet. Run `dig +short _tailscale-challenge.yourdomain.com TXT` to check. If empty, wait and retry. |
-| Domains page missing from admin console | You're on a shared-domain tailnet (signed in with `@gmail.com` or GitHub). Custom domains require a tailnet with a custom domain email address. |
+| Domains page shows "You are not authorized to access this page" | Expected on shared-domain tailnets (Gmail, GitHub). Custom domains are not available. This guide does not require them. |
+| `omlx` dashboard returns 404 | Confirm oMLX is running (`brew services list \| grep omlx`) and that Caddy is pointing at `localhost:8000`. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
+| QwenPaw CSS/JS assets return 404 | The app is emitting absolute asset paths. Verify the Caddyfile uses `handle_path /qwenpaw/*` (not `handle`), which strips the prefix before forwarding. |
+| `tailscale serve status` shows no configuration | Re-run `tailscale serve --bg --https=443 http://localhost:9080`. Ensure HTTPS Certificates are enabled per §7.2. |
+| Certificate error on `*.ts.net` URL | Verify HTTPS Certificates are enabled in the Tailscale admin console under DNS settings. |
+| `tailscale: command not found` | Add the alias per §7.1b and reload your shell. |
+| Caddy won't start | Check for port conflicts on 9080: `sudo lsof -i :9080`. Stop any conflicting service before starting Caddy. |
+| QwenPaw auth not prompting | Verify the three `QWENPAW_AUTH_*` variables are present in the plist (`plutil -p ~/Library/LaunchAgents/com.qwenpaw.app.plist`) and reload the service per §7.8. |
 
 ## Troubleshooting Quick Reference
 
@@ -790,6 +842,7 @@ All services should return healthy responses without any manual intervention.
 | `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
+| Forgot the QwenPaw password | Run `source ~/.zshrc && qwenpaw auth reset-password` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Use `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead of the legacy `load` command |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
@@ -799,6 +852,4 @@ All services should return healthy responses without any manual intervention.
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
-| Custom domain not resolving | Verify the `_tailscale-challenge` TXT record is set at your registrar. Check Tailscale admin console for domain verification status. |
-| Caddy not routing correctly | Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. Ensure subdomain blocks match your Tailscale custom domain. |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
