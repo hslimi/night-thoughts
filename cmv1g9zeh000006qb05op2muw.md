@@ -204,10 +204,15 @@ uv pip install mlx mlx-lm
 Verify:
 
 ```bash
-python -c "import mlx; print(mlx.__version__)"
+python -c "import mlx.core as mx; print(mx.__version__)"
 ```
 
-**Expected output:** `0.x.x`
+**Expected output:** `0.32.x`
+
+> **Note:** The top-level `mlx` module does **not** export `__version__`. If you try `python -c "import mlx; print(mlx.__version__)"`, you'll get `AttributeError: module 'mlx' has no attribute '__version__'`. The version attribute lives on `mlx.core`. Alternatively, you can read the version from package metadata:
+> ```bash
+> python -c "import importlib.metadata as md; print(md.version('mlx'))"
+> ```
 
 ## Part 4: Install MLX Manager (Web UI + Background Service)
 
@@ -294,9 +299,29 @@ brew trust tumma72/mlx-manager
 brew install mlx-manager
 ```
 
-**Expected output:** `/opt/homebrew/Cellar/mlx-manager/x.x.x: ...`
+**Expected output:** `/opt/homebrew/Cellar/mlx-manager/x.x.x: ...` followed by a **Caveats** section that shows the available commands:
 
-### 4.4 Start the Web UI
+```
+==> Caveats
+==> mlx-manager
+To start the MLX Manager server:
+  mlx-manager serve
+
+To run as a background service:
+  brew services start mlx-manager
+
+To launch the menubar app:
+  mlx-manager menubar
+
+The web interface will be available at:
+  http://localhost:10242
+```
+
+> **Take note of the port.** MLX Manager's web UI runs on **port 10242**, not 8080. All URLs in this guide use 10242.
+
+### 4.4 Start the Web UI (Foreground, for First-Time Setup)
+
+For the very first run, start it in the foreground so you can see logs and complete the initial account registration:
 
 ```bash
 mlx-manager serve
@@ -308,47 +333,66 @@ mlx-manager serve
 INFO:     Started server process [xxxxx]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8080
+INFO:     Uvicorn running on http://0.0.0.0:10242
 ```
 
-Open `http://localhost:8080` in your browser (or `http://your-mac-ip:8080` from another device).
+Open `http://localhost:10242` in your browser (or `http://your-mac-ip:10242` from another device).
 
 ### 4.5 Create Your Account
 
 On first visit, you'll see a registration page. The **first user automatically becomes admin**. Create your account and log in.
 
-### 4.6 Install as Persistent launchd Service
+### 4.6 Run MLX Manager as an Always-On Background Service
 
-This is the key step for always-on operation. Stop the foreground server first (`Ctrl+C`), then:
+This is the key step for always-on operation. Stop the foreground server first (`Ctrl+C`), then register MLX Manager with `brew services`, which installs a launchd agent that auto-starts on login and restarts on crash:
 
 ```bash
-mlx-manager install-service
+brew services start mlx-manager
 ```
 
 **Expected output:**
 
 ```
-✅ launchd service installed: com.mlx-manager.server
-Service will auto-start on login.
-Use `mlx-manager status` to check.
+==> Successfully started `mlx-manager` (label: homebrew.mxcl.mlx-manager)
 ```
 
 Verify it's running:
 
 ```bash
-mlx-manager status
+brew services list
 ```
 
-**Expected output:** Shows the service as `running` with a PID.
+**Expected output:**
+
+```
+Name          Status  User  File
+mlx-manager   started yourname ~/Library/LaunchAgents/homebrew.mxcl.mlx-manager.plist
+```
+
+The `Status` should be `started`. `brew services` writes the launchd plist to `~/Library/LaunchAgents/homebrew.mxcl.mlx-manager.plist` automatically — no manual plist creation needed.
+
+> **Note:** If you previously used `mlx-manager install-service`, uninstall it first to avoid two competing launchd jobs:
+> ```bash
+> mlx-manager uninstall-service 2>/dev/null || true
+> brew services start mlx-manager
+> ```
+
+**Useful `brew services` commands:**
+
+```bash
+brew services stop mlx-manager      # stop the service
+brew services restart mlx-manager   # restart the service
+brew services info mlx-manager      # show detailed status
+```
 
 ### 4.7 Download & Deploy a Model
 
-1. In the web UI, click **Browse** to search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
+1. In the web UI (`http://localhost:10242`), click **Browse** to search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
 2. Click **Download** — watch the progress bar
 3. Click **Configure** to create a server profile (GPU layers, context length, etc.)
 4. Click **Run** to start serving
 
-Once running, the model is available at:
+The model's OpenAI-compatible API endpoint is shown in the web UI. By default it is available at:
 
 ```
 http://localhost:10242/v1
@@ -365,6 +409,8 @@ curl http://localhost:10242/v1/models
 ```json
 {"object":"list","data":[{"id":"mlx-community/Qwen3.5-4B-8bit","object":"model"}]}
 ```
+
+> **Note:** If your MLX Manager instance serves the model API on a different port (some versions expose the UI and API separately), check the **Server** or **Settings** page in the web UI for the exact endpoint URL.
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
@@ -507,14 +553,14 @@ ssh your-username@your-mac-ip
 Check all services:
 
 ```bash
-# MLX Manager
-mlx-manager status
+# MLX Manager (should be "started")
+brew services list | grep mlx-manager
 
 # QwenPaw
 launchctl list | grep qwenpaw
 
 # MLX Manager web UI
-curl -s http://localhost:8080/health
+curl -s http://localhost:10242/health
 
 # QwenPaw console
 curl -s http://localhost:8088/
@@ -668,7 +714,7 @@ ssh your-username@my-mac
 
 ### 7.8 Secure Remote Access to Web UIs with HTTPS via MagicDNS
 
-Your MLX Manager (port 8080) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
+Your MLX Manager (port 10242) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
 
 **With MagicDNS enabled, you access these services by name instead of IP.** Tailscale Serve keeps your web UIs bound to localhost while giving your tailnet an HTTPS MagicDNS hostname.
 
@@ -677,7 +723,7 @@ Your MLX Manager (port 8080) and QwenPaw (port 8088) web interfaces can be acces
 Run these commands on your Mac server:
 
 ```bash
-tailscale serve --bg --https=443 http://localhost:8080
+tailscale serve --bg --https=443 http://localhost:10242
 tailscale serve --bg --https=443 http://localhost:8088
 ```
 
@@ -686,7 +732,7 @@ tailscale serve --bg --https=443 http://localhost:8088
 ```
 Available within your tailnet:
 https://my-mac.your-tailnet.ts.net/
-|-- proxy http://localhost:8080
+|-- proxy http://localhost:10242
 ```
 
 Tailscale will print the HTTPS MagicDNS URL for your services.
@@ -712,7 +758,7 @@ tailscale serve status
 
 ```
 https://my-mac.your-tailnet.ts.net
-|-- / proxy http://localhost:8080
+|-- / proxy http://localhost:10242
 |-- / proxy http://localhost:8088
 ```
 
@@ -731,7 +777,7 @@ If you need to share your services with someone outside your tailnet (e.g., a cl
 **Exposing a service publicly:**
 
 ```bash
-tailscale funnel 8080
+tailscale funnel 10242
 ```
 
 **Expected output:**
@@ -739,7 +785,7 @@ tailscale funnel 8080
 ```
 Available on the internet:
 https://my-mac.your-tailnet.ts.net/
-|-- proxy http://127.0.0.1:8080
+|-- proxy http://127.0.0.1:10242
 ```
 
 > **Warning:** Funnel exposes your service to the public internet. Anyone with the URL can access it. Do not use Funnel for services containing sensitive data. Always enable password authentication for any service exposed via Funnel.
@@ -747,7 +793,7 @@ https://my-mac.your-tailnet.ts.net/
 To stop public access:
 
 ```bash
-tailscale funnel --terminate-on 8080
+tailscale funnel --terminate-on 10242
 ```
 
 ### 7.10 Verify Tailscale Survives Reboot
@@ -769,11 +815,15 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust tumma72/mlx-manager` (or `brew trust --formula tumma72/mlx-manager/mlx-manager` for the single formula), then retry `brew install mlx-manager` |
+| `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` or `python -c "import importlib.metadata as md; print(md.version('mlx'))"` |
+| MLX Manager isn't running after reboot | Run `brew services list` — status should be `started`. If it says `error`, check `~/Library/Logs/` or run `brew services info mlx-manager` |
+| MLX Manager service conflicts with old `install-service` | Run `mlx-manager uninstall-service` then `brew services start mlx-manager` |
+| Web UI shows 404 at `localhost:8080` | The correct port is **10242**, not 8080. Use `http://localhost:10242` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `mlx-manager` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach MLX | Confirm MLX Manager is running: `curl http://localhost:10242/v1/models` |
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window in MLX Manager |
-| Port conflicts | Change MLX Manager port with `MLX_MANAGER_DEFAULT_PORT_START` env var |
+| Port conflicts | Change MLX Manager port via the web UI's Settings page or `MLX_MANAGER_PORT` env var |
 | MagicDNS name doesn't resolve | Verify MagicDNS is enabled in the Tailscale admin console under DNS settings; check Tailscale is running on both devices |
 | `ts.net` URL doesn't resolve | MagicDNS may be off for that resolver; enable it, or use `curl --resolve :443:` |
 | SSH over Tailscale times out | Verify Remote Login is enabled (`sudo systemsetup -getremotelogin`); check Tailscale SSH policy in admin console |
