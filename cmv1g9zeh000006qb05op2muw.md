@@ -421,18 +421,50 @@ EOF
 >
 > Want QwenPaw's stock defaults instead? Change the two `<string>` values to `5MiB` and `3` (≈ 20 MiB total). To disable backups entirely, set `QWENPAW_LOG_MAX_BACKUPS` to `0`.
 
-Verify the paths resolved correctly (they should show your real username, not `$HOME`), then load and check the service:
+**Load the launcher to start QwenPaw in the background:**
 
 ```bash
-grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl list | grep qwenpaw
+launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist
+```
+
+**Expected output:** No output on success. The service is now registered with launchd and running.
+
+Confirm it's live:
+
+```bash
+launchctl list | grep qwenpaw
+```
+
+**Expected output:**
+
+```
+-   0   com.qwenpaw.app
+```
+
+The first column (`-`) is the PID; `0` means it exited cleanly if it ever stopped, or is currently running under launchd's management.
+
+Verify the plist expanded `$HOME` correctly (it should show your real username):
+
+```bash
+grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist
 ```
 
 **Expected output:**
 
 ```
     <string>/Users/yourname/.qwenpaw/bin/qwenpaw</string>
--   0   com.qwenpaw.app
 ```
+
+**Useful launcher management commands:**
+
+```bash
+launchctl list | grep qwenpaw                                                    # check status
+launchctl unload ~/Library/LaunchAgents/com.qwenpaw.app.plist                    # stop and unregister
+launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist                      # start and register
+launchctl unload ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist   # restart
+```
+
+> **After editing the plist**, you must unload and reload it for changes to take effect — launchd caches the plist at load time.
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -690,7 +722,9 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
-| QwenPaw logs growing too large | The plist caps QwenPaw's internal log at **2 MiB × 2 backups** (~6 MiB total) via `QWENPAW_LOG_MAX_SIZE` and `QWENPAW_LOG_MAX_BACKUPS`, and routes launchd's stdout/stderr to `/dev/null`. To change limits, edit the plist and reload. Check sizes with `ls -lh ~/.qwenpaw/qwenpaw.log*` |
+| QwenPaw launcher won't start | Verify the plist loaded: `launchctl list \| grep qwenpaw`. If missing, run `launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
+| QwenPaw launcher changes don't take effect | You must `launchctl unload` then `launchctl load` the plist — launchd caches it at load time |
+| QwenPaw logs growing too large | The plist caps QwenPaw's internal log at **2 MiB × 2 backups** (~6 MiB total) via `QWENPAW_LOG_MAX_SIZE` and `QWENPAW_LOG_MAX_BACKUPS`, and routes launchd's stdout/stderr to `/dev/null`. To change limits, edit the plist, then `launchctl unload` + `launchctl load` it. Check sizes with `ls -lh ~/.qwenpaw/qwenpaw.log*` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
