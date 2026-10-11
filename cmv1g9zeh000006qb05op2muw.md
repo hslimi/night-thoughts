@@ -8,6 +8,26 @@ tags: ai, mlx, macmini, qwenpaw
 
 ---
 
+## Tested Environment
+
+Everything in this guide was verified on the following setup. If your versions are close, the commands should work unchanged.
+
+| Component | Version | Notes |
+|-----------|---------|-------|
+| **macOS** | 15.x (Sequoia) or later | Required for oMLX |
+| **Chip** | Apple Silicon (M1/M2/M3/M4) | Required for MLX and oMLX |
+| **Homebrew** | 4.x | Package manager for oMLX and Tailscale |
+| **uv** | 0.8.x or later | Python version + package manager |
+| **Python (MLX venv)** | 3.11.x | Managed by uv at `~/.mlx-venv` |
+| **Python (QwenPaw)** | 3.12.x | Bundled by QwenPaw's installer |
+| **MLX** | 0.32.x | Apple's ML framework |
+| **mlx-lm** | 0.28.x | LLM extensions for MLX |
+| **oMLX** | latest via `jundot/omlx` | Inference server + admin dashboard |
+| **QwenPaw** | latest via `agentscope.io` | Agent framework + web console |
+| **Tailscale** | latest via `--cask` | Mesh VPN + MagicDNS |
+
+> **Note:** Version numbers above reflect the state of the ecosystem when this guide was written. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
+
 ## Part 1: Prepare macOS for Headless Server Mode
 
 These steps ensure your Mac never sleeps, is accessible remotely, and boots into a usable state without manual intervention.
@@ -418,25 +438,11 @@ EOF
 ```
 
 > **Why these values?** `launchd` writes to `StandardOutPath`/`StandardErrorPath` once and never rotates them, so we route them to `/dev/null`. QwenPaw's own `RotatingFileHandler` writes structured logs to `~/.qwenpaw/qwenpaw.log`, and the two env vars cap it at **2 MiB per file × 2 backups** (≈ 6 MiB total). Worst-case log disk usage is bounded and known.
->
-> Want QwenPaw's stock defaults instead? Change the two `<string>` values to `5MiB` and `3` (≈ 20 MiB total). To disable backups entirely, set `QWENPAW_LOG_MAX_BACKUPS` to `0`.
 
-#### Load the launcher
-
-Use `launchctl bootstrap` — the modern replacement for the legacy `launchctl load`. On macOS Ventura and later, `launchctl load` frequently fails with a generic `Input/output error` even when the plist is valid.
-
-If a previous version of the service is registered, remove it first:
+**Load the launcher** using `launchctl bootstrap` (the modern replacement for the legacy `launchctl load`, which fails with a generic `Input/output error` on Ventura and later):
 
 ```bash
-launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null
-```
-
-**Expected output:** No output (the `2>/dev/null` suppresses the error if it wasn't loaded).
-
-Now register and start the service:
-
-```bash
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist
+launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null; launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist
 ```
 
 **Expected output:** No output on success.
@@ -453,48 +459,20 @@ launchctl list | grep qwenpaw
 30406	0	com.qwenpaw.app
 ```
 
-The first column is the process ID (a number means it's running; `-` means launchd manages it but it's not currently running), the second is the last exit status, and the third is the label.
+The first column is the PID (a number means it's running), the second is the last exit status (`0` = clean), and the third is the label.
 
-Verify the plist expanded `$HOME` correctly (it should show your real username, not `$HOME`):
-
-```bash
-grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist
-```
-
-**Expected output:**
-
-```
-    <string>/Users/yourname/.qwenpaw/bin/qwenpaw</string>
-```
-
-**Useful launcher management commands** (all use the modern `bootstrap`/`bootout` API):
+**Useful launcher management commands:**
 
 ```bash
-launchctl list | grep qwenpaw                                                          # check status
-launchctl bootout gui/$(id -u)/com.qwenpaw.app                                          # stop and unregister
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist            # start and register
-launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app                                     # restart in place
-launchctl print gui/$(id -u)/com.qwenpaw.app | head -20                                 # detailed status
+launchctl list | grep qwenpaw                                             # check status
+launchctl bootout gui/$(id -u)/com.qwenpaw.app                            # stop and unregister
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist   # start and register
+launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app                       # restart in place
 ```
 
 > **After editing the plist**, you must `bootout` then `bootstrap` for changes to take effect — launchd caches the plist at load time.
 
-#### Troubleshooting: `Load failed: 5: Input/output error`
-
-If `launchctl load` fails with this generic error, it's almost always because you're using the legacy command on a modern macOS version. Switch to `bootstrap`:
-
-```bash
-launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist
-```
-
-If `bootstrap` also fails, work through these checks:
-
-1. **Validate the file syntax:** `plutil -lint ~/Library/LaunchAgents/com.qwenpaw.app.plist`
-2. **Check ownership:** The file must be owned by your user. Check with `ls -l ~/Library/LaunchAgents/com.qwenpaw.app.plist`. If it shows `root`, fix it: `sudo chown $(whoami):staff ~/Library/LaunchAgents/com.qwenpaw.app.plist`
-3. **Check if it's disabled:** `launchctl print-disabled gui/$(id -u) | grep qwenpaw`. If it shows `true`, enable it: `launchctl enable gui/$(id -u)/com.qwenpaw.app`
-4. **Check the executable path:** `ls -l ~/.qwenpaw/bin/qwenpaw` — the `x` bit must be set. If not: `chmod +x ~/.qwenpaw/bin/qwenpaw`
-5. **Watch the system log:** In one terminal run `log stream --predicate 'process == "launchd"' --level debug`, then in another try to bootstrap. The log will show the specific failure reason.
+![QwenPaw web console with an agent conversation open](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f3ac7a7b-3fd4-48fd-8e72-b138b735fc34.png)
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -744,27 +722,23 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
 | oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4) and macOS 15.0 (Sequoia) or later |
-| `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` or `python -c "import importlib.metadata as md; print(md.version('mlx'))"` |
-| oMLX isn't running after reboot | Run `brew services list` — status should be `started`. If it says `error`, check `$(brew --prefix)/var/log/omlx.log` |
+| `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` |
+| oMLX isn't running after reboot | Run `brew services list` — status should be `started` |
 | Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
-| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string (e.g., `omlx-night-thoughts`) |
-| `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header. Add `-H "Authorization: Bearer omlx-night-thoughts"` |
+| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
+| `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
-| `launchctl load` fails with `Load failed: 5: Input/output error` | This is a known regression in the legacy `load` command on modern macOS. Use `launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null` then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead |
-| QwenPaw launcher won't start | Verify the plist loaded: `launchctl list \| grep qwenpaw`. If missing, run `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
-| QwenPaw launcher changes don't take effect | You must `launchctl bootout` then `launchctl bootstrap` the plist — launchd caches it at load time |
-| QwenPaw logs growing too large | The plist caps QwenPaw's internal log at **2 MiB × 2 backups** (~6 MiB total) via `QWENPAW_LOG_MAX_SIZE` and `QWENPAW_LOG_MAX_BACKUPS`, and routes launchd's stdout/stderr to `/dev/null`. To change limits, edit the plist, then `bootout` + `bootstrap` it. Check sizes with `ls -lh ~/.qwenpaw/qwenpaw.log*` |
+| `launchctl load` fails with `Load failed: 5: Input/output error` | Use `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead of the legacy `load` command |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
-| QwenPaw custom provider shows no models | Manually set `support_model_discovery: true` and `support_connection_check: true` in the provider JSON, then restart QwenPaw |
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
-| MagicDNS name doesn't resolve | Verify MagicDNS is enabled in the Tailscale admin console under DNS settings; check Tailscale is running on both devices |
-| `ts.net` URL doesn't resolve | MagicDNS may be off for that resolver; enable it, or use `curl --resolve :443:` |
-| SSH over Tailscale times out | Verify Remote Login is enabled (`sudo systemsetup -getremotelogin`); check Tailscale SSH policy in admin console |
-| HTTPS URL gives certificate error | Verify HTTPS Certificates are enabled in the Tailscale admin console under DNS settings |
-| Tailscale Serve not working | Run `tailscale serve status` to check active configurations; ensure the target services are running locally |
-| Funnel URL not accessible | Verify Funnel is enabled in the admin console; check your ACL policy allows Funnel; ensure HTTPS certificates are enabled |
+| MagicDNS name doesn't resolve | Verify MagicDNS is enabled in the Tailscale admin console under DNS settings |
+| `ts.net` URL doesn't resolve | MagicDNS may be off for that resolver; enable it, or use `curl --resolve` |
+| SSH over Tailscale times out | Verify Remote Login is enabled; check Tailscale SSH policy in admin console |
+| HTTPS URL gives certificate error | Verify HTTPS Certificates are enabled in the Tailscale admin console |
+| Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
+| Funnel URL not accessible | Verify Funnel is enabled in the admin console; check your ACL policy allows Funnel |
