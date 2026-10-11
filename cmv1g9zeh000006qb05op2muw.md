@@ -1205,10 +1205,103 @@ curl -s -o /dev/null -w "QwenPaw: HTTP %{http_code}\n" https://night-thoughts.de
 
 **Expected output:** `HTTP 200` for both.
 
+#### 7.10.1 Serving Multiple Domains on the Same Tunnel
+
+A single Cloudflare Tunnel can serve any number of hostnames. If you own a second domain — say `nightthoughts.info` alongside `night-thoughts.dev` — you can point it at the same tunnel without creating a new one or reconfiguring Caddy.
+
+> **Why this comes up:** Each Cloudflare zone is managed independently. Adding a second domain to the tunnel is not a one-liner — you must first add it to Cloudflare as its own zone, switch its nameservers at the registrar, and then route it to the tunnel. Skipping any step results in the domain not resolving at all, even though everything looks configured in the first zone.
+
+**Step A: Add the second domain to Cloudflare**
+
+1. In the Cloudflare dashboard, click **Add a site** and enter `nightthoughts.info`.
+2. Choose the **Free** plan.
+3. Cloudflare will assign **two new nameservers** to this zone. They will be different from the ones assigned to `night-thoughts.dev` — for example:
+   ```
+   <name1>.ns.cloudflare.com
+   <name2>.ns.cloudflare.com
+   ```
+4. **Copy both** — you'll need them in the next step.
+
+**Step B: Update nameservers at your registrar**
+
+Repeat the same nameserver change you did for the first domain, this time for the second:
+
+1. Log in to your registrar and go to the DNS settings for `nightthoughts.info`.
+2. Delete the existing nameservers.
+3. Paste the two new Cloudflare nameservers assigned to `nightthoughts.info`.
+4. Save.
+
+> **Important:** If DNSSEC is enabled for the second domain, disable it before changing nameservers — same reason as the first domain. DNSSEC conflicts with the new authoritative DNS provider.
+
+Verify propagation once it's live:
+
+```bash
+dig +short NS nightthoughts.info @1.1.1.1
+```
+
+**Expected output:** The two new Cloudflare nameservers.
+
+**Step C: Route the second domain to your existing tunnel**
+
+Once the domain is active in Cloudflare (you'll get a confirmation email), run:
+
+```bash
+cloudflared tunnel route dns night-thoughts nightthoughts.info
+```
+
+The `night-thoughts` here is the **tunnel name** you chose in Step 5 — it does not have to match any of your domain names. This creates a proxied CNAME at the second zone pointing at the same tunnel.
+
+**Step D: Add the hostname to the tunnel config**
+
+The tunnel config (`~/.cloudflared/config.yml`) currently has a single ingress rule. Add the second hostname as an additional rule, keeping the catch-all at the end:
+
+```bash
+TUNNEL_ID=$(cloudflared tunnel list | awk '/night-thoughts/ {print $1}') && \
+cat > ~/.cloudflared/config.yml << EOF
+tunnel: $TUNNEL_ID
+credentials-file: $HOME/.cloudflared/$TUNNEL_ID.json
+
+ingress:
+  - hostname: night-thoughts.dev
+    service: http://localhost:9080
+  - hostname: nightthoughts.info
+    service: http://localhost:9080
+  - service: http_status:404
+EOF
+```
+
+Each `hostname` becomes its own ingress rule. All hostnames point to the same Caddy instance on port 9080 — Caddy handles the actual routing based on the request's `Host` header, which it already does for the first domain.
+
+**Step E: Restart the tunnel agent**
+
+```bash
+launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
+sleep 5
+```
+
+**Step F: Verify**
+
+```bash
+curl -s -o /dev/null -w "night-thoughts.dev:     HTTP %{http_code}\n" https://night-thoughts.dev/omlx/admin
+curl -s -o /dev/null -w "nightthoughts.info:     HTTP %{http_code}\n" https://nightthoughts.info/omlx/admin
+```
+
+**Expected output:** `HTTP 200` for both.
+
+You can also confirm the tunnel is announcing both hostnames:
+
+```bash
+cloudflared tunnel info night-thoughts
+```
+
+Both domains will appear in Cloudflare's Zero Trust → Networks → Tunnels view under the same tunnel's **Public Hostnames** tab.
+
+> **Note about DNS propagation for the second domain:** The nameserver change for the second domain follows the same timeline as the first — a few minutes to a couple of hours in most cases. Until Cloudflare confirms the zone is active, `cloudflared tunnel route dns` will fail with a "zone not found" error. Wait for the confirmation email, then retry.
+
 **How it fits together:**
 
 ```
-Public internet → Cloudflare edge (TLS for night-thoughts.dev)
+Public internet → Cloudflare edge (TLS for both domains)
                        ↓
                    Cloudflare Tunnel (encrypted)
                        ↓
@@ -1280,8 +1373,10 @@ cloudflared tunnel delete night-thoughts
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
 | `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
+| `cloudflared tunnel route dns` fails with "zone not found" for a second domain | The second domain hasn't finished activating in Cloudflare yet. Wait for the confirmation email, verify with `dig +short NS <domain> @1.1.1.1`, then retry |
+| Second domain resolves but returns a Cloudflare error | Check that its hostname is present in `~/.cloudflared/config.yml` and the tunnel agent was restarted after the edit: `launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared` |
 | cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist on macOS. Remove it and write a user launch agent per §7.10 Step 8 |
-| Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev @1.1.1.1` — should return `*.ns.cloudflare.com` servers |
+| Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS <domain> @1.1.1.1` — should return `*.ns.cloudflare.com` servers |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
@@ -1290,5 +1385,5 @@ cloudflared tunnel delete night-thoughts
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
-| Custom domain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for the `night-thoughts.dev` entry. |
+| Custom domain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for the domain entry. |
 | Cloudflare Tunnel not running | Run `launchctl list \| grep cloudflared`. If missing, write the launch agent per §7.10 Step 8 |
