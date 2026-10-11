@@ -563,36 +563,35 @@ If you see your machine list, the CLI is working and you can proceed.
 
 ### 7.2 Configure Your Custom Domain in Tailscale
 
-Tailscale can provision TLS certificates for your own domain, but you must first prove ownership by adding DNS records.
+Tailscale can provision TLS certificates for your own domain, but you must first prove ownership by adding a TXT record at your DNS provider.
 
 **Step 1: Add your domain to Tailscale**
 
-1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
-2. Under **HTTPS Certificates**, ensure **Enable HTTPS** is turned on.
-3. In the **Custom domain** section, click **Add domain** and enter your apex domain (e.g., `yourdomain.com`).
+1. Go to the [**Domains page**](https://login.tailscale.com/admin/settings/domains) of the Tailscale admin console.
+2. Click **Add domain** and enter your domain (e.g., `yourdomain.com`).
+3. Tailscale will display a **TXT record** with a **Name** and **Value**.
 
-**Step 2: Add the DNS records at your registrar**
+> **Note:** The Domains page is **not available** for shared-domain tailnets — those signed in with a public email like `@gmail.com` or via GitHub. If you see no Domains page, you're on a shared-domain tailnet. You'll need to sign up with a custom domain email to use this feature, or use the default `.ts.net` hostname instead.
 
-Tailscale will display two DNS records you need to create at your domain registrar (Cloudflare, Namecheap, Route 53, etc.):
+**Step 2: Add the TXT record at your registrar**
 
-| Type | Name | Value |
-|------|------|-------|
-| `CNAME` | `_acme-challenge.yourdomain.com` | `<value provided by Tailscale>` |
-| `CNAME` | `*.yourdomain.com` | `your-tailnet.ts.net` |
+Sign into your domain registrar (Cloudflare, Namecheap, Route 53, etc.) and create a new **TXT record** using the Name and Value shown in the Tailscale console. Set the TTL to **3600**.
 
-> **Note:** The `*.yourdomain.com` wildcard CNAME points all subdomains (including `omlx.` and `qwenpaw.`) to your tailnet. The `_acme-challenge` record is used by Tailscale to prove you own the domain and provision Let's Encrypt certificates.
+The Name is a `_tailscale-challenge` subdomain of your domain. For example:
 
-Add these records at your registrar, then wait a few minutes for DNS propagation. Verify with:
+| Type | Name | Value | TTL |
+|------|------|-------|-----|
+| `TXT` | `_tailscale-challenge.yourdomain.com` | `<value provided by Tailscale>` | 3600 |
 
-```bash
-dig +short _acme-challenge.yourdomain.com CNAME
-```
+> **Note:** Some DNS providers automatically append your domain to the record name. For those, enter only `_tailscale-challenge` in the Name field — do not include `.yourdomain.com`.
 
-**Expected output:** The value provided by Tailscale.
+**Step 3: Verify the domain**
 
-**Step 3: Verify the domain is active**
+Return to the Tailscale admin console and click **Close**. Your domain will show as **Pending verification** until Tailscale detects the TXT record. It may take up to a few hours for DNS propagation.
 
-In the Tailscale admin console, the custom domain should now show as **Verified**. Tailscale will automatically provision and renew TLS certificates for `*.yourdomain.com` using Let's Encrypt.
+Once verified, you'll receive a confirmation email, and your domain will be marked as **Claimed**. Leave the TXT record in place — Tailscale periodically re-checks it.
+
+> **Important:** Enabling custom domains publishes your domain name on a public ledger (Certificate Transparency). If your domain name contains sensitive information, consider using a randomized tailnet name instead.
 
 ### 7.3 Install Caddy
 
@@ -768,10 +767,11 @@ All services should return healthy responses without any manual intervention.
 | Symptom | Fix |
 |---------|-----|
 | `omlx.yourdomain.com` returns 404 | Verify Caddy is running (`brew services list \| grep caddy`) and the Caddyfile has the correct subdomain blocks. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
-| Certificate error on custom domain | Verify the `_acme-challenge` and wildcard CNAME records are correctly set at your registrar. Wait 5–10 minutes for DNS propagation, then check Tailscale admin console for domain verification status. |
+| Certificate error on custom domain | Verify the `_tailscale-challenge` TXT record is correctly set at your registrar. Wait 5–10 minutes for DNS propagation, then check Tailscale admin console for domain verification status. |
 | `tailscale serve status` shows no configuration | Run `tailscale serve --bg --https=443 http://localhost:80` again. Ensure HTTPS certificates are enabled in the Tailscale admin console. |
 | Caddy won't start | Check for port conflicts on 80 or 443: `sudo lsof -i :80` and `sudo lsof -i :443`. Stop any conflicting service (e.g., a local web server) before starting Caddy. |
-| Custom domain shows "not verified" in Tailscale | DNS records haven't propagated yet. Run `dig +short _acme-challenge.yourdomain.com CNAME` to check. If empty, wait and retry. |
+| Custom domain shows "not verified" in Tailscale | DNS records haven't propagated yet. Run `dig +short _tailscale-challenge.yourdomain.com TXT` to check. If empty, wait and retry. |
+| Domains page missing from admin console | You're on a shared-domain tailnet (signed in with `@gmail.com` or GitHub). Custom domains require a tailnet with a custom domain email address. |
 
 ## Troubleshooting Quick Reference
 
@@ -794,12 +794,11 @@ All services should return healthy responses without any manual intervention.
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Use `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead of the legacy `load` command |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
-| Tailscale SSH denies access (`access denied`) with `"action": "accept"` | Switch to `"action": "check"` and use `"src": ["autogroup:member"]` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
-| Custom domain not resolving | Verify DNS records are set at your registrar. Check Tailscale admin console for domain verification status. See §7.10 |
+| Custom domain not resolving | Verify the `_tailscale-challenge` TXT record is set at your registrar. Check Tailscale admin console for domain verification status. |
 | Caddy not routing correctly | Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. Ensure subdomain blocks match your Tailscale custom domain. |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
