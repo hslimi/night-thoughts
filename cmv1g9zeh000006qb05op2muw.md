@@ -517,13 +517,32 @@ Tailscale creates a secure mesh VPN between your devices, giving each one a stab
 brew install --cask tailscale
 ```
 
-**Expected output:** `tailscale was successfully installed!`
+**Expected output:** `tailscale-app was successfully installed!`
 
 Open the Tailscale app from your Applications folder or menu bar, and sign in with Google, GitHub, Microsoft, or email.
 
 Once authenticated, the Tailscale icon appears in your menu bar and shows a green "Connected" status.
 
-> **Note:** The `--cask` version provides the GUI app and includes the `tailscale` CLI command automatically. For a headless server setup, this is the recommended approach.
+> **Note:** The `--cask` version installs the GUI app but does **not** add the `tailscale` CLI to your `$PATH`. See §7.1b below to enable it.
+
+### 7.1b Enable the Tailscale CLI
+
+The cask bundles the CLI inside the app binary. **Do not symlink the app binary** — it crashes with `Fatal error: The current bundleIdentifier is unknown to the registry`. Instead, add a shell alias:
+
+```bash
+echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc && tailscale status
+```
+
+**Expected output:**
+
+```
+100.97.7.34    haithemslimis-mac-mini  haythemslimi@  macOS    -
+100.88.189.0   night-thoughts         haythemslimi@  macOS    offline, last seen 2d ago
+```
+
+If you see your machine list, the CLI is working and you can proceed.
+
+> **Tip:** Your machine name (e.g., `haithemslimis-mac-mini`) may be long and awkward to type. You can rename it to something memorable like `ai-server` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
 
 ### 7.2 Install Tailscale on Your Client Device
 
@@ -731,6 +750,8 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Use `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead of the legacy `load` command |
+| `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
+| `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
