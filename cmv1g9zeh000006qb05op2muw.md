@@ -108,11 +108,7 @@ launchd user agents only start after a user logs in. Without auto-login, your se
 For quick control without terminal, install the `mac-server-mode` menu bar app:
 
 ```bash
-git clone https://github.com/thairc-dev/mac-server-mode.git
-cd mac-server-mode
-./build.sh
-nohup ./mac-server-mode >/dev/null 2>&1 &
-./install-launch-agent.sh
+git clone https://github.com/thairc-dev/mac-server-mode.git && cd mac-server-mode && ./build.sh && nohup ./mac-server-mode >/dev/null 2>&1 & ./install-launch-agent.sh
 ```
 
 A ⚡ icon appears in your menu bar. Press `Ctrl + Option + Cmd + S` to toggle server mode (screen off, system awake).
@@ -124,90 +120,49 @@ A ⚡ icon appears in your menu bar. Press `Ctrl + Option + Cmd + S` to toggle s
 `uv` is a fast, all-in-one Python package and version manager written in Rust. Install it via the official one-liner:
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+curl -LsSf https://astral.sh/uv/install.sh | sh && source ~/.zshrc && uv --version
 ```
 
-**Expected output:** Installation progress bars, then a success message.
-
-After installation, restart your shell or source your profile:
-
-```bash
-source ~/.zshrc
-```
-
-Verify:
-
-```bash
-uv --version
-```
-
-**Expected output:** `uv 0.x.x`
+**Expected output:** Installation progress bars, then `uv 0.x.x`.
 
 ### 2.2 Install Python 3.11 with uv
 
 Install Python 3.11 as a uv-managed Python:
 
 ```bash
-uv python install 3.11
+uv python install 3.11 && uv python list | grep 3.11
 ```
 
-**Expected output:** Download progress, then `Installed Python 3.11.x`
-
-Verify:
-
-```bash
-uv python list | grep 3.11
-```
-
-**Expected output:** Shows the installed Python 3.11 version.
+**Expected output:** Download progress, then the installed Python 3.11 version.
 
 ### 2.3 Create a Virtual Environment for MLX
 
-Create a dedicated virtual environment using Python 3.11:
+Create a dedicated virtual environment, activate it, and verify the version in one go:
 
 ```bash
-uv venv --python 3.11 ~/.mlx-venv
+uv venv --python 3.11 ~/.mlx-venv && source ~/.mlx-venv/bin/activate && python --version && python -c "import platform; print(platform.processor())"
 ```
 
-Activate it:
+**Expected output:**
 
-```bash
-source ~/.mlx-venv/bin/activate
+```
+Python 3.11.x
+arm
 ```
 
-Verify the Python version inside the venv:
-
-```bash
-python --version
-```
-
-**Expected output:** `Python 3.11.x`
-
-> **Critical:** Ensure you are NOT using a Rosetta (x86) Python. Run this check:
-> ```bash
-> python -c "import platform; print(platform.processor())"
-> ```
-> **Expected output:** `arm` — if you see `i386`, you have the wrong Python.
+> **Critical:** If you see `i386` instead of `arm`, you have a Rosetta (x86) Python. Reinstall Python 3.11 through uv and start over.
 
 ## Part 3: Install MLX Framework
 
 MLX is Apple's native machine learning framework for Apple Silicon.
 
-With your virtual environment activated:
+With your virtual environment activated, install the framework and verify it:
 
 ```bash
-uv pip install mlx mlx-lm
+source ~/.mlx-venv/bin/activate && uv pip install mlx mlx-lm && python -c "import mlx.core as mx; print(mx.__version__)"
 ```
 
-**Expected output:** `Successfully installed mlx-x.x.x mlx-lm-x.x.x ...`
-
-Verify:
-
-```bash
-python -c "import mlx.core as mx; print(mx.__version__)"
-```
-
-**Expected output:** `0.32.x`
+**Expected output:** `Successfully installed mlx-x.x.x mlx-lm-x.x.x ...` followed by `0.32.x`.
 
 > **Note:** The top-level `mlx` module does **not** export `__version__`. If you try `python -c "import mlx; print(mlx.__version__)"`, you'll get `AttributeError: module 'mlx' has no attribute '__version__'`. The version attribute lives on `mlx.core`. Alternatively, you can read the version from package metadata:
 > ```bash
@@ -216,56 +171,30 @@ python -c "import mlx.core as mx; print(mx.__version__)"
 
 ## Part 4: Install oMLX (Web Dashboard + Background Service)
 
-oMLX is an LLM inference server optimized for Apple Silicon, built on the MLX framework. It provides continuous batching, tiered KV caching (hot in-memory + cold SSD), and a web-based admin dashboard for managing models. It is actively maintained (v0.6.4 as of September 2026) and ships as a Homebrew formula with native launchd service integration[reference:0].
+oMLX is an LLM inference server optimized for Apple Silicon, built on the MLX framework. It provides continuous batching, tiered KV caching (hot in-memory + cold SSD), and a web-based admin dashboard for managing models. It is actively maintained and ships as a Homebrew formula with native launchd service integration.
 
-> **Note:** oMLX is a community project maintained by `jundot`. It is built directly on top of Apple's MLX framework (which *is* official). Unlike mlx-manager, oMLX is actively maintained and has a much larger user base (22k+ stars)[reference:1].
+> **Note:** oMLX is a community project maintained by `jundot`. It is built directly on top of Apple's MLX framework (which *is* official).
 
-It is distributed via a Homebrew tap, so we need to install Homebrew first.
+> **Platform requirement:** oMLX requires **Apple Silicon** (M1/M2/M3/M4) and **macOS 15.0 (Sequoia) or later**. Intel Macs and earlier macOS versions are rejected during installation.
 
 ### 4.1 Install Homebrew
 
-Homebrew is the missing package manager for macOS. Install it with the official one-liner:
+If you don't already have Homebrew, install it and set up your PATH in one command:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile && eval "$(/opt/homebrew/bin/brew shellenv)" && brew --version
 ```
 
-**Expected output:** Installation progress messages, followed by:
+**Expected output:** Installation progress messages, then `Homebrew 4.x.x`.
 
-```
-==> Installation successful!
+> **Note:** If Homebrew is already installed, the installer will detect it and skip installation. You can safely run this command again.
 
-==> Homebrew has enabled anonymous aggregate formulae and cask analytics.
-...
-==> Next steps:
-- Run these commands in your terminal to add Homebrew to your PATH:
-    echo >> ~/.zprofile
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-```
+### 4.2 Tap, Trust, and Install oMLX
 
-Follow the printed **Next steps** to add Homebrew to your `PATH` (Apple Silicon uses `/opt/homebrew`; Intel uses `/usr/local`):
+Run all three steps in one command:
 
 ```bash
-echo >> ~/.zprofile
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
-```
-
-Verify:
-
-```bash
-brew --version
-```
-
-**Expected output:** `Homebrew 4.x.x`
-
-> **Note:** If Homebrew is already installed, this command will detect it and skip installation. You can safely run it again.
-
-### 4.2 Tap and Trust the oMLX Repository
-
-```bash
-brew tap jundot/omlx https://github.com/jundot/omlx
+brew tap jundot/omlx https://github.com/jundot/omlx && brew trust jundot/omlx && brew install jundot/omlx/omlx
 ```
 
 **Expected output:**
@@ -273,91 +202,58 @@ brew tap jundot/omlx https://github.com/jundot/omlx
 ```
 ==> Tapping jundot/omlx
 Cloning into '/opt/homebrew/Library/Taps/jundot/homebrew-omlx'...
-Tapped 1 formula (xxx files, x.xMB).
+Tapped 1 formula.
+==> Successfully trusted tap jundot/omlx.
+==> Installing omlx from jundot/omlx
+/opt/homebrew/Cellar/omlx/x.x.x: ...
 ```
 
-Now **trust the tap**. Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — this is a security feature to prevent arbitrary code execution from untrusted sources[reference:2]:
+> **Why `brew trust` is needed:** Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — a security feature to prevent arbitrary code execution from untrusted sources. If you skip this, you'll see `Error: Refusing to load formula jundot/omlx/omlx from untrusted tap jundot/omlx.`
+
+### 4.3 Set the API Key
+
+oMLX requires an API key for all requests to the `/v1/*` endpoints. **You choose this key yourself** — it's not generated. For this guide, we'll use:
+
+```
+omlx-night-thoughts
+```
+
+> **Important:** `omlx-night-thoughts` is just an example. You can replace it with any string you want — as long as you use the **same value** in QwenPaw's config later in §5.3. If you change it here, change it there too.
+
+Write the key into oMLX's settings file (creating the file if needed) and restart the service:
 
 ```bash
-brew trust jundot/omlx
+mkdir -p ~/.omlx && cat > ~/.omlx/settings.json << 'EOF'
+{
+  "auth": {
+    "api_key": "omlx-night-thoughts"
+  }
+}
+EOF
 ```
 
-**Expected output:** A confirmation message listing the tap as trusted.
-
-> **Why is this needed?** If you run `brew install omlx` without trusting the tap first, you'll see:
->
-> ```
-> Error: Refusing to load formula jundot/omlx/omlx from untrusted tap jundot/omlx.
-> Run `brew trust --formula jundot/omlx/omlx` or `brew trust jundot/omlx` to trust it.
-> ```
->
-> That error is safe to resolve with `brew trust` as long as you've reviewed the tap source.
-
-### 4.3 Install oMLX via Homebrew
+If you haven't started the service yet, this file is read automatically on first launch. If oMLX is already running, restart it to pick up the key:
 
 ```bash
-brew install jundot/omlx/omlx
+brew services restart omlx
 ```
 
-**Expected output:** `/opt/homebrew/Cellar/omlx/x.x.x: ...`
+### 4.4 Start oMLX as an Always-On Background Service
 
-> **Platform requirement:** The oMLX formula requires **Apple Silicon** and **macOS 15.0 (Sequoia) or later**. An Intel Mac or macOS 14 machine is rejected during installation[reference:3].
-
-### 4.4 Start the Web Dashboard (Foreground, for First-Time Setup)
-
-For the very first run, start it in the foreground so you can see logs and complete the initial setup:
+Register oMLX with `brew services`, which installs a launchd agent that auto-starts on login and restarts on crash:
 
 ```bash
-omlx serve --model-dir ~/models
-```
-
-**Expected output:**
-
-```
-INFO:     Started server process [xxxxx]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8000
-```
-
-Open `http://localhost:8000/admin` in your browser (or `http://your-mac-ip:8000/admin` from another device). The admin dashboard requires session-based authentication on first visit[reference:4].
-
-> **Note:** oMLX automatically discovers LLMs, VLMs, embedding models, and rerankers from subdirectories of your model directory[reference:5].
-
-### 4.5 Create Your Account
-
-On first visit to `/admin`, you'll be prompted to set up authentication. Create your credentials and log in.
-
-### 4.6 Run oMLX as an Always-On Background Service
-
-This is the key step for always-on operation. Stop the foreground server first (`Ctrl+C`), then register oMLX with `brew services`, which installs a launchd agent that auto-starts on login and restarts on crash:
-
-```bash
-brew services start omlx
+brew services start omlx && brew services list | grep omlx
 ```
 
 **Expected output:**
 
 ```
 ==> Successfully started `omlx` (label: homebrew.mxcl.omlx)
+omlx    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.omlx.plist
 ```
 
-Verify it's running:
-
-```bash
-brew services list
-```
-
-**Expected output:**
-
-```
-Name    Status  User      File
-omlx    started yourname  ~/Library/LaunchAgents/homebrew.mxcl.omlx.plist
-```
-
-The `Status` should be `started`. `brew services` writes the launchd plist automatically — no manual plist creation needed[reference:6].
-
-> **Note:** The service runs `omlx serve` with zero-config defaults (`~/.omlx/models`, port 8000). To customize the model directory or port, either set environment variables (`OMLX_MODEL_DIR`, `OMLX_PORT`) or run `omlx serve --model-dir /your/path` once to persist settings to `~/.omlx/settings.json`[reference:7].
+The `Status` should be `started`.
 
 **Useful `brew services` commands:**
 
@@ -367,24 +263,42 @@ brew services restart omlx   # restart the service
 brew services info omlx      # show detailed status
 ```
 
+### 4.5 Open the Admin Dashboard
+
+oMLX binds to `http://localhost:8000` by default. Open the admin dashboard in your browser:
+
+```
+http://localhost:8000/admin
+```
+
+From another device on your network, use your Mac's IP: `http://your-mac-ip:8000/admin`.
+
+> **Note:** The dashboard lives at `/admin`, not `/`. Hitting the root URL returns a 404 by design.
+
+### 4.6 Verify the API Key Works
+
+Before moving on, confirm the key is accepted:
+
+```bash
+curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models
+```
+
+**Expected output:** A JSON list of available models (empty list is fine — you haven't downloaded any yet).
+
+If you get `{"detail":"API key required"}` or a `401`, the key wasn't saved. Re-run the `cat > ~/.omlx/settings.json` block from §4.3 and then `brew services restart omlx`.
+
 ### 4.7 Download & Deploy a Model
 
 1. In the admin dashboard (`http://localhost:8000/admin`), go to the **Models** section
-2. Search for MLX models on Hugging Face (e.g., `mlx-community/Qwen3.5-4B-8bit`)
+2. Search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
 3. Click **Download** — watch the progress bar
 4. Configure per-model settings (sampling parameters, context length, etc.)
 5. Click **Load** to start serving
 
-Once running, the model's OpenAI-compatible API endpoint is available at:
-
-```
-http://localhost:8000/v1
-```
-
-Test it:
+Verify the model is live:
 
 ```bash
-curl http://localhost:8000/v1/models
+curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models
 ```
 
 **Expected output:**
@@ -393,7 +307,7 @@ curl http://localhost:8000/v1/models
 {"object":"list","data":[{"id":"mlx-community/Qwen3.5-4B-8bit","object":"model"}]}
 ```
 
-> **Note:** oMLX provides both OpenAI-compatible (`/v1/chat/completions`) and Anthropic-compatible (`/v1/messages`) API endpoints. It also supports `/v1/embeddings`, `/v1/rerank`, and `/v1/responses` for broader compatibility[reference:8].
+> **Note:** oMLX provides both OpenAI-compatible (`/v1/chat/completions`) and Anthropic-compatible (`/v1/messages`) endpoints. It also supports `/v1/embeddings`, `/v1/rerank`, and `/v1/responses` for broader compatibility.
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
@@ -402,56 +316,41 @@ QwenPaw is a local-first AI agent framework that can connect to your oMLX-served
 ### 5.1 Install via One-Line Script
 
 ```bash
-curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash
+curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash && qwenpaw init --defaults
 ```
 
 **Expected output:**
 
 ```
 ✅ QwenPaw installed successfully to ~/.qwenpaw
-✅ uv Python environment created
-Run `qwenpaw init --defaults` to configure.
-```
-
-This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`-managed Python environment. It automatically installs `uv`, creates a virtual environment, and downloads dependencies without requiring manual Python setup.
-
-### 5.2 Initialize QwenPaw
-
-```bash
-qwenpaw init --defaults
-```
-
-**Expected output:**
-
-```
 ✅ Configuration initialized at ~/.qwenpaw/config.json
 ✅ Default model backend configured
 ```
 
-### 5.3 Configure QwenPaw to Use oMLX
+This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`-managed Python environment. It automatically installs `uv`, creates a virtual environment, and downloads dependencies without requiring manual Python setup.
 
-Edit the QwenPaw config to point to your oMLX API:
+### 5.2 Configure QwenPaw to Use oMLX
+
+Write the QwenPaw config in one command. Note that the `api_key` here **must match** the value you chose in §4.3 (`omlx-night-thoughts` in this guide):
 
 ```bash
-vim ~/.qwenpaw/config.json
-```
-
-Find the `model` section and set:
-
-```json
+cat > ~/.qwenpaw/config.json << 'EOF'
 {
   "model": {
     "backend": "openai",
     "base_url": "http://localhost:8000/v1",
-    "api_key": "not-needed",
+    "api_key": "omlx-night-thoughts",
     "model_name": "mlx-community/Qwen3.5-4B-8bit"
   }
 }
+EOF
 ```
 
-> **Important:** When adding oMLX as a custom OpenAI-compatible provider in QwenPaw, you must manually set `support_model_discovery: true` and `support_connection_check: true` in the provider JSON. Also ensure `base_url` includes the `/v1` suffix — QwenPaw's OpenAI client appends `/models` etc. after `base_url`, so a missing `/v1` causes requests to the wrong paths[reference:9].
+> **Using a different key?** If you chose a different value in §4.3, replace `omlx-night-thoughts` in the `api_key` field above with that same value. The two **must match** — this is the single most common source of `401 Unauthorized` errors.
 
-### 5.4 Start QwenPaw
+> **Path note:** `base_url` must include the `/v1` suffix. QwenPaw's OpenAI client appends `/models`, `/chat/completions`, etc. after `base_url`, so a missing `/v1` sends requests to the wrong paths.
+
+### 5.3 Start QwenPaw
 
 ```bash
 qwenpaw app
@@ -465,14 +364,14 @@ QwenPaw Console running at http://127.0.0.1:8088/
 
 Open `http://localhost:8088` to access the QwenPaw web console.
 
-### 5.5 Make QwenPaw Persistent (launchd)
+### 5.4 Make QwenPaw Persistent (launchd)
 
-Create a launchd plist so QwenPaw starts automatically on login. The heredoc below is **unquoted** (`<< EOF`, not `<< 'EOF'`), so the shell expands `$HOME` to your actual home directory when the file is written:
+Create a launchd plist so QwenPaw starts automatically on login. The heredoc below is **unquoted** (`<< EOF`, not `<< 'EOF'`), so the shell expands `$HOME` to your actual home directory when the file is written.
+
+Copy and paste the entire block in one shot:
 
 ```bash
-mkdir -p ~/.qwenpaw/logs
-
-cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << EOF
+mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -499,27 +398,18 @@ cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << EOF
 EOF
 ```
 
-Verify the paths resolved correctly (they should show your real username, not `$HOME`):
+Verify the paths resolved correctly (they should show your real username, not `$HOME`), then load and check the service:
 
 ```bash
-grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist
+grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl list | grep qwenpaw
 ```
 
-**Expected output:** The `<string>` lines should contain e.g. `/Users/yourname/.qwenpaw/bin/qwenpaw`.
+**Expected output:**
 
-Load it:
-
-```bash
-launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist
 ```
-
-Verify:
-
-```bash
-launchctl list | grep qwenpaw
+    <string>/Users/yourname/.qwenpaw/bin/qwenpaw</string>
+-   0   com.qwenpaw.app
 ```
-
-**Expected output:** `- 0 com.qwenpaw.app`
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -535,23 +425,22 @@ After reboot, wait 30 seconds, then SSH in from another machine:
 ssh your-username@your-mac-ip
 ```
 
-Check all services:
+Check all services in one command:
 
 ```bash
-# oMLX (should be "started")
-brew services list | grep omlx
-
-# QwenPaw
-launchctl list | grep qwenpaw
-
-# oMLX admin dashboard
-curl -s http://localhost:8000/admin
-
-# QwenPaw console
-curl -s http://localhost:8088/
+brew services list | grep omlx && launchctl list | grep qwenpaw && curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 ```
 
-All should return healthy responses without any manual intervention.
+**Expected output:**
+
+```
+omlx    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.omlx.plist
+-   0   com.qwenpaw.app
+{"object":"list","data":[...]}
+QwenPaw HTTP 200
+```
+
+All three services should return healthy responses without any manual intervention.
 
 ## Part 7: Remote Access from Anywhere with Tailscale & MagicDNS
 
@@ -665,15 +554,7 @@ Tailscale SSH lets you authenticate using your Tailscale identity instead of you
 On your Mac server, run:
 
 ```bash
-tailscale set --ssh
-```
-
-**Expected output:** No output (success).
-
-Verify with:
-
-```bash
-tailscale status --json | grep -i ssh
+tailscale set --ssh && tailscale status --json | grep -i ssh
 ```
 
 **Expected output:** `"ssh": true`
@@ -701,42 +582,10 @@ ssh your-username@my-mac
 
 Your oMLX admin dashboard (port 8000) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
 
-**With MagicDNS enabled, you access these services by name instead of IP.** Tailscale Serve keeps your web UIs bound to localhost while giving your tailnet an HTTPS MagicDNS hostname.
-
-**Exposing your web UIs:**
-
 Run these commands on your Mac server:
 
 ```bash
-tailscale serve --bg --https=443 http://localhost:8000
-tailscale serve --bg --https=443 http://localhost:8088
-```
-
-**Expected output:**
-
-```
-Available within your tailnet:
-https://my-mac.your-tailnet.ts.net/
-|-- proxy http://localhost:8000
-```
-
-Tailscale will print the HTTPS MagicDNS URL for your services.
-
-**Accessing your services using MagicDNS:**
-
-Open the HTTPS URL provided by Tailscale in your browser from any device on your tailnet:
-
-```
-https://my-mac.your-tailnet.ts.net (for oMLX admin dashboard)
-https://my-mac.your-tailnet.ts.net (for QwenPaw)
-```
-
-Your connection will be fully encrypted, and the browser will show a valid HTTPS certificate (padlock icon). No port forwarding, no firewall changes, and no certificate warnings.
-
-**Verify the configuration:**
-
-```bash
-tailscale serve status
+tailscale serve --bg --https=443 http://localhost:8000 && tailscale serve --bg --https=443 http://localhost:8088 && tailscale serve status
 ```
 
 **Expected output:**
@@ -746,6 +595,15 @@ https://my-mac.your-tailnet.ts.net
 |-- / proxy http://localhost:8000
 |-- / proxy http://localhost:8088
 ```
+
+Open the HTTPS URL in your browser from any device on your tailnet:
+
+```
+https://my-mac.your-tailnet.ts.net (for oMLX admin dashboard)
+https://my-mac.your-tailnet.ts.net (for QwenPaw)
+```
+
+Your connection will be fully encrypted, and the browser will show a valid HTTPS certificate (padlock icon). No port forwarding, no firewall changes, and no certificate warnings.
 
 > **Note:** If you need to serve on a different port (e.g., 8443), use `--https=8443` instead. The MagicDNS URL will include the port number.
 
@@ -773,7 +631,7 @@ https://my-mac.your-tailnet.ts.net/
 |-- proxy http://127.0.0.1:8000
 ```
 
-> **Warning:** Funnel exposes your service to the public internet. Anyone with the URL can access it. Do not use Funnel for services containing sensitive data. Always enable password authentication for any service exposed via Funnel.
+> **Warning:** Funnel exposes your service to the public internet. Anyone with the URL can access it. Do not use Funnel for services containing sensitive data. Always enable password authentication for any service exposed via Funnel. Since oMLX already requires your `omlx-night-thoughts` API key, this is protected — but review any service you expose.
 
 To stop public access:
 
@@ -800,14 +658,17 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
-| oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4) and macOS 15.0 (Sequoia) or later[reference:10] |
+| oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4) and macOS 15.0 (Sequoia) or later |
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` or `python -c "import importlib.metadata as md; print(md.version('mlx'))"` |
 | oMLX isn't running after reboot | Run `brew services list` — status should be `started`. If it says `error`, check `$(brew --prefix)/var/log/omlx.log` |
 | Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
+| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string (e.g., `omlx-night-thoughts`) |
+| `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header. Add `-H "Authorization: Bearer omlx-night-thoughts"` |
+| Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
-| QwenPaw can't reach oMLX | Confirm oMLX is running: `curl http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1`[reference:11] |
-| QwenPaw custom provider shows no models | Manually set `support_model_discovery: true` and `support_connection_check: true` in the provider JSON, then restart QwenPaw[reference:12] |
+| QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
+| QwenPaw custom provider shows no models | Manually set `support_model_discovery: true` and `support_connection_check: true` in the provider JSON, then restart QwenPaw |
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
 | MagicDNS name doesn't resolve | Verify MagicDNS is enabled in the Tailscale admin console under DNS settings; check Tailscale is running on both devices |
