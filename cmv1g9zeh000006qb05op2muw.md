@@ -211,7 +211,11 @@ python -c "import mlx; print(mlx.__version__)"
 
 ## Part 4: Install MLX Manager (Web UI + Background Service)
 
-MLX Manager provides a browser-based interface for downloading MLX models from Hugging Face and running them as persistent services. It is distributed via a Homebrew tap, so we need to install Homebrew first.
+MLX Manager provides a browser-based interface for downloading MLX models from Hugging Face and running them as persistent services.
+
+> **Note:** MLX Manager is a **community project** maintained by an individual developer (`tumma72`), not an Apple-official tool. It is built directly on top of Apple's MLX framework (which *is* official) but adds the web UI and service management layer on its own. It is currently in beta, so expect occasional rough edges.
+
+It is distributed via a Homebrew tap, so we need to install Homebrew first.
 
 ### 4.1 Install Homebrew
 
@@ -253,16 +257,46 @@ brew --version
 
 > **Note:** If Homebrew is already installed, this command will detect it and skip installation. You can safely run it again.
 
-### 4.2 Install MLX Manager via Homebrew
+### 4.2 Tap and Trust the MLX Manager Repository
 
 ```bash
 brew tap tumma72/mlx-manager https://github.com/tumma72/mlx-manager
+```
+
+**Expected output:**
+
+```
+==> Tapping tumma72/mlx-manager
+Cloning into '/opt/homebrew/Library/Taps/tumma72/homebrew-mlx-manager'...
+Tapped 1 formula (1,054 files, 18.6MB).
+```
+
+Now **trust the tap**. Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — this is a security feature to prevent arbitrary code execution from untrusted sources:
+
+```bash
+brew trust tumma72/mlx-manager
+```
+
+**Expected output:** A confirmation message listing the tap as trusted.
+
+> **Why is this needed?** If you run `brew install mlx-manager` without trusting the tap first, you'll see:
+>
+> ```
+> Error: Refusing to load formula tumma72/mlx-manager/mlx-manager from untrusted tap tumma72/mlx-manager.
+> Run `brew trust --formula tumma72/mlx-manager/mlx-manager` or `brew trust tumma72/mlx-manager` to trust it.
+> ```
+>
+> That error is safe to resolve with `brew trust` as long as you've reviewed the tap source. You can also trust a single formula instead of the whole tap with `brew trust --formula tumma72/mlx-manager/mlx-manager`.
+
+### 4.3 Install MLX Manager via Homebrew
+
+```bash
 brew install mlx-manager
 ```
 
 **Expected output:** `/opt/homebrew/Cellar/mlx-manager/x.x.x: ...`
 
-### 4.3 Start the Web UI
+### 4.4 Start the Web UI
 
 ```bash
 mlx-manager serve
@@ -279,11 +313,11 @@ INFO:     Uvicorn running on http://0.0.0.0:8080
 
 Open `http://localhost:8080` in your browser (or `http://your-mac-ip:8080` from another device).
 
-### 4.4 Create Your Account
+### 4.5 Create Your Account
 
 On first visit, you'll see a registration page. The **first user automatically becomes admin**. Create your account and log in.
 
-### 4.5 Install as Persistent launchd Service
+### 4.6 Install as Persistent launchd Service
 
 This is the key step for always-on operation. Stop the foreground server first (`Ctrl+C`), then:
 
@@ -307,7 +341,7 @@ mlx-manager status
 
 **Expected output:** Shows the service as `running` with a PID.
 
-### 4.6 Download & Deploy a Model
+### 4.7 Download & Deploy a Model
 
 1. In the web UI, click **Browse** to search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
 2. Click **Download** — watch the progress bar
@@ -734,6 +768,7 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
+| `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust tumma72/mlx-manager` (or `brew trust --formula tumma72/mlx-manager/mlx-manager` for the single formula), then retry `brew install mlx-manager` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `mlx-manager` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach MLX | Confirm MLX Manager is running: `curl http://localhost:10242/v1/models` |
