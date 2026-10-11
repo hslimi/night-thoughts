@@ -15,7 +15,7 @@ Everything in this guide was verified on the following setup. If your versions a
 | Component | Version | Notes |
 |-----------|---------|-------|
 | **macOS** | 15.x (Sequoia) or later | Required for oMLX |
-| **Chip** | Apple Silicon (M1/M2/M3/M4/M5) | Required for MLX and oMLX |
+| **Chip** | Apple Silicon (M1/M2/M3/M4) | Required for MLX and oMLX |
 | **Homebrew** | 4.x | Package manager for oMLX and Tailscale |
 | **uv** | 0.8.x or later | Python version + package manager |
 | **Python (MLX venv)** | 3.11.x | Managed by uv at `~/.mlx-venv` |
@@ -511,6 +511,19 @@ Tailscale creates a secure mesh VPN between your devices, giving each one a stab
 
 **MagicDNS** is Tailscale's built-in DNS feature that lets you reach your server by its machine name (e.g., `my-mac`) instead of remembering IP addresses. This section sets up MagicDNS as the primary access method for all your services.
 
+### 7.0 Create a Tailscale Account
+
+If you don't already have a Tailscale account, sign up first. It's free for personal use and takes about a minute.
+
+1. Go to [tailscale.com](https://tailscale.com/) and click **Get Started** (or go directly to [login.tailscale.com/start](https://login.tailscale.com/start)).
+2. Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address all work[reference:0]. You do not create a Tailscale-specific password; Tailscale authenticates you through your chosen provider.
+3. After signing in, you'll be asked to choose **Business use** or **Personal use**. Pick Personal for a home server setup[reference:1].
+4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin). This is where you'll manage devices, DNS settings, and access control policies throughout the rest of this guide[reference:2].
+
+> **Note:** If you sign up with a public email domain (e.g., `@gmail.com`), you're automatically placed on the **Personal** plan, which includes up to **6 free users** and **100 devices**[reference:3]. That's more than enough for this guide.
+
+> **Tip:** The same account must be used on every device you want on your tailnet. If you sign in with Google on your Mac server, sign in with Google on your laptop too — otherwise they won't see each other.
+
 ### 7.1 Install Tailscale on Your Mac Server
 
 ```bash
@@ -519,7 +532,7 @@ brew install --cask tailscale
 
 **Expected output:** `tailscale-app was successfully installed!`
 
-Open the Tailscale app from your Applications folder or menu bar, and sign in with Google, GitHub, Microsoft, or email.
+Open the Tailscale app from your Applications folder or menu bar, and sign in with the same account you just created.
 
 Once authenticated, the Tailscale icon appears in your menu bar and shows a green "Connected" status.
 
@@ -544,18 +557,7 @@ If you see your machine list, the CLI is working and you can proceed.
 
 > **Tip:** Your machine name (e.g., `haithemslimis-mac-mini`) may be long and awkward to type. You can rename it to something memorable like `ai-server` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
 
-### 7.2 Install Tailscale on Your Client Device
-
-Install Tailscale on any device you'll use to connect — your laptop, phone, or tablet:
-
-- **macOS:** `brew install --cask tailscale` or download from the Mac App Store
-- **Windows:** Download the installer from [tailscale.com/download](https://tailscale.com/download)
-- **Linux:** `curl -fsSL https://tailscale.com/install.sh | sh && sudo tailscale up`
-- **iOS/Android:** Download from the App Store or Play Store
-
-**Critical:** Sign in with the **same account** on every device. All devices must belong to the same "tailnet" (your private Tailscale network) to see each other.
-
-### 7.3 Enable MagicDNS and HTTPS Certificates (One-Time Setup)
+### 7.2 Enable MagicDNS and HTTPS Certificates (One-Time Setup)
 
 MagicDNS and HTTPS Certificates are required for secure, name-based access to your services.
 
@@ -565,7 +567,7 @@ MagicDNS and HTTPS Certificates are required for secure, name-based access to yo
 
 > **Important:** Enabling HTTPS certificates publishes your machine names and tailnet DNS name on a public ledger (Certificate Transparency). If your machine names contain sensitive information, rename them before enabling HTTPS.
 
-### 7.4 Find Your MagicDNS Name
+### 7.3 Find Your MagicDNS Name
 
 Once MagicDNS is enabled, you can reach your Mac server by its machine name. There are two ways to find the name:
 
@@ -590,7 +592,7 @@ Your MagicDNS name is the second column (e.g., `my-mac`).
 
 > **Tip:** You can rename your device to something memorable (like `ai-server`) by editing the machine name in the admin console. The MagicDNS entry will update automatically.
 
-### 7.5 Verify MagicDNS Resolution
+### 7.4 Verify MagicDNS Resolution
 
 From your client device (e.g., your laptop), test that MagicDNS resolves the machine name:
 
@@ -609,7 +611,7 @@ If you get a response, MagicDNS is working. Press `Ctrl+C` to stop.
 
 > **Note:** Some CLI tools on macOS like `host` or `nslookup` bypass system DNS resolution and will not work with MagicDNS. Use `ping` or `curl` instead.
 
-### 7.6 SSH into Your Mac Server Using MagicDNS
+### 7.5 SSH into Your Mac Server Using MagicDNS
 
 Once MagicDNS is working, SSH becomes much simpler — no more remembering IP addresses:
 
@@ -629,7 +631,7 @@ Type `yes` and enter your Mac's login password. You are now remotely connected t
 
 > **Tip:** For shared devices, you must use the full domain name: `ssh your-username@my-mac.your-tailnet.ts.net`.
 
-### 7.7 Optional — Enable Tailscale SSH (Passwordless)
+### 7.6 Optional — Enable Tailscale SSH (Passwordless)
 
 Tailscale SSH lets you authenticate using your Tailscale identity instead of your macOS password. This is useful for automation and scripting.
 
@@ -660,7 +662,7 @@ ssh your-username@my-mac
 > ```
 > This allows devices you own to SSH into each other without a password.
 
-### 7.8 Secure Remote Access to Web UIs with HTTPS via MagicDNS
+### 7.7 Secure Remote Access to Web UIs with HTTPS via MagicDNS
 
 Your oMLX admin dashboard (port 8000) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
 
@@ -689,7 +691,7 @@ Your connection will be fully encrypted, and the browser will show a valid HTTPS
 
 > **Note:** If you need to serve on a different port (e.g., 8443), use `--https=8443` instead. The MagicDNS URL will include the port number.
 
-### 7.9 Optional — Public Access with Tailscale Funnel
+### 7.8 Optional — Public Access with Tailscale Funnel
 
 If you need to share your services with someone outside your tailnet (e.g., a client reviewing a prototype), Tailscale Funnel exposes a local port to the public internet over a stable HTTPS URL — without port forwarding, DNS records, or a public IP address.
 
@@ -721,7 +723,7 @@ To stop public access:
 tailscale funnel --terminate-on 8000
 ```
 
-### 7.10 Verify Tailscale Survives Reboot
+### 7.9 Verify Tailscale Survives Reboot
 
 Tailscale runs as a system extension and automatically reconnects on reboot. After restarting your Mac, verify from your client device:
 
