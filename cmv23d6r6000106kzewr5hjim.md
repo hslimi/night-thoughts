@@ -86,13 +86,34 @@ When you call `ta.propagate("NVDA", date)`, LangGraph compiles the graph locally
 
 ## Step 1: Install Homebrew
 
-If you don't have Homebrew:
+Homebrew is the missing package manager for macOS. Install it with the official one-liner:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Follow the printed instructions to add Homebrew to your PATH, then verify:
+**Expected output:** Installation progress messages, followed by:
+
+```
+==> Installation successful!
+==> Homebrew has enabled anonymous aggregate formulae and cask analytics.
+...
+==> Next steps:
+- Run these commands in your terminal to add Homebrew to your PATH:
+  echo >> ~/.zprofile
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Follow the printed Next steps to add Homebrew to your PATH (Apple Silicon uses `/opt/homebrew`; Intel uses `/usr/local`):
+
+```bash
+echo >> ~/.zprofile
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Verify:
 
 ```bash
 brew --version
@@ -102,6 +123,9 @@ brew --version
 ```
 Homebrew 4.x.x
 ```
+
+**Note:** If Homebrew is already installed, this command will detect it and skip installation. You can safely run it again.
+
 
 ## Step 2: Install uv
 
