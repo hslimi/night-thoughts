@@ -3,7 +3,7 @@ title: "Complete Guide: Always-On Mac Server with MLX, oMLX & QwenPaw"
 datePublished: 2026-10-09T21:01:08.387Z
 cuid: cmv1g9zeh000006qb05op2muw
 slug: complete-guide-always-on-mac-server-with-mlx-omlx-qwenpaw
-cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/040513aa-a14f-4cc7-9b62-45d63fc9e230.jpg
+cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/e8731940-c0fb-4aa5-b7be-8ba95a19041e.png
 tags: ai, mlx, macmini, qwenpaw
 
 ---
