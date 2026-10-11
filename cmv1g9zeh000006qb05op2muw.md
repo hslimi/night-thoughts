@@ -513,7 +513,7 @@ This part sets up secure HTTPS access to both oMLX and QwenPaw from anywhere in 
 - `https://omlx.yourdomain.com`
 - `https://qwenpaw.yourdomain.com`
 
-The architecture: **Tailscale** provides the encrypted mesh network and provision TLS certificates for your custom domain; **Caddy** runs locally as a reverse proxy to route each subdomain to the correct service.
+The architecture: **Tailscale** provides the encrypted mesh network and provisions TLS certificates for your custom domain; **Caddy** runs locally as a reverse proxy to route each subdomain to the correct service.
 
 ### 7.0 Create a Tailscale Account
 
@@ -553,8 +553,8 @@ echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >>
 **Expected output:**
 
 ```
-100.97.7.34    haithemslimis-mac-mini  haythemslimi@  macOS    -
-100.88.189.0   night-thoughts         haythemslimi@  macOS    offline, last seen 2d ago
+100.97.x.x    my-mac-mini     user@example.com  macOS    -
+100.88.x.x    night-thoughts  user@example.com  macOS    offline, last seen 2d ago
 ```
 
 If you see your machine list, the CLI is working and you can proceed.
@@ -662,13 +662,13 @@ brew services list | grep caddy
 caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 ```
 
-Caddy is now listening on ports 80 and 443 locally, ready to receive traffic from Tailscale.
+Caddy is now listening on port 80, ready to receive traffic from Tailscale.
 
-> **Note:** Caddy does **not** need to terminate TLS — Tailscale handles that. Caddy simply receives plain HTTP from Tailscale's local proxy and routes based on the `Host` header.
+> **Note:** Caddy does **not** terminate TLS here — Tailscale handles that. Caddy receives plain HTTP from Tailscale's local proxy and routes based on the `Host` header.
 
 ### 7.6 Point Tailscale Serve at Caddy
 
-Now tell Tailscale to forward all HTTPS traffic on port 443 to Caddy, which will route based on hostname.
+Now tell Tailscale to forward all HTTPS traffic on port 443 to Caddy on port 80, which will route based on hostname.
 
 First, clear any existing serve configuration:
 
@@ -676,16 +676,11 @@ First, clear any existing serve configuration:
 tailscale serve reset
 ```
 
-Then set up the proxy to Caddy:
+Then set up the proxy to Caddy's HTTP listener:
 
 ```bash
-tailscale serve --bg --https=443 http://localhost:2019
+tailscale serve --bg --https=443 http://localhost:80
 ```
-
-> **Note:** Caddy's admin API listens on port 2019 by default. However, for serving regular HTTP traffic, Caddy listens on port 80. Use `http://localhost:80` instead if you want to route through Caddy's main HTTP listener:
-> ```bash
-> tailscale serve --bg --https=443 http://localhost:80
-> ```
 
 Verify the serve configuration:
 
@@ -701,6 +696,8 @@ https://yourdomain.com
 ```
 
 Tailscale is now terminating TLS for `*.yourdomain.com` and forwarding all requests to Caddy, which routes them to oMLX or QwenPaw based on the subdomain.
+
+> **Note:** Caddy's **admin API** (a separate internal endpoint) listens on port 2019 — that is **not** the port Tailscale should proxy to. The correct target is Caddy's HTTP listener on port 80.
 
 ### 7.7 Access Your Services
 
@@ -797,7 +794,7 @@ All services should return healthy responses without any manual intervention.
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Use `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead of the legacy `load` command |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
-| Tailscale SSH denies access (`access denied`) with `"action": "accept"` | Switch to `"action": "check"` and use `"src": ["autogroup:member"]`. See §7.6 for the full working ACL |
+| Tailscale SSH denies access (`access denied`) with `"action": "accept"` | Switch to `"action": "check"` and use `"src": ["autogroup:member"]` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
