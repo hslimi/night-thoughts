@@ -902,7 +902,7 @@ The result:
 1. Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
 2. Click **Add a site** and enter `night-thoughts.dev`.
 3. Choose the **Free** plan.
-4. Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account (they look like `walt.ns.cloudflare.com` and `alina.ns.cloudflare.com`). **Copy both** — you'll need them in Step 2.
+4. Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account. They will look like `<name>.ns.cloudflare.com`. **Copy both** — you'll need them in Step 2.
 
 **Step 2: Point the domain to Cloudflare at your registrar**
 
@@ -913,7 +913,11 @@ The process is the same for every registrar:
 1. Log in to your registrar account and find the DNS or nameserver settings for `night-thoughts.dev`.
 2. Locate the current nameservers (they'll be the registrar's defaults, e.g., `ns1.godaddy.com`).
 3. **Delete** them.
-4. **Paste** the two Cloudflare nameservers you copied in Step 1.
+4. **Paste** the two Cloudflare nameservers from Step 1. For this guide, they are:
+   ```
+   lamar.ns.cloudflare.com
+   rosemary.ns.cloudflare.com
+   ```
 5. **Save** your changes.
 
 > **Important:** If DNSSEC is enabled at your registrar, disable it before changing nameservers. DNSSEC conflicts with the new authoritative DNS provider and can cause `SERVFAIL` errors until it's turned off.
@@ -928,8 +932,29 @@ If your registrar is GoDaddy:
 2. Find `night-thoughts.dev` and click **DNS** (or **Manage DNS**).
 3. Scroll to the **Nameservers** section and click **Change**.
 4. Select **I'll use my own nameservers** (or **Custom**).
-5. **Delete the existing GoDaddy nameservers** and paste the two Cloudflare nameservers you copied in Step 1.
+5. Delete the existing GoDaddy nameservers and paste:
+   ```
+   lamar.ns.cloudflare.com
+   rosemary.ns.cloudflare.com
+   ```
 6. Click **Save**, then **Continue** to confirm.
+
+**Verify propagation**
+
+After saving, check that the new nameservers are live:
+
+```bash
+dig +short NS night-thoughts.dev @1.1.1.1
+```
+
+**Expected output:**
+
+```
+lamar.ns.cloudflare.com.
+rosemary.ns.cloudflare.com.
+```
+
+If you see your registrar's nameservers instead, wait and retry — propagation can take up to 48 hours, though it's often much faster.
 
 **Step 3: Install cloudflared**
 
@@ -959,7 +984,7 @@ This generates a tunnel ID and credentials file in `~/.cloudflared/`. The `grep 
 cloudflared tunnel route dns night-thoughts night-thoughts.dev
 ```
 
-This automatically creates the CNAME record at Cloudflare pointing `night-thoughts.dev` to your tunnel. If it fails with "neither the ID nor the name of any of your tunnels", run `cloudflared tunnel list` to see the actual tunnel names and retry with the exact name or ID.
+This creates a proxied CNAME record at Cloudflare pointing `night-thoughts.dev` to your tunnel. If it fails with "neither the ID nor the name of any of your tunnels", run `cloudflared tunnel list` to see the actual tunnel names and retry with the exact name or ID.
 
 **Step 7: Configure the tunnel**
 
@@ -1057,7 +1082,7 @@ launchctl list | grep cloudflared
 **Expected output:**
 
 ```
--   0   com.cloudflare.cloudflared
+46761	0	com.cloudflare.cloudflared
 ```
 
 Now check the log to confirm the tunnel is actually connected:
@@ -1066,24 +1091,79 @@ Now check the log to confirm the tunnel is actually connected:
 tail -20 ~/.cloudflared/cloudflared.err.log
 ```
 
-**Expected output:** Connection logs like:
+**Expected output:** A health precheck summary followed by connection logs:
 
 ```
-INF Registered tunnel connection connIndex=0 connection=... location=...
-INF Registered tunnel connection connIndex=1 connection=... location=...
+INF |  SUMMARY: Environment is healthy. cloudflared will use 'quic' as primary protocol.  |
+INF precheck complete hard_fail=false run_id=... suggested_protocol=quic
+INF Registered tunnel connection connIndex=0 connection=... location=hkg
+INF Registered tunnel connection connIndex=1 connection=... location=hkg
 ```
 
-The old `use cloudflared tunnel run to start tunnel <UUID>` messages should be gone.
-
-You can also confirm from Cloudflare's side:
+Confirm from Cloudflare's side:
 
 ```bash
 cloudflared tunnel info night-thoughts
 ```
 
-**Expected output:** A table showing one or more active connectors with their location and connection ID.
+**Expected output:**
 
-Open `https://night-thoughts.dev/omlx/admin` in a browser. Cloudflare automatically provisions a valid Let's Encrypt certificate for your domain — no browser warning, no manual CA trust.
+```
+NAME:     night-thoughts
+ID:       <uuid>
+CREATED:  ...
+
+CONNECTOR ID                         CREATED              ARCHITECTURE VERSION   ORIGIN IP       EDGE
+<uuid>                               2026-...             darwin_arm64 2026.10.0 <your-ip>       1xhkg01, 2xhkg08, 1xhkg09
+```
+
+Then test publicly:
+
+```bash
+curl -s -o /dev/null -w "oMLX:    HTTP %{http_code}\n" https://night-thoughts.dev/omlx/admin
+curl -s -o /dev/null -w "QwenPaw: HTTP %{http_code}\n" https://night-thoughts.dev/console/
+```
+
+**Expected output:** `HTTP 200` for both.
+
+**Troubleshooting `HTTP 000` on the public URL**
+
+If the tunnel shows a healthy connector and Caddy returns 200 locally (`curl http://localhost:9080/omlx/admin`), but public requests fail with `HTTP 000`, the cause is almost always a **conflicting DNS record at Cloudflare's edge**.
+
+The tunnel route needs the apex (`night-thoughts.dev`) to be a **proxied CNAME** pointing at `<tunnel-id>.cfargotunnel.com`. Cloudflare's initial DNS scan often creates an `A` or `AAAA` record at the apex instead, and the two conflict. The edge doesn't know which one to honor, so it refuses the connection.
+
+**Fix — Option A: Toggle the proxy status**
+
+1. Go to the [Cloudflare dashboard](https://dash.cloudflare.com) → `night-thoughts.dev` → **DNS** → **Records**.
+2. Find the record for `night-thoughts.dev` (apex `@`).
+3. Toggle its **Proxy status** from **Proxied** (orange cloud) to **DNS Only** (grey cloud). Save.
+4. Wait 30 seconds, then toggle it back to **Proxied** (orange cloud). Save again.
+
+This forces Cloudflare to re-evaluate the record and bind it to the tunnel.
+
+**Fix — Option B: Recreate the route**
+
+```bash
+cloudflared tunnel route dns delete night-thoughts night-thoughts.dev
+cloudflared tunnel route dns c31c1341-ab1e-43bd-a2bb-9327d8ebc653 night-thoughts.dev
+launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
+sleep 30
+```
+
+Then retest.
+
+**Fix — Option C: Verify the record**
+
+In the Cloudflare dashboard → **DNS** → **Records**, the apex record must be:
+
+| Field | Value |
+|-------|-------|
+| **Type** | CNAME |
+| **Name** | `@` (or `night-thoughts.dev`) |
+| **Target** | `<your-tunnel-id>.cfargotunnel.com` |
+| **Proxy status** | **Proxied** (orange cloud) |
+
+If the target is anything else (e.g., a Cloudflare IP from an A record), delete that record and recreate the route with `cloudflared tunnel route dns`.
 
 **How it fits together:**
 
@@ -1159,7 +1239,8 @@ cloudflared tunnel delete night-thoughts
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
 | `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
 | cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist on macOS. Remove it and write a user launch agent per §7.10 Step 8 |
-| Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev` — should return `*.ns.cloudflare.com` servers |
+| Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev @1.1.1.1` — should return `*.ns.cloudflare.com` servers |
+| Public URL returns `HTTP 000` but Caddy works locally | Conflicting DNS record at Cloudflare's edge. Toggle the apex record's proxy status off then on, or recreate the route per §7.10 "Troubleshooting `HTTP 000`" |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
