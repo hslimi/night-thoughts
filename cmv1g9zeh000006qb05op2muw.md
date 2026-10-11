@@ -900,17 +900,32 @@ The result:
 **Step 1: Add your domain to Cloudflare**
 
 1. Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
-2. Add `night-thoughts.dev` as a new site.
-3. Cloudflare will give you two nameservers. Update them at your domain registrar (where you bought the domain).
-4. Wait for Cloudflare to confirm the domain is active — usually a few minutes.
+2. Click **Add a site** and enter `night-thoughts.dev`.
+3. Choose the **Free** plan.
+4. Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account (they look like `walt.ns.cloudflare.com` and `alina.ns.cloudflare.com`). **Copy both** — you'll need them in Step 2.
 
-**Step 2: Install cloudflared**
+**Step 2: Point the domain to Cloudflare at GoDaddy**
+
+Cloudflare needs to be the authoritative DNS provider for your domain. This means replacing GoDaddy's default nameservers with Cloudflare's. GoDaddy is the registrar; Cloudflare becomes the DNS host.
+
+1. Log in to [GoDaddy](https://godaddy.com) and go to **My Products**.
+2. Find `night-thoughts.dev` and click **DNS** (or **Manage DNS**).
+3. Scroll to the **Nameservers** section and click **Change**.
+4. Select **I'll use my own nameservers** (or **Custom**).
+5. **Delete the existing GoDaddy nameservers** and paste the two Cloudflare nameservers you copied in Step 1.
+6. Click **Save**, then **Continue** to confirm.
+
+> **Important:** If DNSSEC is enabled at GoDaddy, disable it before changing nameservers. DNSSEC conflicts with the new authoritative DNS provider and can cause `SERVFAIL` errors until it's turned off.
+
+> **Propagation time:** Nameserver changes typically propagate within a few minutes but can take up to **24–48 hours** globally. Cloudflare will email you once your domain becomes **Active** in their dashboard.
+
+**Step 3: Install cloudflared**
 
 ```bash
 brew install cloudflared
 ```
 
-**Step 3: Authenticate**
+**Step 4: Authenticate**
 
 ```bash
 cloudflared tunnel login
@@ -918,7 +933,7 @@ cloudflared tunnel login
 
 This opens a browser — select `night-thoughts.dev` and authorize.
 
-**Step 4: Create the tunnel**
+**Step 5: Create the tunnel**
 
 ```bash
 cloudflared tunnel list | grep -q night-thoughts || cloudflared tunnel create night-thoughts
@@ -926,7 +941,7 @@ cloudflared tunnel list | grep -q night-thoughts || cloudflared tunnel create ni
 
 This generates a tunnel ID and credentials file in `~/.cloudflared/`. The `grep -q` guard skips creation if the tunnel already exists, so it's safe to re-run.
 
-**Step 5: Route DNS**
+**Step 6: Route DNS**
 
 ```bash
 cloudflared tunnel route dns night-thoughts night-thoughts.dev
@@ -934,7 +949,7 @@ cloudflared tunnel route dns night-thoughts night-thoughts.dev
 
 This automatically creates the CNAME record at Cloudflare pointing `night-thoughts.dev` to your tunnel. If it fails with "neither the ID nor the name of any of your tunnels", run `cloudflared tunnel list` to see the actual tunnel names and retry with the exact name or ID.
 
-**Step 6: Configure the tunnel**
+**Step 7: Configure the tunnel**
 
 The following command generates the config file with both the tunnel ID and your home directory resolved automatically — no manual editing required:
 
@@ -973,19 +988,33 @@ ingress:
 
 Both values should be resolved to actual strings — no `$TUNNEL_ID` or `$HOME` left in the file.
 
-**Step 7: Install as a service**
+**Step 8: Install as a service**
 
 ```bash
 sudo cloudflared service install
 ```
 
-**Step 8: Verify**
+**Step 9: Verify**
 
 ```bash
 sudo launchctl list | grep cloudflared
 ```
 
 Open `https://night-thoughts.dev/omlx/admin` in a browser. Cloudflare automatically provisions a valid Let's Encrypt certificate for your domain — no browser warning, no manual CA trust.
+
+> **Restarting the tunnel later:** To restart the Cloudflare Tunnel service after editing the config, use:
+> ```bash
+> sudo launchctl kickstart -k system/com.cloudflare.cloudflared
+> ```
+> Or stop and reload it explicitly:
+> ```bash
+> sudo launchctl stop com.cloudflare.cloudflared
+> sudo launchctl unload /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
+> sudo launchctl load /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
+> sudo launchctl start com.cloudflare.cloudflared
+> ```
+>
+> If you installed `cloudflared` via Homebrew's `brew services` instead, use `brew services restart cloudflared` instead.
 
 **How it fits together:**
 
@@ -1056,6 +1085,7 @@ cloudflared tunnel delete night-thoughts
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
 | `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
+| Nameserver change at GoDaddy isn't propagating | Confirm DNSSEC is disabled at GoDaddy (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev` — should return `*.ns.cloudflare.com` servers |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
