@@ -1126,45 +1126,6 @@ curl -s -o /dev/null -w "QwenPaw: HTTP %{http_code}\n" https://night-thoughts.de
 
 **Expected output:** `HTTP 200` for both.
 
-**Troubleshooting `HTTP 000` on the public URL**
-
-If the tunnel shows a healthy connector and Caddy returns 200 locally (`curl http://localhost:9080/omlx/admin`), but public requests fail with `HTTP 000`, the cause is almost always a **conflicting DNS record at Cloudflare's edge**.
-
-The tunnel route needs the apex (`night-thoughts.dev`) to be a **proxied CNAME** pointing at `<tunnel-id>.cfargotunnel.com`. Cloudflare's initial DNS scan often creates an `A` or `AAAA` record at the apex instead, and the two conflict. The edge doesn't know which one to honor, so it refuses the connection.
-
-**Fix — Option A: Toggle the proxy status**
-
-1. Go to the [Cloudflare dashboard](https://dash.cloudflare.com) → `night-thoughts.dev` → **DNS** → **Records**.
-2. Find the record for `night-thoughts.dev` (apex `@`).
-3. Toggle its **Proxy status** from **Proxied** (orange cloud) to **DNS Only** (grey cloud). Save.
-4. Wait 30 seconds, then toggle it back to **Proxied** (orange cloud). Save again.
-
-This forces Cloudflare to re-evaluate the record and bind it to the tunnel.
-
-**Fix — Option B: Recreate the route**
-
-```bash
-cloudflared tunnel route dns delete night-thoughts night-thoughts.dev
-cloudflared tunnel route dns c31c1341-ab1e-43bd-a2bb-9327d8ebc653 night-thoughts.dev
-launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
-sleep 30
-```
-
-Then retest.
-
-**Fix — Option C: Verify the record**
-
-In the Cloudflare dashboard → **DNS** → **Records**, the apex record must be:
-
-| Field | Value |
-|-------|-------|
-| **Type** | CNAME |
-| **Name** | `@` (or `night-thoughts.dev`) |
-| **Target** | `<your-tunnel-id>.cfargotunnel.com` |
-| **Proxy status** | **Proxied** (orange cloud) |
-
-If the target is anything else (e.g., a Cloudflare IP from an A record), delete that record and recreate the route with `cloudflared tunnel route dns`.
-
 **How it fits together:**
 
 ```
@@ -1240,7 +1201,6 @@ cloudflared tunnel delete night-thoughts
 | `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
 | cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist on macOS. Remove it and write a user launch agent per §7.10 Step 8 |
 | Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev @1.1.1.1` — should return `*.ns.cloudflare.com` servers |
-| Public URL returns `HTTP 000` but Caddy works locally | Conflicting DNS record at Cloudflare's edge. Toggle the apex record's proxy status off then on, or recreate the route per §7.10 "Troubleshooting `HTTP 000`" |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
