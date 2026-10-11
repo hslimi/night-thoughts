@@ -904,9 +904,25 @@ The result:
 3. Choose the **Free** plan.
 4. Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account (they look like `walt.ns.cloudflare.com` and `alina.ns.cloudflare.com`). **Copy both** — you'll need them in Step 2.
 
-**Step 2: Point the domain to Cloudflare at GoDaddy**
+**Step 2: Point the domain to Cloudflare at your registrar**
 
-Cloudflare needs to be the authoritative DNS provider for your domain. This means replacing GoDaddy's default nameservers with Cloudflare's. GoDaddy is the registrar; Cloudflare becomes the DNS host.
+Cloudflare needs to be the authoritative DNS provider for your domain. This means replacing your registrar's default nameservers with the two Cloudflare nameservers shown in Step 1. The registrar is wherever you bought the domain (GoDaddy, Namecheap, Google Domains, Porkbun, etc.).
+
+The process is the same for every registrar:
+
+1. Log in to your registrar account and find the DNS or nameserver settings for `night-thoughts.dev`.
+2. Locate the current nameservers (they'll be the registrar's defaults, e.g., `ns1.godaddy.com`).
+3. **Delete** them.
+4. **Paste** the two Cloudflare nameservers you copied in Step 1.
+5. **Save** your changes.
+
+> **Important:** If DNSSEC is enabled at your registrar, disable it before changing nameservers. DNSSEC conflicts with the new authoritative DNS provider and can cause `SERVFAIL` errors until it's turned off.
+
+> **Propagation time:** Nameserver changes typically propagate within a few minutes but can take up to **24–48 hours** globally. Cloudflare will email you once your domain becomes **Active** in their dashboard.
+
+**GoDaddy example**
+
+If your registrar is GoDaddy:
 
 1. Log in to [GoDaddy](https://godaddy.com) and go to **My Products**.
 2. Find `night-thoughts.dev` and click **DNS** (or **Manage DNS**).
@@ -914,10 +930,6 @@ Cloudflare needs to be the authoritative DNS provider for your domain. This mean
 4. Select **I'll use my own nameservers** (or **Custom**).
 5. **Delete the existing GoDaddy nameservers** and paste the two Cloudflare nameservers you copied in Step 1.
 6. Click **Save**, then **Continue** to confirm.
-
-> **Important:** If DNSSEC is enabled at GoDaddy, disable it before changing nameservers. DNSSEC conflicts with the new authoritative DNS provider and can cause `SERVFAIL` errors until it's turned off.
-
-> **Propagation time:** Nameserver changes typically propagate within a few minutes but can take up to **24–48 hours** globally. Cloudflare will email you once your domain becomes **Active** in their dashboard.
 
 **Step 3: Install cloudflared**
 
@@ -1085,7 +1097,7 @@ cloudflared tunnel delete night-thoughts
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
 | `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
-| Nameserver change at GoDaddy isn't propagating | Confirm DNSSEC is disabled at GoDaddy (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev` — should return `*.ns.cloudflare.com` servers |
+| Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev` — should return `*.ns.cloudflare.com` servers |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
