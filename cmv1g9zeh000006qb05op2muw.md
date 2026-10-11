@@ -15,7 +15,7 @@ Everything in this guide was verified on the following setup. If your versions a
 | Component | Version | Notes |
 |-----------|---------|-------|
 | **macOS** | 15.x (Sequoia) or later | Required for oMLX |
-| **Chip** | Apple Silicon (M1/M2/M3/M4) | Required for MLX and oMLX |
+| **Chip** | Apple Silicon (M1/M2/M3/M4/M5) | Required for MLX and oMLX |
 | **Homebrew** | 4.x | Package manager for oMLX and Tailscale |
 | **uv** | 0.8.x or later | Python version + package manager |
 | **Python (MLX venv)** | 3.11.x | Managed by uv at `~/.mlx-venv` |
