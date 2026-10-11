@@ -218,7 +218,7 @@ oMLX requires an API key for all requests to the `/v1/*` endpoints. **You choose
 omlx-night-thoughts
 ```
 
-> **Important:** `omlx-night-thoughts` is just an example. You can replace it with any string you want — as long as you use the **same value** in QwenPaw's config later in §5.3. If you change it here, change it there too.
+> **Important:** `omlx-night-thoughts` is just an example. You can replace it with any string you want — as long as you use the **same value** in QwenPaw's config later in §5.2. If you change it here, change it there too.
 
 Write the key into oMLX's settings file (creating the file if needed) and restart the service:
 
@@ -249,11 +249,11 @@ brew services start omlx && brew services list | grep omlx
 **Expected output:**
 
 ```
-==> Successfully started `omlx` (label: homebrew.mxcl.omlx)
-omlx    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.omlx.plist
+==> Successfully started `omlx` (label: sh.brew.omlx)
+omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 ```
 
-The `Status` should be `started`.
+The `Status` should be `started`. Homebrew writes the launchd plist to `~/Library/LaunchAgents/sh.brew.omlx.plist` automatically — no manual plist creation needed.
 
 **Useful `brew services` commands:**
 
@@ -308,6 +308,8 @@ curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/
 ```
 
 > **Note:** oMLX provides both OpenAI-compatible (`/v1/chat/completions`) and Anthropic-compatible (`/v1/messages`) endpoints. It also supports `/v1/embeddings`, `/v1/rerank`, and `/v1/responses` for broader compatibility.
+
+![oMLX admin dashboard with a model loaded and serving](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2cf4e346-d538-46b3-9247-bcad2487131a.png)
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
@@ -434,7 +436,7 @@ brew services list | grep omlx && launchctl list | grep qwenpaw && curl -s -H "A
 **Expected output:**
 
 ```
-omlx    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.omlx.plist
+omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 -   0   com.qwenpaw.app
 {"object":"list","data":[...]}
 QwenPaw HTTP 200
