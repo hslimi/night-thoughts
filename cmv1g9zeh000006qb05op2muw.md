@@ -508,7 +508,7 @@ All three services should return healthy responses without any manual interventi
 
 ## Part 7: Remote Access from Anywhere with Tailscale Serve + Caddy
 
-This part sets up secure HTTPS access to both oMLX and QwenPaw from anywhere in the world, using Tailscale's built-in `*.ts.net` hostname. **Caddy** runs locally as a reverse proxy to route each service and provide a single authentication entry point.
+This part sets up secure HTTPS access to both oMLX and QwenPaw from anywhere in the world, using Tailscale's built-in `*.ts.net` hostname. **Caddy** runs locally as a reverse proxy to route each service on a single port.
 
 The architecture:
 
@@ -516,8 +516,8 @@ The architecture:
 Client (tailnet) → Tailscale Serve (TLS, port 443)
                        ↓
                    Caddy (localhost:9080) ← always-on launchd service
-                    ├── /        → oMLX (localhost:8000)
-                    └── /qwenpaw → QwenPaw (localhost:8088)
+                    ├── /omlx/*    → oMLX   (localhost:8000)
+                    └── /qwenpaw/* → QwenPaw (localhost:8088)
 ```
 
 **Caddy is a required always-on component.** It runs as a launchd service managed by `brew services`, which means:
@@ -526,8 +526,6 @@ Client (tailnet) → Tailscale Serve (TLS, port 443)
 - It restarts automatically if it crashes
 - It comes back up after every reboot
 - No manual intervention is ever needed
-
-Tailscale terminates TLS using its auto-provisioned certificates. Caddy owns all path routing on a single port.
 
 ### 7.0 Create a Tailscale Account
 
@@ -604,17 +602,37 @@ caddy version
 
 **Expected output:** `v2.x.x`
 
-### 7.4 Configure Caddy for Path Routing
+### 7.4 Configure Caddy
 
-Create a Caddyfile that routes `/qwenpaw` to the QwenPaw console and everything else to oMLX. The `handle_path` directive **strips the prefix** before forwarding, so QwenPaw receives requests at `/` as it expects.
+Caddy serves both services on a single local port (9080). Each service is mounted under a path: oMLX at `/omlx/`, QwenPaw at `/qwenpaw/`. Absolute-path API calls from QwenPaw's frontend are routed back to QwenPaw via the `Referer` header; everything else falls through to oMLX.
 
 ```bash
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
 :9080 {
+    # Root redirect
+    @root path /
+    redir @root /omlx/admin 302
+
+    # oMLX entry point
+    @omlx_bare path /omlx
+    redir @omlx_bare /omlx/admin 302
+
+    handle_path /omlx/* {
+        reverse_proxy localhost:8000
+    }
+
+    # QwenPaw entry point
     handle_path /qwenpaw/* {
         reverse_proxy localhost:8088
     }
 
+    # Absolute-path API calls from QwenPaw: route by Referer
+    @from_qwenpaw header_regexp Referer /qwenpaw/
+    handle @from_qwenpaw {
+        reverse_proxy localhost:8088
+    }
+
+    # Everything else: oMLX
     handle {
         reverse_proxy localhost:8000
     }
@@ -622,9 +640,18 @@ sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/n
 EOF
 ```
 
-> **Why oMLX gets the root path?** oMLX's admin dashboard lives at `/admin` and references assets with absolute paths like `/static/...`. Mounting it at `/` means those paths resolve correctly without any rewriting. QwenPaw is mounted at `/qwenpaw`; Caddy's `handle_path` strips that prefix before forwarding, so QwenPaw receives requests at `/` as it expects.
+> **How the routing works:**
+>
+> | Request | Matched by | Forwarded to |
+> |---------|------------|--------------|
+> | `/omlx/admin` | `handle_path /omlx/*` | oMLX, path stripped to `/admin` |
+> | `/omlx/static/...` | `handle_path /omlx/*` | oMLX, path stripped to `/static/...` |
+> | `/qwenpaw/` | `handle_path /qwenpaw/*` | QwenPaw, path stripped to `/` |
+> | `/api/foo` (from QwenPaw page) | `@from_qwenpaw` | QwenPaw (Referer contains `/qwenpaw/`) |
+> | `/static/x.js` (from oMLX page) | fallback `handle` | oMLX |
+> | `/v1/models` | fallback `handle` | oMLX |
 
-Verify the Caddyfile syntax:
+Verify the syntax:
 
 ```bash
 caddy validate --config /opt/homebrew/etc/Caddyfile
@@ -648,21 +675,15 @@ Confirm it's running and registered to auto-start:
 
 ```bash
 brew services list | grep caddy
+lsof -i :9080 | grep caddy
 ```
 
 **Expected output:**
 
 ```
 caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
+caddy   39606    yourname    9u  IPv6  ...  TCP *:9080 (LISTEN)
 ```
-
-The `started` status plus the presence of the plist in `~/Library/LaunchAgents/` confirms Caddy will:
-
-- Auto-start on every login
-- Auto-restart if it crashes
-- Survive every reboot
-
-Caddy is now listening on port 9080, ready to receive traffic from Tailscale.
 
 **Useful Caddy service commands:**
 
@@ -672,14 +693,11 @@ brew services restart caddy   # restart after editing the Caddyfile
 brew services info caddy      # show detailed status
 ```
 
-> **After editing the Caddyfile**, you must reload Caddy for changes to take effect:
-> ```bash
-> brew services restart caddy
-> ```
+> **After editing the Caddyfile**, you must reload Caddy: `brew services restart caddy`.
 
 ### 7.6 Point Tailscale Serve at Caddy
 
-Now tell Tailscale to forward all HTTPS traffic on port 443 to Caddy on port 9080.
+Tell Tailscale to forward all HTTPS traffic on port 443 to Caddy on port 9080.
 
 First, clear any existing serve configuration:
 
@@ -706,7 +724,7 @@ https://night-thoughts.your-tailnet.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
-Tailscale is now terminating TLS for your `*.ts.net` hostname and forwarding all requests to Caddy, which routes them based on path.
+Tailscale is now terminating TLS for your `*.ts.net` hostname and forwarding all requests to Caddy.
 
 > **Note:** Tailscale Serve configurations persist across reboots automatically. Combined with Caddy's launchd service, the entire stack comes back up on its own after a restart.
 
@@ -714,13 +732,15 @@ Tailscale is now terminating TLS for your `*.ts.net` hostname and forwarding all
 
 From any device on your tailnet — laptop, phone, tablet — open:
 
-- **oMLX admin dashboard:** `https://night-thoughts.your-tailnet.ts.net/admin`
-- **oMLX API:** `https://night-thoughts.your-tailnet.ts.net/v1/models`
-- **QwenPaw web console:** `https://night-thoughts.your-tailnet.ts.net/qwenpaw`
+| Service | URL |
+|---------|-----|
+| **oMLX admin dashboard** | `https://night-thoughts.your-tailnet.ts.net/omlx/admin` |
+| **oMLX API** | `https://night-thoughts.your-tailnet.ts.net/omlx/v1/models` |
+| **QwenPaw web console** | `https://night-thoughts.your-tailnet.ts.net/qwenpaw/` |
 
-Replace `night-thoughts.your-tailnet.ts.net` with your actual MagicDNS name, which you can find by running `tailscale status` — the second column of the row for your Mac server.
+Replace `night-thoughts.your-tailnet.ts.net` with your actual MagicDNS name (`tailscale status --json | grep DNSName`). The tailnet name is the part after the machine name.
 
-No ports in the URL. Valid HTTPS certificates. Reachable from anywhere in the world, as long as the client device is signed into Tailscale.
+Visiting the root URL (`https://night-thoughts.your-tailnet.ts.net/`) redirects to `/omlx/admin` automatically. Both services share port 443 — no ports appear in any URL.
 
 ### 7.8 Enable QwenPaw Authentication
 
@@ -805,7 +825,7 @@ curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 QwenPaw HTTP 200
 ```
 
-> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://night-thoughts.your-tailnet.ts.net/qwenpaw` in a browser to confirm you're prompted for credentials.
+> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://night-thoughts.your-tailnet.ts.net/qwenpaw/` in a browser to confirm you're prompted for credentials.
 
 > **Forgot the password?** Reset it with:
 > ```bash
@@ -842,7 +862,7 @@ https://night-thoughts.your-tailnet.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
-All four components — oMLX, Caddy, QwenPaw, and Tailscale Serve — should be running without any manual intervention:
+All four components should be running without any manual intervention:
 
 | Component | Managed by | Auto-starts on login? | Auto-restarts on crash? |
 |-----------|------------|-----------------------|--------------------------|
@@ -857,9 +877,9 @@ All four components — oMLX, Caddy, QwenPaw, and Tailscale Serve — should be 
 |---------|-----|
 | Domains page shows "You are not authorized to access this page" | Expected on shared-domain tailnets (Gmail, GitHub). Custom domains are not available. This guide does not require them. |
 | `omlx` dashboard returns 404 | Confirm oMLX is running (`brew services list \| grep omlx`) and that Caddy is pointing at `localhost:8000`. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
+| QwenPaw loads but its API calls return `{"detail":"Not Found"}` | The `Referer` matcher in the Caddyfile isn't matching. Verify the rule uses `header_regexp Referer /qwenpaw/`. |
 | Caddy not running after reboot | Run `brew services list \| grep caddy`. If status is `error`, check the log at `/opt/homebrew/var/log/caddy.log`. Restart with `brew services restart caddy`. |
 | Caddyfile changes don't take effect | You must restart Caddy after editing the Caddyfile: `brew services restart caddy`. |
-| QwenPaw CSS/JS assets return 404 | The app is emitting absolute asset paths. Verify the Caddyfile uses `handle_path /qwenpaw/*` (not `handle`), which strips the prefix before forwarding. |
 | `tailscale serve status` shows no configuration | Re-run `tailscale serve --bg --https=443 http://localhost:9080`. Ensure HTTPS Certificates are enabled per §7.2. |
 | Certificate error on `*.ts.net` URL | Verify HTTPS Certificates are enabled in the Tailscale admin console under DNS settings. |
 | `tailscale: command not found` | Add the alias per §7.1b and reload your shell. |
