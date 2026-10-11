@@ -978,7 +978,7 @@ ingress:
 EOF
 ```
 
-> **Why `$HOME` and not `~`?** The `cloudflared` daemon runs as a system service under a different user context. The `~` symbol is not expanded by YAML parsing — it would be written literally and the daemon couldn't find the credentials file. Using `$HOME` at config-generation time bakes in the absolute path.
+> **Why `$HOME` and not `~`?** The `cloudflared` daemon runs as a launch agent under your user context. The `~` symbol is not expanded by YAML parsing — it would be written literally and the agent couldn't find the credentials file. Using `$HOME` at config-generation time bakes in the absolute path.
 
 Verify the generated config:
 
@@ -1000,33 +1000,90 @@ ingress:
 
 Both values should be resolved to actual strings — no `$TUNNEL_ID` or `$HOME` left in the file.
 
-**Step 8: Install as a service**
+**Step 8: Install the tunnel as a launch agent**
+
+> **Do not use `sudo cloudflared service install` on macOS.** It writes a broken launchd plist that omits the `tunnel run` subcommand, so the daemon exits immediately with `use cloudflared tunnel run to start tunnel <UUID>` in a loop. This is a long-standing bug ([cloudflared#327](https://github.com/cloudflare/cloudflared/issues/327)) that Cloudflare has acknowledged but not fixed. Instead, write the launch agent yourself.
+
+First, clean up any broken installation from an earlier attempt:
 
 ```bash
-sudo cloudflared service install
+sudo launchctl unload /Library/LaunchDaemons/com.cloudflare.cloudflared.plist 2>/dev/null
+sudo rm -f /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
+```
+
+Then write a correct user-level launch agent. It runs as your user, so the credentials in `~/.cloudflared/` are directly accessible — no `sudo`, no path juggling:
+
+```bash
+mkdir -p ~/Library/LaunchAgents && cat > ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.cloudflare.cloudflared</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>$(which cloudflared)</string>
+    <string>tunnel</string>
+    <string>run</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>$HOME/.cloudflared/cloudflared.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>$HOME/.cloudflared/cloudflared.err.log</string>
+</dict>
+</plist>
+EOF
+```
+
+The `$(which cloudflared)` is resolved at write time to the absolute path of the binary (typically `/opt/homebrew/bin/cloudflared`). `$HOME` is expanded to your actual home directory. Both substitutions happen when the file is written, so the plist contains literal paths.
+
+Load the agent:
+
+```bash
+launchctl bootout gui/$(id -u)/com.cloudflare.cloudflared 2>/dev/null; launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
 ```
 
 **Step 9: Verify**
 
 ```bash
-sudo launchctl list | grep cloudflared
+launchctl list | grep cloudflared
 ```
 
-Open `https://night-thoughts.dev/omlx/admin` in a browser. Cloudflare automatically provisions a valid Let's Encrypt certificate for your domain — no browser warning, no manual CA trust.
+**Expected output:**
 
-> **Restarting the tunnel later:** To restart the Cloudflare Tunnel service after editing the config, use:
-> ```bash
-> sudo launchctl kickstart -k system/com.cloudflare.cloudflared
-> ```
-> Or stop and reload it explicitly:
-> ```bash
-> sudo launchctl stop com.cloudflare.cloudflared
-> sudo launchctl unload /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
-> sudo launchctl load /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
-> sudo launchctl start com.cloudflare.cloudflared
-> ```
->
-> If you installed `cloudflared` via Homebrew's `brew services` instead, use `brew services restart cloudflared` instead.
+```
+-   0   com.cloudflare.cloudflared
+```
+
+Now check the log to confirm the tunnel is actually connected:
+
+```bash
+tail -20 ~/.cloudflared/cloudflared.err.log
+```
+
+**Expected output:** Connection logs like:
+
+```
+INF Registered tunnel connection connIndex=0 connection=... location=...
+INF Registered tunnel connection connIndex=1 connection=... location=...
+```
+
+The old `use cloudflared tunnel run to start tunnel <UUID>` messages should be gone.
+
+You can also confirm from Cloudflare's side:
+
+```bash
+cloudflared tunnel info night-thoughts
+```
+
+**Expected output:** A table showing one or more active connectors with their location and connection ID.
+
+Open `https://night-thoughts.dev/omlx/admin` in a browser. Cloudflare automatically provisions a valid Let's Encrypt certificate for your domain — no browser warning, no manual CA trust.
 
 **How it fits together:**
 
@@ -1035,7 +1092,7 @@ Public internet → Cloudflare edge (TLS for night-thoughts.dev)
                        ↓
                    Cloudflare Tunnel (encrypted)
                        ↓
-                   cloudflared (localhost, managed by launchd)
+                   cloudflared (localhost, managed by launchd user agent)
                        ↓
                    Caddy (localhost:9080)
                     ├── /omlx/*    → oMLX
@@ -1055,19 +1112,23 @@ Cloudflare Tunnel exposes your services publicly by default. To restrict access:
 
 ```bash
 # Check tunnel status
-sudo launchctl list | grep cloudflared
+launchctl list | grep cloudflared
 
 # List tunnels (to find the exact name or ID if route dns fails)
 cloudflared tunnel list
 
 # View cloudflared logs
-tail -50 /opt/homebrew/var/log/cloudflared.log
+tail -20 ~/.cloudflared/cloudflared.err.log
 
-# Restart the tunnel
-sudo launchctl kickstart -k system/com.cloudflare.cloudflared
+# Restart the tunnel after config changes
+launchctl bootout gui/$(id -u)/com.cloudflare.cloudflared 2>/dev/null; launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
+
+# Or restart in place
+launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
 
 # Remove the tunnel entirely
-sudo cloudflared service uninstall
+launchctl bootout gui/$(id -u)/com.cloudflare.cloudflared
+rm ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
 cloudflared tunnel delete night-thoughts
 ```
 
@@ -1097,6 +1158,7 @@ cloudflared tunnel delete night-thoughts
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
 | `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
+| cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist on macOS. Remove it and write a user launch agent per §7.10 Step 8 |
 | Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS night-thoughts.dev` — should return `*.ns.cloudflare.com` servers |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
@@ -1107,4 +1169,4 @@ cloudflared tunnel delete night-thoughts
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
 | Custom domain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for the `night-thoughts.dev` entry. |
-| Cloudflare Tunnel not running | Run `sudo launchctl list \| grep cloudflared`. If missing, reinstall with `sudo cloudflared service install`. |
+| Cloudflare Tunnel not running | Run `launchctl list \| grep cloudflared`. If missing, write the launch agent per §7.10 Step 8 |
