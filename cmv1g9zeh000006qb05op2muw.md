@@ -1,8 +1,8 @@
 ---
-title: "Complete Guide: Always-On Mac Server with MLX, MLX Manager & QwenPaw"
+title: "Complete Guide: Always-On Mac Server with MLX, oMLX & QwenPaw"
 datePublished: 2026-10-09T21:01:08.387Z
 cuid: cmv1g9zeh000006qb05op2muw
-slug: complete-guide-always-on-mac-server-with-mlx-mlx-manager-qwenpaw
+slug: complete-guide-always-on-mac-server-with-mlx-omlx-qwenpaw
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/040513aa-a14f-4cc7-9b62-45d63fc9e230.jpg
 tags: ai, mlx, macmini, qwenpaw
 
@@ -145,7 +145,7 @@ uv --version
 
 ### 2.2 Install Python 3.11 with uv
 
-MLX Manager requires Python 3.11 or 3.12. Install Python 3.11 as a uv-managed Python:
+Install Python 3.11 as a uv-managed Python:
 
 ```bash
 uv python install 3.11
@@ -214,11 +214,11 @@ python -c "import mlx.core as mx; print(mx.__version__)"
 > python -c "import importlib.metadata as md; print(md.version('mlx'))"
 > ```
 
-## Part 4: Install MLX Manager (Web UI + Background Service)
+## Part 4: Install oMLX (Web Dashboard + Background Service)
 
-MLX Manager provides a browser-based interface for downloading MLX models from Hugging Face and running them as persistent services.
+oMLX is an LLM inference server optimized for Apple Silicon, built on the MLX framework. It provides continuous batching, tiered KV caching (hot in-memory + cold SSD), and a web-based admin dashboard for managing models. It is actively maintained (v0.6.4 as of September 2026) and ships as a Homebrew formula with native launchd service integration[reference:0].
 
-> **Note:** MLX Manager is a **community project** maintained by an individual developer (`tumma72`), not an Apple-official tool. It is built directly on top of Apple's MLX framework (which *is* official) but adds the web UI and service management layer on its own. It is currently in beta, so expect occasional rough edges.
+> **Note:** oMLX is a community project maintained by `jundot`. It is built directly on top of Apple's MLX framework (which *is* official). Unlike mlx-manager, oMLX is actively maintained and has a much larger user base (22k+ stars)[reference:1].
 
 It is distributed via a Homebrew tap, so we need to install Homebrew first.
 
@@ -262,69 +262,53 @@ brew --version
 
 > **Note:** If Homebrew is already installed, this command will detect it and skip installation. You can safely run it again.
 
-### 4.2 Tap and Trust the MLX Manager Repository
+### 4.2 Tap and Trust the oMLX Repository
 
 ```bash
-brew tap tumma72/mlx-manager https://github.com/tumma72/mlx-manager
+brew tap jundot/omlx https://github.com/jundot/omlx
 ```
 
 **Expected output:**
 
 ```
-==> Tapping tumma72/mlx-manager
-Cloning into '/opt/homebrew/Library/Taps/tumma72/homebrew-mlx-manager'...
-Tapped 1 formula (1,054 files, 18.6MB).
+==> Tapping jundot/omlx
+Cloning into '/opt/homebrew/Library/Taps/jundot/homebrew-omlx'...
+Tapped 1 formula (xxx files, x.xMB).
 ```
 
-Now **trust the tap**. Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — this is a security feature to prevent arbitrary code execution from untrusted sources:
+Now **trust the tap**. Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — this is a security feature to prevent arbitrary code execution from untrusted sources[reference:2]:
 
 ```bash
-brew trust tumma72/mlx-manager
+brew trust jundot/omlx
 ```
 
 **Expected output:** A confirmation message listing the tap as trusted.
 
-> **Why is this needed?** If you run `brew install mlx-manager` without trusting the tap first, you'll see:
+> **Why is this needed?** If you run `brew install omlx` without trusting the tap first, you'll see:
 >
 > ```
-> Error: Refusing to load formula tumma72/mlx-manager/mlx-manager from untrusted tap tumma72/mlx-manager.
-> Run `brew trust --formula tumma72/mlx-manager/mlx-manager` or `brew trust tumma72/mlx-manager` to trust it.
+> Error: Refusing to load formula jundot/omlx/omlx from untrusted tap jundot/omlx.
+> Run `brew trust --formula jundot/omlx/omlx` or `brew trust jundot/omlx` to trust it.
 > ```
 >
-> That error is safe to resolve with `brew trust` as long as you've reviewed the tap source. You can also trust a single formula instead of the whole tap with `brew trust --formula tumma72/mlx-manager/mlx-manager`.
+> That error is safe to resolve with `brew trust` as long as you've reviewed the tap source.
 
-### 4.3 Install MLX Manager via Homebrew
-
-```bash
-brew install mlx-manager
-```
-
-**Expected output:** `/opt/homebrew/Cellar/mlx-manager/x.x.x: ...` followed by a **Caveats** section that shows the available commands:
-
-```
-==> Caveats
-==> mlx-manager
-To start the MLX Manager server:
-  mlx-manager serve
-
-To run as a background service:
-  brew services start mlx-manager
-
-To launch the menubar app:
-  mlx-manager menubar
-
-The web interface will be available at:
-  http://localhost:10242
-```
-
-> **Take note of the port.** MLX Manager's web UI runs on **port 10242**, not 8080. All URLs in this guide use 10242.
-
-### 4.4 Start the Web UI (Foreground, for First-Time Setup)
-
-For the very first run, start it in the foreground so you can see logs and complete the initial account registration:
+### 4.3 Install oMLX via Homebrew
 
 ```bash
-mlx-manager serve
+brew install jundot/omlx/omlx
+```
+
+**Expected output:** `/opt/homebrew/Cellar/omlx/x.x.x: ...`
+
+> **Platform requirement:** The oMLX formula requires **Apple Silicon** and **macOS 15.0 (Sequoia) or later**. An Intel Mac or macOS 14 machine is rejected during installation[reference:3].
+
+### 4.4 Start the Web Dashboard (Foreground, for First-Time Setup)
+
+For the very first run, start it in the foreground so you can see logs and complete the initial setup:
+
+```bash
+omlx serve --model-dir ~/models
 ```
 
 **Expected output:**
@@ -333,27 +317,29 @@ mlx-manager serve
 INFO:     Started server process [xxxxx]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:10242
+INFO:     Uvicorn running on http://0.0.0.0:8000
 ```
 
-Open `http://localhost:10242` in your browser (or `http://your-mac-ip:10242` from another device).
+Open `http://localhost:8000/admin` in your browser (or `http://your-mac-ip:8000/admin` from another device). The admin dashboard requires session-based authentication on first visit[reference:4].
+
+> **Note:** oMLX automatically discovers LLMs, VLMs, embedding models, and rerankers from subdirectories of your model directory[reference:5].
 
 ### 4.5 Create Your Account
 
-On first visit, you'll see a registration page. The **first user automatically becomes admin**. Create your account and log in.
+On first visit to `/admin`, you'll be prompted to set up authentication. Create your credentials and log in.
 
-### 4.6 Run MLX Manager as an Always-On Background Service
+### 4.6 Run oMLX as an Always-On Background Service
 
-This is the key step for always-on operation. Stop the foreground server first (`Ctrl+C`), then register MLX Manager with `brew services`, which installs a launchd agent that auto-starts on login and restarts on crash:
+This is the key step for always-on operation. Stop the foreground server first (`Ctrl+C`), then register oMLX with `brew services`, which installs a launchd agent that auto-starts on login and restarts on crash:
 
 ```bash
-brew services start mlx-manager
+brew services start omlx
 ```
 
 **Expected output:**
 
 ```
-==> Successfully started `mlx-manager` (label: homebrew.mxcl.mlx-manager)
+==> Successfully started `omlx` (label: homebrew.mxcl.omlx)
 ```
 
 Verify it's running:
@@ -365,43 +351,40 @@ brew services list
 **Expected output:**
 
 ```
-Name          Status  User  File
-mlx-manager   started yourname ~/Library/LaunchAgents/homebrew.mxcl.mlx-manager.plist
+Name    Status  User      File
+omlx    started yourname  ~/Library/LaunchAgents/homebrew.mxcl.omlx.plist
 ```
 
-The `Status` should be `started`. `brew services` writes the launchd plist to `~/Library/LaunchAgents/homebrew.mxcl.mlx-manager.plist` automatically — no manual plist creation needed.
+The `Status` should be `started`. `brew services` writes the launchd plist automatically — no manual plist creation needed[reference:6].
 
-> **Note:** If you previously used `mlx-manager install-service`, uninstall it first to avoid two competing launchd jobs:
-> ```bash
-> mlx-manager uninstall-service 2>/dev/null || true
-> brew services start mlx-manager
-> ```
+> **Note:** The service runs `omlx serve` with zero-config defaults (`~/.omlx/models`, port 8000). To customize the model directory or port, either set environment variables (`OMLX_MODEL_DIR`, `OMLX_PORT`) or run `omlx serve --model-dir /your/path` once to persist settings to `~/.omlx/settings.json`[reference:7].
 
 **Useful `brew services` commands:**
 
 ```bash
-brew services stop mlx-manager      # stop the service
-brew services restart mlx-manager   # restart the service
-brew services info mlx-manager      # show detailed status
+brew services stop omlx      # stop the service
+brew services restart omlx   # restart the service
+brew services info omlx      # show detailed status
 ```
 
 ### 4.7 Download & Deploy a Model
 
-1. In the web UI (`http://localhost:10242`), click **Browse** to search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
-2. Click **Download** — watch the progress bar
-3. Click **Configure** to create a server profile (GPU layers, context length, etc.)
-4. Click **Run** to start serving
+1. In the admin dashboard (`http://localhost:8000/admin`), go to the **Models** section
+2. Search for MLX models on Hugging Face (e.g., `mlx-community/Qwen3.5-4B-8bit`)
+3. Click **Download** — watch the progress bar
+4. Configure per-model settings (sampling parameters, context length, etc.)
+5. Click **Load** to start serving
 
-The model's OpenAI-compatible API endpoint is shown in the web UI. By default it is available at:
+Once running, the model's OpenAI-compatible API endpoint is available at:
 
 ```
-http://localhost:10242/v1
+http://localhost:8000/v1
 ```
 
 Test it:
 
 ```bash
-curl http://localhost:10242/v1/models
+curl http://localhost:8000/v1/models
 ```
 
 **Expected output:**
@@ -410,11 +393,11 @@ curl http://localhost:10242/v1/models
 {"object":"list","data":[{"id":"mlx-community/Qwen3.5-4B-8bit","object":"model"}]}
 ```
 
-> **Note:** If your MLX Manager instance serves the model API on a different port (some versions expose the UI and API separately), check the **Server** or **Settings** page in the web UI for the exact endpoint URL.
+> **Note:** oMLX provides both OpenAI-compatible (`/v1/chat/completions`) and Anthropic-compatible (`/v1/messages`) API endpoints. It also supports `/v1/embeddings`, `/v1/rerank`, and `/v1/responses` for broader compatibility[reference:8].
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
-QwenPaw is a local-first AI agent framework that can connect to your MLX-served models.
+QwenPaw is a local-first AI agent framework that can connect to your oMLX-served models.
 
 ### 5.1 Install via One-Line Script
 
@@ -445,9 +428,9 @@ qwenpaw init --defaults
 ✅ Default model backend configured
 ```
 
-### 5.3 Configure QwenPaw to Use MLX Manager
+### 5.3 Configure QwenPaw to Use oMLX
 
-Edit the QwenPaw config to point to your MLX Manager API:
+Edit the QwenPaw config to point to your oMLX API:
 
 ```bash
 vim ~/.qwenpaw/config.json
@@ -459,12 +442,14 @@ Find the `model` section and set:
 {
   "model": {
     "backend": "openai",
-    "base_url": "http://localhost:10242/v1",
+    "base_url": "http://localhost:8000/v1",
     "api_key": "not-needed",
     "model_name": "mlx-community/Qwen3.5-4B-8bit"
   }
 }
 ```
+
+> **Important:** When adding oMLX as a custom OpenAI-compatible provider in QwenPaw, you must manually set `support_model_discovery: true` and `support_connection_check: true` in the provider JSON. Also ensure `base_url` includes the `/v1` suffix — QwenPaw's OpenAI client appends `/models` etc. after `base_url`, so a missing `/v1` causes requests to the wrong paths[reference:9].
 
 ### 5.4 Start QwenPaw
 
@@ -553,14 +538,14 @@ ssh your-username@your-mac-ip
 Check all services:
 
 ```bash
-# MLX Manager (should be "started")
-brew services list | grep mlx-manager
+# oMLX (should be "started")
+brew services list | grep omlx
 
 # QwenPaw
 launchctl list | grep qwenpaw
 
-# MLX Manager web UI
-curl -s http://localhost:10242/health
+# oMLX admin dashboard
+curl -s http://localhost:8000/admin
 
 # QwenPaw console
 curl -s http://localhost:8088/
@@ -714,7 +699,7 @@ ssh your-username@my-mac
 
 ### 7.8 Secure Remote Access to Web UIs with HTTPS via MagicDNS
 
-Your MLX Manager (port 10242) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
+Your oMLX admin dashboard (port 8000) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
 
 **With MagicDNS enabled, you access these services by name instead of IP.** Tailscale Serve keeps your web UIs bound to localhost while giving your tailnet an HTTPS MagicDNS hostname.
 
@@ -723,7 +708,7 @@ Your MLX Manager (port 10242) and QwenPaw (port 8088) web interfaces can be acce
 Run these commands on your Mac server:
 
 ```bash
-tailscale serve --bg --https=443 http://localhost:10242
+tailscale serve --bg --https=443 http://localhost:8000
 tailscale serve --bg --https=443 http://localhost:8088
 ```
 
@@ -732,7 +717,7 @@ tailscale serve --bg --https=443 http://localhost:8088
 ```
 Available within your tailnet:
 https://my-mac.your-tailnet.ts.net/
-|-- proxy http://localhost:10242
+|-- proxy http://localhost:8000
 ```
 
 Tailscale will print the HTTPS MagicDNS URL for your services.
@@ -742,7 +727,7 @@ Tailscale will print the HTTPS MagicDNS URL for your services.
 Open the HTTPS URL provided by Tailscale in your browser from any device on your tailnet:
 
 ```
-https://my-mac.your-tailnet.ts.net (for MLX Manager)
+https://my-mac.your-tailnet.ts.net (for oMLX admin dashboard)
 https://my-mac.your-tailnet.ts.net (for QwenPaw)
 ```
 
@@ -758,7 +743,7 @@ tailscale serve status
 
 ```
 https://my-mac.your-tailnet.ts.net
-|-- / proxy http://localhost:10242
+|-- / proxy http://localhost:8000
 |-- / proxy http://localhost:8088
 ```
 
@@ -777,7 +762,7 @@ If you need to share your services with someone outside your tailnet (e.g., a cl
 **Exposing a service publicly:**
 
 ```bash
-tailscale funnel 10242
+tailscale funnel 8000
 ```
 
 **Expected output:**
@@ -785,7 +770,7 @@ tailscale funnel 10242
 ```
 Available on the internet:
 https://my-mac.your-tailnet.ts.net/
-|-- proxy http://127.0.0.1:10242
+|-- proxy http://127.0.0.1:8000
 ```
 
 > **Warning:** Funnel exposes your service to the public internet. Anyone with the URL can access it. Do not use Funnel for services containing sensitive data. Always enable password authentication for any service exposed via Funnel.
@@ -793,7 +778,7 @@ https://my-mac.your-tailnet.ts.net/
 To stop public access:
 
 ```bash
-tailscale funnel --terminate-on 10242
+tailscale funnel --terminate-on 8000
 ```
 
 ### 7.10 Verify Tailscale Survives Reboot
@@ -814,16 +799,17 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
-| `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust tumma72/mlx-manager` (or `brew trust --formula tumma72/mlx-manager/mlx-manager` for the single formula), then retry `brew install mlx-manager` |
+| `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
+| oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4) and macOS 15.0 (Sequoia) or later[reference:10] |
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` or `python -c "import importlib.metadata as md; print(md.version('mlx'))"` |
-| MLX Manager isn't running after reboot | Run `brew services list` — status should be `started`. If it says `error`, check `~/Library/Logs/` or run `brew services info mlx-manager` |
-| MLX Manager service conflicts with old `install-service` | Run `mlx-manager uninstall-service` then `brew services start mlx-manager` |
-| Web UI shows 404 at `localhost:8080` | The correct port is **10242**, not 8080. Use `http://localhost:10242` |
+| oMLX isn't running after reboot | Run `brew services list` — status should be `started`. If it says `error`, check `$(brew --prefix)/var/log/omlx.log` |
+| Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
-| `mlx-manager` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
-| QwenPaw can't reach MLX | Confirm MLX Manager is running: `curl http://localhost:10242/v1/models` |
-| Out of memory errors | Use smaller quantized models (4-bit); reduce context window in MLX Manager |
-| Port conflicts | Change MLX Manager port via the web UI's Settings page or `MLX_MANAGER_PORT` env var |
+| `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
+| QwenPaw can't reach oMLX | Confirm oMLX is running: `curl http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1`[reference:11] |
+| QwenPaw custom provider shows no models | Manually set `support_model_discovery: true` and `support_connection_check: true` in the provider JSON, then restart QwenPaw[reference:12] |
+| Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
+| Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
 | MagicDNS name doesn't resolve | Verify MagicDNS is enabled in the Tailscale admin console under DNS settings; check Tailscale is running on both devices |
 | `ts.net` URL doesn't resolve | MagicDNS may be off for that resolver; enable it, or use `curl --resolve :443:` |
 | SSH over Tailscale times out | Verify Remote Login is enabled (`sudo systemsetup -getremotelogin`); check Tailscale SSH policy in admin console |
