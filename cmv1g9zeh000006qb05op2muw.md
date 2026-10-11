@@ -16,7 +16,7 @@ Everything in this guide was verified on the following setup. If your versions a
 |-----------|---------|-------|
 | **macOS** | 15.x (Sequoia) or later | Required for oMLX |
 | **Chip** | Apple Silicon (M1/M2/M3/M4) | Required for MLX and oMLX |
-| **Homebrew** | 4.x | Package manager for oMLX and Tailscale |
+| **Homebrew** | 4.x | Package manager for oMLX, Caddy, and Tailscale |
 | **uv** | 0.8.x or later | Python version + package manager |
 | **Python (MLX venv)** | 3.11.x | Managed by uv at `~/.mlx-venv` |
 | **Python (QwenPaw)** | 3.12.x | Bundled by QwenPaw's installer |
@@ -24,7 +24,8 @@ Everything in this guide was verified on the following setup. If your versions a
 | **mlx-lm** | 0.28.x | LLM extensions for MLX |
 | **oMLX** | latest via `jundot/omlx` | Inference server + admin dashboard |
 | **QwenPaw** | latest via `agentscope.io` | Agent framework + web console |
-| **Tailscale** | latest via `--cask` | Mesh VPN + MagicDNS |
+| **Caddy** | 2.x | Reverse proxy for custom domain routing |
+| **Tailscale** | latest via `--cask` | Mesh VPN + custom domain certificates |
 
 > **Note:** Version numbers above reflect the state of the ecosystem when this guide was written. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
 
@@ -505,11 +506,14 @@ QwenPaw HTTP 200
 
 All three services should return healthy responses without any manual intervention.
 
-## Part 7: Remote Access from Anywhere with Tailscale & MagicDNS
+## Part 7: Remote Access from Anywhere with a Custom Domain
 
-Tailscale creates a secure mesh VPN between your devices, giving each one a stable private IP address that works from any network — even behind CGNAT or corporate firewalls, with no port forwarding required.
+This part sets up secure HTTPS access to both oMLX and QwenPaw from anywhere in the world, using your **own custom domain** rather than Tailscale's default `.ts.net` hostname. You'll get clean, port-free URLs like:
 
-**MagicDNS** is Tailscale's built-in DNS feature that lets you reach your server by its machine name (e.g., `night-thoughts`) instead of remembering IP addresses. This section sets up MagicDNS as the primary access method for all your services.
+- `https://omlx.yourdomain.com`
+- `https://qwenpaw.yourdomain.com`
+
+The architecture: **Tailscale** provides the encrypted mesh network and provision TLS certificates for your custom domain; **Caddy** runs locally as a reverse proxy to route each subdomain to the correct service.
 
 ### 7.0 Create a Tailscale Account
 
@@ -518,7 +522,7 @@ If you don't already have a Tailscale account, sign up first. It's free for pers
 1. Go to [tailscale.com](https://tailscale.com/) and click **Get Started** (or go directly to [login.tailscale.com/start](https://login.tailscale.com/start)).
 2. Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address all work. You do not create a Tailscale-specific password; Tailscale authenticates you through your chosen provider.
 3. After signing in, you'll be asked to choose **Business use** or **Personal use**. Pick Personal for a home server setup.
-4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin). This is where you'll manage devices, DNS settings, and access control policies throughout the rest of this guide.
+4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin).
 
 > **Note:** If you sign up with a public email domain (e.g., `@gmail.com`), you're automatically placed on the **Personal** plan, which includes up to **6 free users** and **100 devices**. That's more than enough for this guide.
 
@@ -555,185 +559,222 @@ echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >>
 
 If you see your machine list, the CLI is working and you can proceed.
 
-> **Tip:** Your machine name (e.g., `haithemslimis-mac-mini`) may be long and awkward to type. You can rename it to something memorable like `night-thoughts` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
+> **Tip:** Your machine name may be long and awkward to type. You can rename it to something memorable like `night-thoughts` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
 
-### 7.2 Enable MagicDNS and HTTPS Certificates (One-Time Setup)
+### 7.2 Configure Your Custom Domain in Tailscale
 
-MagicDNS and HTTPS Certificates are required for secure, name-based access to your services.
+Tailscale can provision TLS certificates for your own domain, but you must first prove ownership by adding DNS records.
+
+**Step 1: Add your domain to Tailscale**
 
 1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
-2. Ensure **MagicDNS** is enabled. Tailnets created on or after October 20, 2022 have MagicDNS enabled by default.
-3. Under the **HTTPS Certificates** section, click **Enable HTTPS**. This allows Tailscale to automatically provision TLS certificates for your devices.
+2. Under **HTTPS Certificates**, ensure **Enable HTTPS** is turned on.
+3. In the **Custom domain** section, click **Add domain** and enter your apex domain (e.g., `yourdomain.com`).
 
-> **Important:** Enabling HTTPS certificates publishes your machine names and tailnet DNS name on a public ledger (Certificate Transparency). If your machine names contain sensitive information, rename them before enabling HTTPS.
+**Step 2: Add the DNS records at your registrar**
 
-### 7.3 Find Your MagicDNS Name
+Tailscale will display two DNS records you need to create at your domain registrar (Cloudflare, Namecheap, Route 53, etc.):
 
-Once MagicDNS is enabled, you can reach your Mac server by its machine name. There are two ways to find the name:
+| Type | Name | Value |
+|------|------|-------|
+| `CNAME` | `_acme-challenge.yourdomain.com` | `<value provided by Tailscale>` |
+| `CNAME` | `*.yourdomain.com` | `your-tailnet.ts.net` |
 
-**Method 1 — Menu Bar (Easiest):** Click the Tailscale icon in your Mac's menu bar. Your machine name appears under "This Device".
+> **Note:** The `*.yourdomain.com` wildcard CNAME points all subdomains (including `omlx.` and `qwenpaw.`) to your tailnet. The `_acme-challenge` record is used by Tailscale to prove you own the domain and provision Let's Encrypt certificates.
 
-**Method 2 — Terminal:**
+Add these records at your registrar, then wait a few minutes for DNS propagation. Verify with:
 
 ```bash
-tailscale status
+dig +short _acme-challenge.yourdomain.com CNAME
+```
+
+**Expected output:** The value provided by Tailscale.
+
+**Step 3: Verify the domain is active**
+
+In the Tailscale admin console, the custom domain should now show as **Verified**. Tailscale will automatically provision and renew TLS certificates for `*.yourdomain.com` using Let's Encrypt.
+
+### 7.3 Install Caddy
+
+Caddy is a lightweight reverse proxy that will route each subdomain to the correct local service.
+
+```bash
+brew install caddy
+```
+
+**Expected output:** `caddy was successfully installed!`
+
+Verify:
+
+```bash
+caddy version
+```
+
+**Expected output:** `v2.x.x`
+
+### 7.4 Configure Caddy for Subdomain Routing
+
+Create a Caddyfile that routes `omlx.yourdomain.com` to oMLX and `qwenpaw.yourdomain.com` to QwenPaw.
+
+Write the configuration in one command (replace `yourdomain.com` with your actual domain):
+
+```bash
+sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
+omlx.yourdomain.com {
+    reverse_proxy localhost:8000
+}
+
+qwenpaw.yourdomain.com {
+    reverse_proxy localhost:8088
+}
+EOF
+```
+
+> **Important:** Replace `yourdomain.com` in both blocks with your actual domain. This is the domain you added to Tailscale in §7.2.
+
+Verify the Caddyfile syntax:
+
+```bash
+caddy validate --config /opt/homebrew/etc/Caddyfile
+```
+
+**Expected output:** `Valid configuration`
+
+### 7.5 Start Caddy as an Always-On Service
+
+Register Caddy with `brew services` so it auto-starts on login:
+
+```bash
+brew services start caddy
+```
+
+**Expected output:** `==> Successfully started 'caddy' (label: homebrew.mxcl.caddy)`
+
+Verify it's running:
+
+```bash
+brew services list | grep caddy
 ```
 
 **Expected output:**
 
 ```
-100.101.102.10   night-thoughts   your-email@example.com  macOS  -
-100.101.102.11   my-laptop        your-email@example.com  macOS  -
+caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 ```
 
-Your MagicDNS name is the second column (e.g., `night-thoughts`).
+Caddy is now listening on ports 80 and 443 locally, ready to receive traffic from Tailscale.
 
-**Method 3 — Admin Console:** Go to [console.tailscale.com/admin/machines](https://console.tailscale.com/admin/machines), find your Mac in the list, and copy the machine name.
+> **Note:** Caddy does **not** need to terminate TLS — Tailscale handles that. Caddy simply receives plain HTTP from Tailscale's local proxy and routes based on the `Host` header.
 
-> **Tip:** You can rename your device to something memorable (like `night-thoughts`) by editing the machine name in the admin console. The MagicDNS entry updates automatically.
+### 7.6 Point Tailscale Serve at Caddy
 
-### 7.4 Verify MagicDNS Resolution
+Now tell Tailscale to forward all HTTPS traffic on port 443 to Caddy, which will route based on hostname.
 
-From your client device (e.g., your laptop), test that MagicDNS resolves the machine name:
+First, clear any existing serve configuration:
 
 ```bash
-ping night-thoughts
+tailscale serve reset
 ```
 
-**Expected output:**
-
-```
-PING night-thoughts (100.101.102.10): 56 data bytes
-64 bytes from 100.101.102.10: icmp_seq=0 ttl=64 time=12.3 ms
-```
-
-If you get a response, MagicDNS is working. Press `Ctrl+C` to stop.
-
-> **Note:** Some CLI tools on macOS like `host` or `nslookup` bypass system DNS resolution and will not work with MagicDNS. Use `ping` or `curl` instead.
-
-![Tailscale MagicDNS resolving night-thoughts to its 100.x.x.x tailnet IP](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/324b0d99-8b8f-4949-9be5-38f0bcc4cb4b.png)
-
-### 7.5 SSH into Your Mac Server Using MagicDNS
-
-Once MagicDNS is working, SSH becomes much simpler — no more remembering IP addresses:
+Then set up the proxy to Caddy:
 
 ```bash
-ssh your-username@night-thoughts
+tailscale serve --bg --https=443 http://localhost:2019
 ```
 
-**Expected output:**
-
-```
-The authenticity of host 'night-thoughts (100.101.102.10)' can't be established.
-ED25519 key fingerprint is SHA256:...
-Are you sure you want to continue connecting (yes/no)?
-```
-
-Type `yes` and enter your Mac's login password. You are now remotely connected to your always-on AI server from any network in the world, using a human-readable name.
-
-> **Tip:** For shared devices, you must use the full domain name: `ssh your-username@night-thoughts.your-tailnet.ts.net`.
-
-### 7.6 Optional — Enable Tailscale SSH (Passwordless)
-
-Tailscale SSH lets you authenticate using your Tailscale identity instead of your macOS password. This is useful for automation and scripting.
-
-On your Mac server, run:
-
-```bash
-tailscale set --ssh && tailscale status --json | grep -i ssh
-```
-
-**Expected output:** `"ssh": true`
-
-Now when you SSH from another Tailscale device, Tailscale handles authentication automatically:
-
-```bash
-ssh your-username@night-thoughts
-```
-
-> **Important:** Tailscale SSH requires you to configure an access control policy. Go to [console.tailscale.com/admin/acls](https://console.tailscale.com/admin/acls) and add:
-> ```json
-> "ssh": [
->   {
->     "action": "accept",
->     "src": ["your-tailscale-username"],
->     "dst": ["autogroup:self"],
->     "users": ["autogroup:nonroot"]
->   }
-> ]
+> **Note:** Caddy's admin API listens on port 2019 by default. However, for serving regular HTTP traffic, Caddy listens on port 80. Use `http://localhost:80` instead if you want to route through Caddy's main HTTP listener:
+> ```bash
+> tailscale serve --bg --https=443 http://localhost:80
 > ```
-> This allows devices you own to SSH into each other without a password.
 
-### 7.7 Secure Remote Access to Web UIs with HTTPS via MagicDNS
-
-Your oMLX admin dashboard (port 8000) and QwenPaw (port 8088) web interfaces can be accessed securely over HTTPS using Tailscale Serve. This provides a valid TLS certificate automatically and encrypts all traffic.
-
-Run these commands on your Mac server:
+Verify the serve configuration:
 
 ```bash
-tailscale serve --bg --https=443 http://localhost:8000 && tailscale serve --bg --https=443 http://localhost:8088 && tailscale serve status
+tailscale serve status
 ```
 
 **Expected output:**
 
 ```
-https://night-thoughts.your-tailnet.ts.net
-|-- / proxy http://localhost:8000
-|-- / proxy http://localhost:8088
+https://yourdomain.com
+|-- / proxy http://localhost:80
 ```
 
-Open the HTTPS URL in your browser from any device on your tailnet:
+Tailscale is now terminating TLS for `*.yourdomain.com` and forwarding all requests to Caddy, which routes them to oMLX or QwenPaw based on the subdomain.
 
+### 7.7 Access Your Services
+
+From any device on your tailnet, open:
+
+- **oMLX admin dashboard:** `https://omlx.yourdomain.com/admin`
+- **QwenPaw web console:** `https://qwenpaw.yourdomain.com`
+
+No ports. No path prefixes. Clean HTTPS URLs with valid certificates.
+
+> **Note:** You must be signed into Tailscale on the client device. These URLs are only reachable from within your tailnet — the public internet cannot reach them.
+
+### 7.8 Authentication Layer
+
+Tailscale handles network-level access control — only devices on your tailnet can connect. However, both services still have their own authentication:
+
+| Service | Authentication |
+|---------|----------------|
+| **oMLX** | Your `omlx-night-thoughts` API key (set in §4.3) |
+| **QwenPaw** | Console login (if enabled) |
+
+For oMLX, the API key protects the `/v1/*` endpoints. The admin dashboard at `/admin` may prompt for a session login on first visit.
+
+For QwenPaw, if you want to require authentication when accessing from outside, set the following environment variables in the launchd plist (§5.4):
+
+```xml
+<key>EnvironmentVariables</key>
+<dict>
+  <key>QWENPAW_AUTH_ENABLED</key>
+  <string>true</string>
+  <key>QWENPAW_AUTH_USERNAME</key>
+  <string>your-username</string>
+  <key>QWENPAW_AUTH_PASSWORD</key>
+  <string>your-password</string>
+</dict>
 ```
-https://night-thoughts.your-tailnet.ts.net (for oMLX admin dashboard)
-https://night-thoughts.your-tailnet.ts.net (for QwenPaw)
-```
 
-Your connection will be fully encrypted, and the browser will show a valid HTTPS certificate (padlock icon). No port forwarding, no firewall changes, and no certificate warnings.
+Then reload the plist as shown in §5.4.
 
-> **Note:** If you need to serve on a different port (e.g., 8443), use `--https=8443` instead. The MagicDNS URL will include the port number.
+### 7.9 Verify Everything Survives Reboot
 
-### 7.8 Optional — Public Access with Tailscale Funnel
-
-If you need to share your services with someone outside your tailnet (e.g., a client reviewing a prototype), Tailscale Funnel exposes a local port to the public internet over a stable HTTPS URL — without port forwarding, DNS records, or a public IP address.
-
-**Enabling Funnel:**
-
-1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the admin console.
-2. Ensure **MagicDNS** and **HTTPS Certificates** are enabled (both are required for Funnel).
-3. Under the **Funnel** section, turn on Funnel. You need to be an Owner, Admin, or Network admin.
-
-**Exposing a service publicly:**
+Restart your Mac:
 
 ```bash
-tailscale funnel 8000
+sudo reboot
+```
+
+After reboot, wait 30 seconds, then verify all services:
+
+```bash
+brew services list | grep -E "omlx|caddy" && launchctl list | grep qwenpaw && tailscale serve status
 ```
 
 **Expected output:**
 
 ```
-Available on the internet:
-https://night-thoughts.your-tailnet.ts.net/
-|-- proxy http://127.0.0.1:8000
+omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
+caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
+-   0   com.qwenpaw.app
+https://yourdomain.com
+|-- / proxy http://localhost:80
 ```
 
-> **Warning:** Funnel exposes your service to the public internet. Anyone with the URL can access it. Do not use Funnel for services containing sensitive data. Always enable password authentication for any service exposed via Funnel. Since oMLX already requires your `omlx-night-thoughts` API key, this is protected — but review any service you expose.
+All services should return healthy responses without any manual intervention.
 
-To stop public access:
+### 7.10 Troubleshooting
 
-```bash
-tailscale funnel --terminate-on 8000
-```
-
-### 7.9 Verify Tailscale Survives Reboot
-
-Tailscale runs as a system extension and automatically reconnects on reboot. After restarting your Mac, verify from your client device:
-
-```bash
-ping night-thoughts
-```
-
-If the ping succeeds, Tailscale and MagicDNS are active and your server is reachable by name.
+| Symptom | Fix |
+|---------|-----|
+| `omlx.yourdomain.com` returns 404 | Verify Caddy is running (`brew services list \| grep caddy`) and the Caddyfile has the correct subdomain blocks. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
+| Certificate error on custom domain | Verify the `_acme-challenge` and wildcard CNAME records are correctly set at your registrar. Wait 5–10 minutes for DNS propagation, then check Tailscale admin console for domain verification status. |
+| `tailscale serve status` shows no configuration | Run `tailscale serve --bg --https=443 http://localhost:80` again. Ensure HTTPS certificates are enabled in the Tailscale admin console. |
+| Caddy won't start | Check for port conflicts on 80 or 443: `sudo lsof -i :80` and `sudo lsof -i :443`. Stop any conflicting service (e.g., a local web server) before starting Caddy. |
+| Custom domain shows "not verified" in Tailscale | DNS records haven't propagated yet. Run `dig +short _acme-challenge.yourdomain.com CNAME` to check. If empty, wait and retry. |
 
 ## Troubleshooting Quick Reference
 
@@ -756,14 +797,12 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Use `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead of the legacy `load` command |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
+| Tailscale SSH denies access (`access denied`) with `"action": "accept"` | Switch to `"action": "check"` and use `"src": ["autogroup:member"]`. See §7.6 for the full working ACL |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
-| MagicDNS name doesn't resolve | Verify MagicDNS is enabled in the Tailscale admin console under DNS settings |
-| `ts.net` URL doesn't resolve | MagicDNS may be off for that resolver; enable it, or use `curl --resolve` |
-| SSH over Tailscale times out | Verify Remote Login is enabled; check Tailscale SSH policy in admin console |
-| HTTPS URL gives certificate error | Verify HTTPS Certificates are enabled in the Tailscale admin console |
+| Custom domain not resolving | Verify DNS records are set at your registrar. Check Tailscale admin console for domain verification status. See §7.10 |
+| Caddy not routing correctly | Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. Ensure subdomain blocks match your Tailscale custom domain. |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
-| Funnel URL not accessible | Verify Funnel is enabled in the admin console; check your ACL policy allows Funnel |
