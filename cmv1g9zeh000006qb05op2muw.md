@@ -509,18 +509,18 @@ All three services should return healthy responses without any manual interventi
 
 Tailscale creates a secure mesh VPN between your devices, giving each one a stable private IP address that works from any network — even behind CGNAT or corporate firewalls, with no port forwarding required.
 
-**MagicDNS** is Tailscale's built-in DNS feature that lets you reach your server by its machine name (e.g., `my-mac`) instead of remembering IP addresses. This section sets up MagicDNS as the primary access method for all your services.
+**MagicDNS** is Tailscale's built-in DNS feature that lets you reach your server by its machine name (e.g., `night-thoughts`) instead of remembering IP addresses. This section sets up MagicDNS as the primary access method for all your services.
 
 ### 7.0 Create a Tailscale Account
 
 If you don't already have a Tailscale account, sign up first. It's free for personal use and takes about a minute.
 
 1. Go to [tailscale.com](https://tailscale.com/) and click **Get Started** (or go directly to [login.tailscale.com/start](https://login.tailscale.com/start)).
-2. Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address all work[reference:0]. You do not create a Tailscale-specific password; Tailscale authenticates you through your chosen provider.
-3. After signing in, you'll be asked to choose **Business use** or **Personal use**. Pick Personal for a home server setup[reference:1].
-4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin). This is where you'll manage devices, DNS settings, and access control policies throughout the rest of this guide[reference:2].
+2. Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address all work. You do not create a Tailscale-specific password; Tailscale authenticates you through your chosen provider.
+3. After signing in, you'll be asked to choose **Business use** or **Personal use**. Pick Personal for a home server setup.
+4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin). This is where you'll manage devices, DNS settings, and access control policies throughout the rest of this guide.
 
-> **Note:** If you sign up with a public email domain (e.g., `@gmail.com`), you're automatically placed on the **Personal** plan, which includes up to **6 free users** and **100 devices**[reference:3]. That's more than enough for this guide.
+> **Note:** If you sign up with a public email domain (e.g., `@gmail.com`), you're automatically placed on the **Personal** plan, which includes up to **6 free users** and **100 devices**. That's more than enough for this guide.
 
 > **Tip:** The same account must be used on every device you want on your tailnet. If you sign in with Google on your Mac server, sign in with Google on your laptop too — otherwise they won't see each other.
 
@@ -555,7 +555,7 @@ echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >>
 
 If you see your machine list, the CLI is working and you can proceed.
 
-> **Tip:** Your machine name (e.g., `haithemslimis-mac-mini`) may be long and awkward to type. You can rename it to something memorable like `ai-server` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
+> **Tip:** Your machine name (e.g., `haithemslimis-mac-mini`) may be long and awkward to type. You can rename it to something memorable like `night-thoughts` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
 
 ### 7.2 Enable MagicDNS and HTTPS Certificates (One-Time Setup)
 
@@ -582,28 +582,28 @@ tailscale status
 **Expected output:**
 
 ```
-100.101.102.10   my-mac        your-email@example.com  macOS  -
-100.101.102.11   my-laptop     your-email@example.com  macOS  -
+100.101.102.10   night-thoughts   your-email@example.com  macOS  -
+100.101.102.11   my-laptop        your-email@example.com  macOS  -
 ```
 
-Your MagicDNS name is the second column (e.g., `my-mac`).
+Your MagicDNS name is the second column (e.g., `night-thoughts`).
 
 **Method 3 — Admin Console:** Go to [console.tailscale.com/admin/machines](https://console.tailscale.com/admin/machines), find your Mac in the list, and copy the machine name.
 
-> **Tip:** You can rename your device to something memorable (like `ai-server`) by editing the machine name in the admin console. The MagicDNS entry will update automatically.
+> **Tip:** You can rename your device to something memorable (like `night-thoughts`) by editing the machine name in the admin console. The MagicDNS entry updates automatically.
 
 ### 7.4 Verify MagicDNS Resolution
 
 From your client device (e.g., your laptop), test that MagicDNS resolves the machine name:
 
 ```bash
-ping my-mac
+ping night-thoughts
 ```
 
 **Expected output:**
 
 ```
-PING my-mac (100.101.102.10): 56 data bytes
+PING night-thoughts (100.101.102.10): 56 data bytes
 64 bytes from 100.101.102.10: icmp_seq=0 ttl=64 time=12.3 ms
 ```
 
@@ -611,25 +611,27 @@ If you get a response, MagicDNS is working. Press `Ctrl+C` to stop.
 
 > **Note:** Some CLI tools on macOS like `host` or `nslookup` bypass system DNS resolution and will not work with MagicDNS. Use `ping` or `curl` instead.
 
+![Tailscale MagicDNS resolving night-thoughts to its 100.x.x.x tailnet IP](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/324b0d99-8b8f-4949-9be5-38f0bcc4cb4b.png)
+
 ### 7.5 SSH into Your Mac Server Using MagicDNS
 
 Once MagicDNS is working, SSH becomes much simpler — no more remembering IP addresses:
 
 ```bash
-ssh your-username@my-mac
+ssh your-username@night-thoughts
 ```
 
 **Expected output:**
 
 ```
-The authenticity of host 'my-mac (100.101.102.10)' can't be established.
+The authenticity of host 'night-thoughts (100.101.102.10)' can't be established.
 ED25519 key fingerprint is SHA256:...
 Are you sure you want to continue connecting (yes/no)?
 ```
 
 Type `yes` and enter your Mac's login password. You are now remotely connected to your always-on AI server from any network in the world, using a human-readable name.
 
-> **Tip:** For shared devices, you must use the full domain name: `ssh your-username@my-mac.your-tailnet.ts.net`.
+> **Tip:** For shared devices, you must use the full domain name: `ssh your-username@night-thoughts.your-tailnet.ts.net`.
 
 ### 7.6 Optional — Enable Tailscale SSH (Passwordless)
 
@@ -646,7 +648,7 @@ tailscale set --ssh && tailscale status --json | grep -i ssh
 Now when you SSH from another Tailscale device, Tailscale handles authentication automatically:
 
 ```bash
-ssh your-username@my-mac
+ssh your-username@night-thoughts
 ```
 
 > **Important:** Tailscale SSH requires you to configure an access control policy. Go to [console.tailscale.com/admin/acls](https://console.tailscale.com/admin/acls) and add:
@@ -675,7 +677,7 @@ tailscale serve --bg --https=443 http://localhost:8000 && tailscale serve --bg -
 **Expected output:**
 
 ```
-https://my-mac.your-tailnet.ts.net
+https://night-thoughts.your-tailnet.ts.net
 |-- / proxy http://localhost:8000
 |-- / proxy http://localhost:8088
 ```
@@ -683,8 +685,8 @@ https://my-mac.your-tailnet.ts.net
 Open the HTTPS URL in your browser from any device on your tailnet:
 
 ```
-https://my-mac.your-tailnet.ts.net (for oMLX admin dashboard)
-https://my-mac.your-tailnet.ts.net (for QwenPaw)
+https://night-thoughts.your-tailnet.ts.net (for oMLX admin dashboard)
+https://night-thoughts.your-tailnet.ts.net (for QwenPaw)
 ```
 
 Your connection will be fully encrypted, and the browser will show a valid HTTPS certificate (padlock icon). No port forwarding, no firewall changes, and no certificate warnings.
@@ -711,7 +713,7 @@ tailscale funnel 8000
 
 ```
 Available on the internet:
-https://my-mac.your-tailnet.ts.net/
+https://night-thoughts.your-tailnet.ts.net/
 |-- proxy http://127.0.0.1:8000
 ```
 
@@ -728,7 +730,7 @@ tailscale funnel --terminate-on 8000
 Tailscale runs as a system extension and automatically reconnects on reboot. After restarting your Mac, verify from your client device:
 
 ```bash
-ping my-mac
+ping night-thoughts
 ```
 
 If the ping succeeds, Tailscale and MagicDNS are active and your server is reachable by name.
