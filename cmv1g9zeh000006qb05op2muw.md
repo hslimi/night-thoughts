@@ -26,7 +26,7 @@ Everything in this guide was verified on the following setup. If your versions a
 | **QwenPaw** | latest via `agentscope.io` | Agent framework + web console |
 | **Caddy** | 2.x | Reverse proxy + authentication layer |
 | **Tailscale** | latest via `--cask` | Mesh VPN + TLS termination |
-| **cloudflared** *(optional)* | latest via Homebrew | Public access via custom domain |
+| **cloudflared** | latest via Homebrew | Public access via custom domain |
 
 > **Note:** Version numbers above reflect the state of the ecosystem when this guide was written. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
 
@@ -75,6 +75,80 @@ Currently in use:
 > **Note:** On macOS Ventura (13) and later, `pmset` reports the disablesleep setting as `SleepDisabled 1` instead of `disablesleep 1`. This is expected — it means the same thing.
 >
 > The annotation `(sleep prevented by powerd, bluetoothd)` next to `sleep 0` is **informational, not an error**. It simply means that in addition to your `pmset` settings, system daemons are also actively preventing sleep. Your server will stay awake.
+
+### 1.1b Prevent App Nap with caffeinate
+
+`pmset` stops the system from sleeping, but macOS can still throttle background processes via **App Nap**. On an always-on server, App Nap causes services to respond slowly — a request that should take milliseconds can hang for seconds while the process is deprioritized. This is especially noticeable on MLX inference: token generation rate can drop dramatically when macOS decides the process is "idle" between requests.
+
+The `caffeinate` command prevents App Nap by holding IOKit power assertions:
+
+```bash
+caffeinate -dimsu -t 2147483647
+```
+
+| Flag | Effect |
+|------|--------|
+| `-d` | Prevent the display from sleeping |
+| `-i` | Prevent idle system sleep — this is what blocks App Nap |
+| `-m` | Prevent disk idle sleep |
+| `-s` | Prevent system sleep on AC power |
+| `-u` | Declare the user is active |
+| `-t 2147483647` | Hold the assertion for the maximum duration (~68 years) |
+
+To make it persistent across reboots, create a dedicated launch agent. This runs independently of your other services, so it survives their restarts:
+
+```bash
+cat > ~/Library/LaunchAgents/com.caffeinate.server.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.caffeinate.server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/caffeinate</string>
+    <string>-dimsu</string>
+    <string>-t</string>
+    <string>2147483647</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+</dict>
+</plist>
+EOF
+```
+
+Load it:
+
+```bash
+launchctl bootout gui/$(id -u)/com.caffeinate.server 2>/dev/null
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.caffeinate.server.plist
+```
+
+Verify it's running:
+
+```bash
+launchctl list | grep caffeinate
+```
+
+**Expected output:**
+
+```
+-	0	com.caffeinate.server
+```
+
+Confirm the assertions are active:
+
+```bash
+pmset -g assertions | grep -A 5 "caffeinate"
+```
+
+**Expected output:** A list showing `PreventUserIdleSystemSleep`, `PreventUserIdleDisplaySleep`, and related assertions attributed to `caffeinate`.
+
+> **Note:** Some reports suggest that `pmset -g assertions` on certain macOS versions no longer lists all assertions. Even if the output is sparse, the `caffeinate` process running under `launchctl` is sufficient — the assertions are held at the kernel level regardless of what `pmset` displays.
 
 ### 1.2 Enable SSH (Remote Login)
 
@@ -493,7 +567,7 @@ ssh your-username@your-mac-ip
 Check all services in one command:
 
 ```bash
-brew services list | grep omlx && launchctl list | grep qwenpaw && curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
+brew services list | grep omlx && launchctl list | grep -E "qwenpaw|caffeinate" && curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 ```
 
 **Expected output:**
@@ -501,11 +575,12 @@ brew services list | grep omlx && launchctl list | grep qwenpaw && curl -s -H "A
 ```
 omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 30406	0	com.qwenpaw.app
+-	0	com.caffeinate.server
 {"object":"list","data":[...]}
 QwenPaw HTTP 200
 ```
 
-All three services should return healthy responses without any manual intervention.
+All services should return healthy responses without any manual intervention.
 
 ## Part 7: Remote Access from Anywhere with Tailscale Serve + Caddy
 
@@ -527,6 +602,8 @@ Client (tailnet) → Tailscale Serve (TLS, port 443)
 - It restarts automatically if it crashes
 - It comes back up after every reboot
 - No manual intervention is ever needed
+
+> **Two access tiers.** Parts §7.0–§7.9 expose your services to devices on your Tailscale tailnet — encrypted, private, no domain required. Part §7.10 extends the same stack to the public internet via Cloudflare Tunnel, using your own domain. If you only need tailnet access, stop after §7.9.
 
 ### 7.0 Create a Tailscale Account
 
@@ -862,7 +939,7 @@ ssh your-username@your-mac-ip
 Check all services in one command:
 
 ```bash
-brew services list | grep -E "omlx|caddy" && launchctl list | grep qwenpaw && tailscale serve status
+brew services list | grep -E "omlx|caddy" && launchctl list | grep -E "qwenpaw|caffeinate" && tailscale serve status
 ```
 
 **Expected output:**
@@ -871,22 +948,24 @@ brew services list | grep -E "omlx|caddy" && launchctl list | grep qwenpaw && ta
 omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 -   0   com.qwenpaw.app
+-   0   com.caffeinate.server
 https://night-thoughts.your-tailnet.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
-All four components should be running without any manual intervention:
+All components should be running without any manual intervention:
 
 | Component | Managed by | Auto-starts on login? | Auto-restarts on crash? |
 |-----------|------------|-----------------------|--------------------------|
 | **oMLX** | `brew services` | ✅ | ✅ |
 | **Caddy** | `brew services` | ✅ | ✅ |
 | **QwenPaw** | `launchd` (`KeepAlive`) | ✅ | ✅ |
+| **caffeinate** | `launchd` (`KeepAlive`) | ✅ | ✅ |
 | **Tailscale Serve** | Tailscale daemon | ✅ | ✅ |
 
-### 7.10 Going Beyond: Public Access with Your Own Domain
+### 7.10 Public Access with Your Own Domain
 
-**This section is optional.** Everything up to this point exposes your services only to devices on your Tailscale tailnet. If you own a domain (e.g., `night-thoughts.dev`) and want to reach your services from **any device on the public internet** — no Tailscale client required — use **Cloudflare Tunnel** to route traffic to your local Caddy instance.
+This section extends your setup from tailnet-only access to the public internet. After completing the steps below, your services become reachable from any browser — no Tailscale client required — using your own domain. Public access is provided by **Cloudflare Tunnel**, which routes external traffic to your local Caddy instance without opening any ports on your router.
 
 The result:
 
@@ -1182,6 +1261,8 @@ cloudflared tunnel delete night-thoughts
 | `systemsetup: Turning Remote Login on or off requires Full Disk Access privileges` | Grant Terminal Full Disk Access in System Settings → Privacy & Security → Full Disk Access, then **quit and reopen Terminal** |
 | `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
+| Services respond slowly or hang under load | App Nap is throttling them. Verify `caffeinate` is running: `launchctl list \| grep caffeinate`. If missing, load the agent per §1.1b |
+| `pmset -g assertions` shows no caffeinate entries | Cosmetic on some macOS versions. Confirm the process is running with `launchctl list \| grep caffeinate` — the assertions are held at the kernel level regardless |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
 | oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4/M5) and macOS 15.0 (Sequoia) or later |
