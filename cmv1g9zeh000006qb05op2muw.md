@@ -505,6 +505,60 @@ If you haven't started the service yet, this file is read automatically on first
 brew services restart omlx
 ```
 
+### 4.3b Rotating the API Key Later
+
+Once oMLX and QwenPaw are running, `~/.omlx/settings.json` and `~/.qwenpaw/config.json` both contain **more than just the API key** — model preferences, backend options, timeouts, workspace paths, and whatever else the services have written. Overwriting them with a heredoc destroys all of that.
+
+The safe way to update just the key is to use `jq`, which modifies a single JSON field in place without disturbing anything else.
+
+**Back up both files first:**
+
+```bash
+cp ~/.omlx/settings.json ~/.omlx/settings.json.bak
+cp ~/.qwenpaw/config.json ~/.qwenpaw/config.json.bak
+```
+
+**Update oMLX's key** (replace `your-new-key` with the value you want):
+
+```bash
+jq '.auth.api_key = "your-new-key"' ~/.omlx/settings.json > ~/.omlx/settings.json.tmp && mv ~/.omlx/settings.json.tmp ~/.omlx/settings.json
+```
+
+**Update QwenPaw's key to match** (same value):
+
+```bash
+jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json
+```
+
+**Restart both services:**
+
+```bash
+brew services restart omlx
+launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app
+sleep 3
+```
+
+**Verify both sides agree:**
+
+```bash
+jq -r '.auth.api_key' ~/.omlx/settings.json
+jq -r '.model.api_key' ~/.qwenpaw/config.json
+curl -s -H "Authorization: Bearer your-new-key" http://localhost:8000/v1/models
+```
+
+All three commands should print the new key or return a valid JSON model list. If the curl returns `{"detail":"API key required"}`, the two files are out of sync — re-run the `jq` command for whichever one doesn't match.
+
+**If something breaks, restore from backup:**
+
+```bash
+mv ~/.omlx/settings.json.bak ~/.omlx/settings.json
+mv ~/.qwenpaw/config.json.bak ~/.qwenpaw/config.json
+brew services restart omlx
+launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app
+```
+
+You're back to the exact state you started in. The `jq` approach is deliberately surgical — it changes one key and leaves the rest of the file byte-for-byte identical.
+
 ### 4.4 Start oMLX as an Always-On Background Service
 
 Register oMLX with `brew services`, which installs a launchd agent that auto-starts on login and restarts on crash:
@@ -552,7 +606,7 @@ curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/
 
 **Expected output:** `{"object":"list","data":[]}` — an empty list is correct at this stage because no model is loaded yet. The important thing is that you don't see `{"detail":"API key required"}` or a `401`.
 
-If you do get a `401`, the key wasn't saved. Re-run the `cat > ~/.omlx/settings.json` block from §4.3 and then `brew services restart omlx`.
+If you do get a `401`, the key wasn't saved. Re-run the `jq` command from §4.3b, or the initial write from §4.3 if the file was empty, and then `brew services restart omlx`.
 
 ### 4.7 Download & Deploy a Model
 
@@ -620,6 +674,8 @@ cat > ~/.qwenpaw/config.json << 'EOF'
 }
 EOF
 ```
+
+> **If `~/.qwenpaw/config.json` already exists** — for example, if QwenPaw has written preferences or other settings — do **not** overwrite it with this heredoc. Use the `jq` approach from §4.3b instead to update just the `api_key` field. The heredoc here is only safe for a fresh install.
 
 > **Using a different key?** If you chose a different value in §4.3, replace `omlx-night-thoughts` in the `api_key` field above with that same value. The two **must match** — this is the single most common source of `401 Unauthorized` errors.
 
@@ -1003,7 +1059,15 @@ Tailscale is now terminating TLS for your `*.ts.net` hostname and forwarding all
 > tailscale set --accept-dns=false
 > sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 > ```
-> You lose MagicDNS short names (`ping night-thoughts`) but gain the ability to resolve public domains. Reach tailnet devices by their full `.ts.net` names or `100.x.x.x` IPs instead.
+> You lose MagicDNS short names (`ping night-thoughts`) but gain the ability to resolve public domains. Reach tailnet devices by their full `.ts.net` names or `100.x.x.x` IPs instead. If you still want the short name for SSH, add a permanent entry to your SSH config:
+> ```bash
+> cat >> ~/.ssh/config << 'EOF'
+> Host night-thoughts
+>     HostName 100.97.7.34
+>     User your-username
+> EOF
+> ```
+> Replace `100.97.7.34` with your Mac's Tailscale IP (`tailscale status | grep night-thoughts`). This is per-client and survives DNS changes.
 
 ### 7.7 Access Your Services
 
@@ -1563,9 +1627,10 @@ cloudflared tunnel delete night-thoughts
 | QwenPaw shows MIME type error for JS | Verify `/assets/*` is routed to QwenPaw in the Caddyfile. Test: `curl -sI http://localhost:9080/assets/index-8OrhnpZF.js \| grep -i content-type` → `application/javascript` |
 | QwenPaw images (SVG, PNG) return 404 | The `@qwenpaw_public` block must be present in the Caddyfile to route root-level static files to QwenPaw |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
+| **Need to change the oMLX API key without losing other settings** | Use `jq` per §4.3b — never overwrite `settings.json` or `config.json` with a heredoc once they contain other fields |
 | `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
-| Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
+| Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` or `jq -r '.auth.api_key' ~/.omlx/settings.json` |
 | Forgot the QwenPaw password | Run `source ~/.zshrc && qwenpaw auth reset-password` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
@@ -1577,6 +1642,7 @@ cloudflared tunnel delete night-thoughts
 | `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
 | `dscacheutil -q host -a name <domain>` returns nothing but `dig` works | `mDNSResponder` is in a zombie state. Fix: `sudo killall -9 mDNSResponder mDNSResponderHelper && sudo dscacheutil -flushcache && sudo ifconfig en0 down && sleep 2 && sudo ifconfig en0 up`. If that fails, reboot |
 | `sudo launchctl kickstart -k system/com.apple.mDNSResponder` returns "Could not find service" | The launchd label differs on your macOS version. Use `sudo killall -9 mDNSResponder` instead — launchd's KeepAlive restarts it |
+| `ssh night-thoughts` fails after `--accept-dns=false` | MagicDNS short names are disabled. Add an SSH config entry per §7.6: `Host night-thoughts` → `HostName 100.x.x.x` |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
