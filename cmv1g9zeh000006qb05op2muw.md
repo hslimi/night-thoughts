@@ -515,10 +515,17 @@ The architecture:
 ```
 Client (tailnet) → Tailscale Serve (TLS, port 443)
                        ↓
-                   Caddy (localhost:9080)
+                   Caddy (localhost:9080) ← always-on launchd service
                     ├── /        → oMLX (localhost:8000)
                     └── /qwenpaw → QwenPaw (localhost:8088)
 ```
+
+**Caddy is a required always-on component.** It runs as a launchd service managed by `brew services`, which means:
+
+- It starts automatically on login (before you touch anything)
+- It restarts automatically if it crashes
+- It comes back up after every reboot
+- No manual intervention is ever needed
 
 Tailscale terminates TLS using its auto-provisioned certificates. Caddy owns all path routing on a single port.
 
@@ -577,11 +584,11 @@ Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can 
 1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
 2. Under the **HTTPS Certificates** section, click **Enable HTTPS**.
 
-> **Note:** This is separate from custom domains. Enabling HTTPS certificates for your `*.ts.net` hostname works on **all** plans, including shared-domain tailnets. You will **not** see a Domains section on shared-domain tailnets — that's expected and does not block anything in this guide.
+> **Note:** This is separate from custom domains. Enabling HTTPS certificates for your `*.ts.net` hostname works on **all** plans, including shared-domain tailnets.
 
 ### 7.3 Install Caddy
 
-Caddy is the reverse proxy that routes each service and provides a single entry point. Install it via Homebrew:
+Caddy is the always-on reverse proxy that routes each service and provides a single entry point. Install it via Homebrew:
 
 ```bash
 brew install caddy
@@ -627,7 +634,9 @@ caddy validate --config /opt/homebrew/etc/Caddyfile
 
 ### 7.5 Start Caddy as an Always-On Service
 
-Register Caddy with `brew services` so it auto-starts on login:
+Caddy must run as a launchd service so it survives reboots and restarts automatically. `brew services` handles all of this for you — it writes a launchd plist to `~/Library/LaunchAgents/` and keeps the process supervised.
+
+Start the service:
 
 ```bash
 brew services start caddy
@@ -635,7 +644,7 @@ brew services start caddy
 
 **Expected output:** `==> Successfully started 'caddy' (label: homebrew.mxcl.caddy)`
 
-Verify it's running:
+Confirm it's running and registered to auto-start:
 
 ```bash
 brew services list | grep caddy
@@ -647,7 +656,26 @@ brew services list | grep caddy
 caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 ```
 
+The `started` status plus the presence of the plist in `~/Library/LaunchAgents/` confirms Caddy will:
+
+- Auto-start on every login
+- Auto-restart if it crashes
+- Survive every reboot
+
 Caddy is now listening on port 9080, ready to receive traffic from Tailscale.
+
+**Useful Caddy service commands:**
+
+```bash
+brew services stop caddy      # stop the service
+brew services restart caddy   # restart after editing the Caddyfile
+brew services info caddy      # show detailed status
+```
+
+> **After editing the Caddyfile**, you must reload Caddy for changes to take effect:
+> ```bash
+> brew services restart caddy
+> ```
 
 ### 7.6 Point Tailscale Serve at Caddy
 
@@ -680,6 +708,8 @@ https://night-thoughts.your-tailnet.ts.net (tailnet only)
 
 Tailscale is now terminating TLS for your `*.ts.net` hostname and forwarding all requests to Caddy, which routes them based on path.
 
+> **Note:** Tailscale Serve configurations persist across reboots automatically. Combined with Caddy's launchd service, the entire stack comes back up on its own after a restart.
+
 ### 7.7 Access Your Services
 
 From any device on your tailnet — laptop, phone, tablet — open:
@@ -691,8 +721,6 @@ From any device on your tailnet — laptop, phone, tablet — open:
 Replace `night-thoughts.your-tailnet.ts.net` with your actual MagicDNS name, which you can find by running `tailscale status` — the second column of the row for your Mac server.
 
 No ports in the URL. Valid HTTPS certificates. Reachable from anywhere in the world, as long as the client device is signed into Tailscale.
-
-> **Note:** These URLs are only reachable from within your tailnet. The public internet cannot reach them — that's a feature, not a limitation.
 
 ### 7.8 Enable QwenPaw Authentication
 
@@ -779,7 +807,7 @@ QwenPaw HTTP 200
 
 > **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://night-thoughts.your-tailnet.ts.net/qwenpaw` in a browser to confirm you're prompted for credentials.
 
-> **Default credentials note:** If you set `QWENPAW_AUTH_USERNAME=admin` and forget the password, reset it with:
+> **Forgot the password?** Reset it with:
 > ```bash
 > source ~/.zshrc && qwenpaw auth reset-password
 > ```
@@ -792,7 +820,13 @@ Restart your Mac:
 sudo reboot
 ```
 
-After reboot, wait 30 seconds, then verify all services:
+After reboot, wait 30 seconds, then SSH in from another machine:
+
+```bash
+ssh your-username@your-mac-ip
+```
+
+Check all services in one command:
 
 ```bash
 brew services list | grep -E "omlx|caddy" && launchctl list | grep qwenpaw && tailscale serve status
@@ -808,9 +842,14 @@ https://night-thoughts.your-tailnet.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
-All services should return healthy responses without any manual intervention.
+All four components — oMLX, Caddy, QwenPaw, and Tailscale Serve — should be running without any manual intervention:
 
-> **Note:** Tailscale Serve configurations persist across reboots automatically. You don't need to re-run the `tailscale serve` commands after a restart.
+| Component | Managed by | Auto-starts on login? | Auto-restarts on crash? |
+|-----------|------------|-----------------------|--------------------------|
+| **oMLX** | `brew services` | ✅ | ✅ |
+| **Caddy** | `brew services` | ✅ | ✅ |
+| **QwenPaw** | `launchd` (`KeepAlive`) | ✅ | ✅ |
+| **Tailscale Serve** | Tailscale daemon | ✅ | ✅ |
 
 ### 7.10 Troubleshooting
 
@@ -818,12 +857,15 @@ All services should return healthy responses without any manual intervention.
 |---------|-----|
 | Domains page shows "You are not authorized to access this page" | Expected on shared-domain tailnets (Gmail, GitHub). Custom domains are not available. This guide does not require them. |
 | `omlx` dashboard returns 404 | Confirm oMLX is running (`brew services list \| grep omlx`) and that Caddy is pointing at `localhost:8000`. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
+| Caddy not running after reboot | Run `brew services list \| grep caddy`. If status is `error`, check the log at `/opt/homebrew/var/log/caddy.log`. Restart with `brew services restart caddy`. |
+| Caddyfile changes don't take effect | You must restart Caddy after editing the Caddyfile: `brew services restart caddy`. |
 | QwenPaw CSS/JS assets return 404 | The app is emitting absolute asset paths. Verify the Caddyfile uses `handle_path /qwenpaw/*` (not `handle`), which strips the prefix before forwarding. |
 | `tailscale serve status` shows no configuration | Re-run `tailscale serve --bg --https=443 http://localhost:9080`. Ensure HTTPS Certificates are enabled per §7.2. |
 | Certificate error on `*.ts.net` URL | Verify HTTPS Certificates are enabled in the Tailscale admin console under DNS settings. |
 | `tailscale: command not found` | Add the alias per §7.1b and reload your shell. |
 | Caddy won't start | Check for port conflicts on 9080: `sudo lsof -i :9080`. Stop any conflicting service before starting Caddy. |
 | QwenPaw auth not prompting | Verify the three `QWENPAW_AUTH_*` variables are present in the plist (`plutil -p ~/Library/LaunchAgents/com.qwenpaw.app.plist`) and reload the service per §7.8. |
+| Forgot the QwenPaw password | Reset it with `source ~/.zshrc && qwenpaw auth reset-password`. |
 
 ## Troubleshooting Quick Reference
 
@@ -837,6 +879,7 @@ All services should return healthy responses without any manual intervention.
 | oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4) and macOS 15.0 (Sequoia) or later |
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` |
 | oMLX isn't running after reboot | Run `brew services list` — status should be `started` |
+| Caddy isn't running after reboot | Run `brew services list \| grep caddy` — status should be `started`. If not, `brew services restart caddy` |
 | Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
 | `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
