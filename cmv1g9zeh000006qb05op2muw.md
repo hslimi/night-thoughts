@@ -406,6 +406,20 @@ mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist <
 EOF
 ```
 
+> **Log rotation is built in.** QwenPaw uses Python's `RotatingFileHandler` to rotate `~/.qwenpaw/qwenpaw.log` automatically at **5 MiB**, keeping **3 backups** (`qwenpaw.log.1` through `.3`). Worst-case disk usage is ~20 MiB — the log will never grow without bound. No external rotation tool (like `newsyslog`) is needed.
+>
+> To customize the limits, add an `EnvironmentVariables` dict to the plist before `</dict>`:
+> ```xml
+> <key>EnvironmentVariables</key>
+> <dict>
+>   <key>QWENPAW_LOG_MAX_SIZE</key>
+>   <string>2MiB</string>
+>   <key>QWENPAW_LOG_MAX_BACKUPS</key>
+>   <string>2</string>
+> </dict>
+> ```
+> That example caps total log usage at ~6 MiB. Setting `QWENPAW_LOG_MAX_BACKUPS` to `0` disables backups entirely.
+
 Verify the paths resolved correctly (they should show your real username, not `$HOME`), then load and check the service:
 
 ```bash
@@ -675,6 +689,7 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
+| QwenPaw logs growing too large | Built-in rotation caps at **5 MiB × 3 backups** (~20 MiB total). Customize with `QWENPAW_LOG_MAX_SIZE` and `QWENPAW_LOG_MAX_BACKUPS` env vars in the launchd plist. Check with `ls -lh ~/.qwenpaw/qwenpaw.log*` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
