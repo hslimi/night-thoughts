@@ -511,11 +511,10 @@ Once oMLX and QwenPaw are running, `~/.omlx/settings.json` and `~/.qwenpaw/confi
 
 The safe way to update just the key is to use `jq`, which modifies a single JSON field in place without disturbing anything else.
 
-**Back up both files first:**
+**Install `jq` if you don't already have it:**
 
 ```bash
-cp ~/.omlx/settings.json ~/.omlx/settings.json.bak
-cp ~/.qwenpaw/config.json ~/.qwenpaw/config.json.bak
+brew install jq
 ```
 
 **Update oMLX's key** (replace `your-new-key` with the value you want):
@@ -548,16 +547,7 @@ curl -s -H "Authorization: Bearer your-new-key" http://localhost:8000/v1/models
 
 All three commands should print the new key or return a valid JSON model list. If the curl returns `{"detail":"API key required"}`, the two files are out of sync — re-run the `jq` command for whichever one doesn't match.
 
-**If something breaks, restore from backup:**
-
-```bash
-mv ~/.omlx/settings.json.bak ~/.omlx/settings.json
-mv ~/.qwenpaw/config.json.bak ~/.qwenpaw/config.json
-brew services restart omlx
-launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app
-```
-
-You're back to the exact state you started in. The `jq` approach is deliberately surgical — it changes one key and leaves the rest of the file byte-for-byte identical.
+The `jq` approach is deliberately surgical — it changes one key and leaves the rest of the file byte-for-byte identical.
 
 ### 4.4 Start oMLX as an Always-On Background Service
 
@@ -1628,6 +1618,7 @@ cloudflared tunnel delete night-thoughts
 | QwenPaw images (SVG, PNG) return 404 | The `@qwenpaw_public` block must be present in the Caddyfile to route root-level static files to QwenPaw |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
 | **Need to change the oMLX API key without losing other settings** | Use `jq` per §4.3b — never overwrite `settings.json` or `config.json` with a heredoc once they contain other fields |
+| `jq: command not found` | Install with `brew install jq` |
 | `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` or `jq -r '.auth.api_key' ~/.omlx/settings.json` |
