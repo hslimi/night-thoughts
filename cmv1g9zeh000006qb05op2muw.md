@@ -15,7 +15,7 @@ Everything in this guide was verified on the following setup. If your versions a
 | Component | Version | Notes |
 |-----------|---------|-------|
 | **macOS** | 15.x (Sequoia) or later | Required for oMLX |
-| **Chip** | Apple Silicon (M1/M2/M3/M4) | Required for MLX and oMLX |
+| **Chip** | Apple Silicon (M1/M2/M3/M4/M5) | Required for MLX and oMLX |
 | **Homebrew** | 4.x | Package manager for oMLX, Caddy, and Tailscale |
 | **uv** | 0.8.x or later | Python version + package manager |
 | **Python (MLX venv)** | 3.11.x | Managed by uv at `~/.mlx-venv` |
@@ -197,7 +197,7 @@ oMLX is an LLM inference server optimized for Apple Silicon, built on the MLX fr
 
 > **Note:** oMLX is a community project maintained by `jundot`. It is built directly on top of Apple's MLX framework (which *is* official).
 
-> **Platform requirement:** oMLX requires **Apple Silicon** (M1/M2/M3/M4) and **macOS 15.0 (Sequoia) or later**. Intel Macs and earlier macOS versions are rejected during installation.
+> **Platform requirement:** oMLX requires **Apple Silicon** (M1/M2/M3/M4/M5) and **macOS 15.0 (Sequoia) or later**. Intel Macs and earlier macOS versions are rejected during installation.
 
 ### 4.1 Install Homebrew
 
@@ -1025,7 +1025,7 @@ cloudflared tunnel delete night-thoughts
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
-| oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4) and macOS 15.0 (Sequoia) or later |
+| oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4/M5) and macOS 15.0 (Sequoia) or later |
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` |
 | oMLX isn't running after reboot | Run `brew services list` — status should be `started` |
 | Caddy isn't running after reboot | Run `brew services list \| grep caddy` — status should be `started`. If not, `brew services restart caddy` |
