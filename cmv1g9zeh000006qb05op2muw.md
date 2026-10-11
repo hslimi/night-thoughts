@@ -539,7 +539,7 @@ If you don't already have a Tailscale account, sign up first. It's free for pers
 
 > **Note:** If you sign up with a public email domain (e.g., `@gmail.com`) or GitHub, you're placed on a **shared-domain tailnet** on the Personal plan — 6 free users, 100 devices, and 50 tagged devices. That's more than enough for this guide.
 
-> **Important:** Shared-domain tailnets **cannot** use custom domains (the Domains page in the admin console will show "You are not authorized to access this page"). This guide does not require custom domains — Tailscale's built-in `*.ts.net` hostname works for everything below. If you own a domain and want public access, see §7.11.
+> **Important:** Shared-domain tailnets **cannot** use custom domains (the Domains page in the admin console will show "You are not authorized to access this page"). This guide does not require custom domains — Tailscale's built-in `*.ts.net` hostname works for everything below. If you own a domain and want public access, see §7.10.
 
 > **Tip:** The same account must be used on every device you want on your tailnet. If you sign in with Google on your Mac server, sign in with Google on your laptop too — otherwise they won't see each other.
 
@@ -816,6 +816,7 @@ EOF
 Reload the service:
 
 ```bash
+launchctl enable gui/$(id -u)/com.qwenpaw.app
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl list | grep qwenpaw
 ```
 
@@ -883,40 +884,23 @@ All four components should be running without any manual intervention:
 | **QwenPaw** | `launchd` (`KeepAlive`) | ✅ | ✅ |
 | **Tailscale Serve** | Tailscale daemon | ✅ | ✅ |
 
-### 7.10 Troubleshooting
+### 7.10 Going Beyond: Public Access with Your Own Domain
 
-| Symptom | Fix |
-|---------|-----|
-| Domains page shows "You are not authorized to access this page" | Expected on shared-domain tailnets (Gmail, GitHub). Custom domains are not available. This guide does not require them. |
-| `omlx` dashboard returns 404 | Confirm oMLX is running (`brew services list \| grep omlx`) and that Caddy is pointing at `localhost:8000`. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
-| QwenPaw shows "Failed to load module script: Expected a JavaScript-or-Wasm module" | The SPA is serving HTML for an asset URL. Verify the Caddyfile has both `@qwenpaw` (for `/assets/*`) and `@qwenpaw_public` (for root-level SVGs). Check with `curl -sI http://localhost:9080/assets/index-8OrhnpZF.js \| grep -i content-type` — must be `application/javascript`. |
-| Caddy won't start | Check for port conflicts on 9080: `sudo lsof -i :9080`. Stop any conflicting service before starting Caddy. |
-| Caddy not running after reboot | Run `brew services list \| grep caddy`. If status is `error`, check the log at `/opt/homebrew/var/log/caddy.log`. Restart with `brew services restart caddy`. |
-| Caddyfile changes don't take effect | You must restart Caddy after editing the Caddyfile: `brew services restart caddy`. |
-| `tailscale serve status` shows no configuration | Re-run `tailscale serve --bg --https=443 http://localhost:9080`. Ensure HTTPS Certificates are enabled per §7.2. |
-| Certificate error on `*.ts.net` URL | Verify HTTPS Certificates are enabled in the Tailscale admin console under DNS settings. |
-| `tailscale: command not found` | Add the alias per §7.1b and reload your shell. |
-| QwenPaw auth not prompting | Verify the three `QWENPAW_AUTH_*` variables are present in the plist (`plutil -p ~/Library/LaunchAgents/com.qwenpaw.app.plist`) and reload the service per §7.8. |
-| Forgot the QwenPaw password | Reset it with `source ~/.zshrc && qwenpaw auth reset-password`. |
-| Want `/qwenpaw/` instead of `/console/` in the URL | QwenPaw hardcodes `/console` as its router basename. See [issue #8177](https://github.com/agentscope-ai/QwenPaw/issues/8177) for the feature request to make this configurable. |
-
-### 7.11 Going Beyond: Public Access with Your Own Domain
-
-**This section is optional.** Everything up to this point exposes your services only to devices on your Tailscale tailnet. If you own a domain (e.g., `night-thoughts.me`) and want to reach your services from **any device on the public internet** — no Tailscale client required — use **Cloudflare Tunnel** to route traffic to your local Caddy instance.
+**This section is optional.** Everything up to this point exposes your services only to devices on your Tailscale tailnet. If you own a domain (e.g., `night-thoughts.dev`) and want to reach your services from **any device on the public internet** — no Tailscale client required — use **Cloudflare Tunnel** to route traffic to your local Caddy instance.
 
 The result:
 
 | Service | Public URL |
 |---------|-----------|
-| **oMLX admin dashboard** | `https://night-thoughts.me/omlx/admin` |
-| **QwenPaw web console** | `https://night-thoughts.me/console/` |
+| **oMLX admin dashboard** | `https://night-thoughts.dev/omlx/admin` |
+| **QwenPaw web console** | `https://night-thoughts.dev/console/` |
 
 > **Security warning:** These URLs are reachable by **anyone on the internet**. You **must** have authentication enabled on both services before exposing them publicly. See §7.8 for QwenPaw auth and §4.3 for the oMLX API key. Consider enabling Cloudflare Access (free for up to 50 users) for an additional SSO layer.
 
 **Step 1: Add your domain to Cloudflare**
 
 1. Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
-2. Add `night-thoughts.me` as a new site.
+2. Add `night-thoughts.dev` as a new site.
 3. Cloudflare will give you two nameservers. Update them at your domain registrar (where you bought the domain).
 4. Wait for Cloudflare to confirm the domain is active — usually a few minutes.
 
@@ -932,45 +916,62 @@ brew install cloudflared
 cloudflared tunnel login
 ```
 
-This opens a browser — select `night-thoughts.me` and authorize.
+This opens a browser — select `night-thoughts.dev` and authorize.
 
 **Step 4: Create the tunnel**
 
 ```bash
-cloudflared tunnel create night-thoughts
+cloudflared tunnel list | grep -q night-thoughts || cloudflared tunnel create night-thoughts
 ```
 
-This generates a tunnel ID and credentials file in `~/.cloudflared/`.
+This generates a tunnel ID and credentials file in `~/.cloudflared/`. The `grep -q` guard skips creation if the tunnel already exists, so it's safe to re-run.
 
 **Step 5: Route DNS**
 
 ```bash
-cloudflared tunnel route dns night-thoughts night-thoughts.me
+cloudflared tunnel route dns night-thoughts night-thoughts.dev
 ```
 
-This automatically creates the CNAME record at Cloudflare pointing `night-thoughts.me` to your tunnel.
+This automatically creates the CNAME record at Cloudflare pointing `night-thoughts.dev` to your tunnel. If it fails with "neither the ID nor the name of any of your tunnels", run `cloudflared tunnel list` to see the actual tunnel names and retry with the exact name or ID.
 
 **Step 6: Configure the tunnel**
 
-Find your tunnel ID:
+The following command generates the config file with both the tunnel ID and your home directory resolved automatically — no manual editing required:
 
 ```bash
-ls ~/.cloudflared/*.json
-```
-
-Create the config file (replace `YOUR_USERNAME` and `YOUR_TUNNEL_ID` with actual values):
-
-```bash
-mkdir -p ~/.cloudflared && cat > ~/.cloudflared/config.yml << 'EOF'
-tunnel: night-thoughts
-credentials-file: /Users/YOUR_USERNAME/.cloudflared/YOUR_TUNNEL_ID.json
+TUNNEL_ID=$(cloudflared tunnel list | awk '/night-thoughts/ {print $1}') && \
+cat > ~/.cloudflared/config.yml << EOF
+tunnel: $TUNNEL_ID
+credentials-file: $HOME/.cloudflared/$TUNNEL_ID.json
 
 ingress:
-  - hostname: night-thoughts.me
+  - hostname: night-thoughts.dev
     service: http://localhost:9080
   - service: http_status:404
 EOF
 ```
+
+> **Why `$HOME` and not `~`?** The `cloudflared` daemon runs as a system service under a different user context. The `~` symbol is not expanded by YAML parsing — it would be written literally and the daemon couldn't find the credentials file. Using `$HOME` at config-generation time bakes in the absolute path.
+
+Verify the generated config:
+
+```bash
+cat ~/.cloudflared/config.yml
+```
+
+**Expected output:**
+
+```
+tunnel: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+credentials-file: /Users/YOUR_USERNAME/.cloudflared/a1b2c3d4-e5f6-7890-abcd-ef1234567890.json
+
+ingress:
+  - hostname: night-thoughts.dev
+    service: http://localhost:9080
+  - service: http_status:404
+```
+
+Both values should be resolved to actual strings — no `$TUNNEL_ID` or `$HOME` left in the file.
 
 **Step 7: Install as a service**
 
@@ -984,12 +985,12 @@ sudo cloudflared service install
 sudo launchctl list | grep cloudflared
 ```
 
-Open `https://night-thoughts.me/omlx/admin` in a browser. Cloudflare automatically provisions a valid Let's Encrypt certificate for your domain — no browser warning, no manual CA trust.
+Open `https://night-thoughts.dev/omlx/admin` in a browser. Cloudflare automatically provisions a valid Let's Encrypt certificate for your domain — no browser warning, no manual CA trust.
 
 **How it fits together:**
 
 ```
-Public internet → Cloudflare edge (TLS for night-thoughts.me)
+Public internet → Cloudflare edge (TLS for night-thoughts.dev)
                        ↓
                    Cloudflare Tunnel (encrypted)
                        ↓
@@ -1014,6 +1015,9 @@ Cloudflare Tunnel exposes your services publicly by default. To restrict access:
 ```bash
 # Check tunnel status
 sudo launchctl list | grep cloudflared
+
+# List tunnels (to find the exact name or ID if route dns fails)
+cloudflared tunnel list
 
 # View cloudflared logs
 tail -50 /opt/homebrew/var/log/cloudflared.log
@@ -1050,7 +1054,8 @@ cloudflared tunnel delete night-thoughts
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
 | Forgot the QwenPaw password | Run `source ~/.zshrc && qwenpaw auth reset-password` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
-| `launchctl load` fails with `Load failed: 5: Input/output error` | Use `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead of the legacy `load` command |
+| `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
+| `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
@@ -1059,5 +1064,5 @@ cloudflared tunnel delete night-thoughts
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
-| Custom domain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for the `night-thoughts.me` entry. |
+| Custom domain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for the `night-thoughts.dev` entry. |
 | Cloudflare Tunnel not running | Run `sudo launchctl list \| grep cloudflared`. If missing, reinstall with `sudo cloudflared service install`. |
