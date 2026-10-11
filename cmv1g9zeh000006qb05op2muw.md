@@ -421,15 +421,27 @@ EOF
 >
 > Want QwenPaw's stock defaults instead? Change the two `<string>` values to `5MiB` and `3` (≈ 20 MiB total). To disable backups entirely, set `QWENPAW_LOG_MAX_BACKUPS` to `0`.
 
-**Load the launcher to start QwenPaw in the background:**
+#### Load the launcher
+
+Use `launchctl bootstrap` — the modern replacement for the legacy `launchctl load`. On macOS Ventura and later, `launchctl load` frequently fails with a generic `Input/output error` even when the plist is valid.
+
+If a previous version of the service is registered, remove it first:
 
 ```bash
-launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist
+launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null
 ```
 
-**Expected output:** No output on success. The service is now registered with launchd and running.
+**Expected output:** No output (the `2>/dev/null` suppresses the error if it wasn't loaded).
 
-Confirm it's live:
+Now register and start the service:
+
+```bash
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist
+```
+
+**Expected output:** No output on success.
+
+Confirm it's running:
 
 ```bash
 launchctl list | grep qwenpaw
@@ -438,12 +450,12 @@ launchctl list | grep qwenpaw
 **Expected output:**
 
 ```
--   0   com.qwenpaw.app
+30406	0	com.qwenpaw.app
 ```
 
-The first column (`-`) is the PID; `0` means it exited cleanly if it ever stopped, or is currently running under launchd's management.
+The first column is the process ID (a number means it's running; `-` means launchd manages it but it's not currently running), the second is the last exit status, and the third is the label.
 
-Verify the plist expanded `$HOME` correctly (it should show your real username):
+Verify the plist expanded `$HOME` correctly (it should show your real username, not `$HOME`):
 
 ```bash
 grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist
@@ -455,16 +467,34 @@ grep -A1 ProgramArguments ~/Library/LaunchAgents/com.qwenpaw.app.plist
     <string>/Users/yourname/.qwenpaw/bin/qwenpaw</string>
 ```
 
-**Useful launcher management commands:**
+**Useful launcher management commands** (all use the modern `bootstrap`/`bootout` API):
 
 ```bash
-launchctl list | grep qwenpaw                                                    # check status
-launchctl unload ~/Library/LaunchAgents/com.qwenpaw.app.plist                    # stop and unregister
-launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist                      # start and register
-launchctl unload ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist   # restart
+launchctl list | grep qwenpaw                                                          # check status
+launchctl bootout gui/$(id -u)/com.qwenpaw.app                                          # stop and unregister
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist            # start and register
+launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app                                     # restart in place
+launchctl print gui/$(id -u)/com.qwenpaw.app | head -20                                 # detailed status
 ```
 
-> **After editing the plist**, you must unload and reload it for changes to take effect — launchd caches the plist at load time.
+> **After editing the plist**, you must `bootout` then `bootstrap` for changes to take effect — launchd caches the plist at load time.
+
+#### Troubleshooting: `Load failed: 5: Input/output error`
+
+If `launchctl load` fails with this generic error, it's almost always because you're using the legacy command on a modern macOS version. Switch to `bootstrap`:
+
+```bash
+launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist
+```
+
+If `bootstrap` also fails, work through these checks:
+
+1. **Validate the file syntax:** `plutil -lint ~/Library/LaunchAgents/com.qwenpaw.app.plist`
+2. **Check ownership:** The file must be owned by your user. Check with `ls -l ~/Library/LaunchAgents/com.qwenpaw.app.plist`. If it shows `root`, fix it: `sudo chown $(whoami):staff ~/Library/LaunchAgents/com.qwenpaw.app.plist`
+3. **Check if it's disabled:** `launchctl print-disabled gui/$(id -u) | grep qwenpaw`. If it shows `true`, enable it: `launchctl enable gui/$(id -u)/com.qwenpaw.app`
+4. **Check the executable path:** `ls -l ~/.qwenpaw/bin/qwenpaw` — the `x` bit must be set. If not: `chmod +x ~/.qwenpaw/bin/qwenpaw`
+5. **Watch the system log:** In one terminal run `log stream --predicate 'process == "launchd"' --level debug`, then in another try to bootstrap. The log will show the specific failure reason.
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -490,7 +520,7 @@ brew services list | grep omlx && launchctl list | grep qwenpaw && curl -s -H "A
 
 ```
 omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
--   0   com.qwenpaw.app
+30406	0	com.qwenpaw.app
 {"object":"list","data":[...]}
 QwenPaw HTTP 200
 ```
@@ -722,9 +752,10 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
-| QwenPaw launcher won't start | Verify the plist loaded: `launchctl list \| grep qwenpaw`. If missing, run `launchctl load ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
-| QwenPaw launcher changes don't take effect | You must `launchctl unload` then `launchctl load` the plist — launchd caches it at load time |
-| QwenPaw logs growing too large | The plist caps QwenPaw's internal log at **2 MiB × 2 backups** (~6 MiB total) via `QWENPAW_LOG_MAX_SIZE` and `QWENPAW_LOG_MAX_BACKUPS`, and routes launchd's stdout/stderr to `/dev/null`. To change limits, edit the plist, then `launchctl unload` + `launchctl load` it. Check sizes with `ls -lh ~/.qwenpaw/qwenpaw.log*` |
+| `launchctl load` fails with `Load failed: 5: Input/output error` | This is a known regression in the legacy `load` command on modern macOS. Use `launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null` then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` instead |
+| QwenPaw launcher won't start | Verify the plist loaded: `launchctl list \| grep qwenpaw`. If missing, run `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
+| QwenPaw launcher changes don't take effect | You must `launchctl bootout` then `launchctl bootstrap` the plist — launchd caches it at load time |
+| QwenPaw logs growing too large | The plist caps QwenPaw's internal log at **2 MiB × 2 backups** (~6 MiB total) via `QWENPAW_LOG_MAX_SIZE` and `QWENPAW_LOG_MAX_BACKUPS`, and routes launchd's stdout/stderr to `/dev/null`. To change limits, edit the plist, then `bootout` + `bootstrap` it. Check sizes with `ls -lh ~/.qwenpaw/qwenpaw.log*` |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
