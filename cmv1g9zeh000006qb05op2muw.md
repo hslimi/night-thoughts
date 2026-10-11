@@ -518,7 +518,7 @@ Client (tailnet) → Tailscale Serve (TLS, port 443)
                        ↓
                    Caddy (localhost:9080) ← always-on launchd service
                     ├── /omlx/*    → oMLX   (localhost:8000)
-                    └── /qwenpaw/* → QwenPaw (localhost:8088)
+                    └── /console/* → QwenPaw (localhost:8088)
 ```
 
 **Caddy is a required always-on component.** It runs as a launchd service managed by `brew services`, which means:
@@ -605,16 +605,12 @@ caddy version
 
 ### 7.4 Configure Caddy
 
-Caddy serves both services on a single local port (9080). Each service is mounted under a path: oMLX at `/omlx/`, QwenPaw at `/qwenpaw/`. Absolute-path API calls from QwenPaw's frontend are routed back to QwenPaw via the `Referer` header; everything else falls through to oMLX.
+Caddy serves both services on a single local port (9080). oMLX is mounted under `/omlx/`, and QwenPaw's console is served under `/console/` — the subpath QwenPaw's SPA is hardcoded to use as its router basename.
 
 ```bash
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
 :9080 {
-    # Root redirect
-    @root path /
-    redir @root /omlx/admin 302
-
-    # oMLX entry point
+    # ── oMLX entry point ─────────────────────────────────────
     @omlx_bare path /omlx
     redir @omlx_bare /omlx/admin 302
 
@@ -622,18 +618,29 @@ sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/n
         reverse_proxy localhost:8000
     }
 
-    # QwenPaw entry point
-    handle_path /qwenpaw/* {
+    # oMLX absolute paths (dashboard + assets + API)
+    @omlx_absolute path /admin /admin/* /static/* /v1 /v1/* /health
+    handle @omlx_absolute {
+        reverse_proxy localhost:8000
+    }
+
+    # ── QwenPaw: full console + backend ──────────────────────
+    # QwenPaw's SPA uses /console as its router basename and
+    # serves assets + API from root-level paths (/assets, /api).
+    @qwenpaw path /console/* /api/* /assets/* /login /logout /voice/* /favicon.ico
+    handle @qwenpaw {
         reverse_proxy localhost:8088
     }
 
-    # Absolute-path API calls from QwenPaw: route by Referer
-    @from_qwenpaw header_regexp Referer /qwenpaw/
-    handle @from_qwenpaw {
+    # ── QwenPaw: public files (SVG, PNG) at root ─────────────
+    # Files in console/public/ are served at the domain root,
+    # e.g. /online.svg, /qwenpaw.png, /logo-dark.svg
+    @qwenpaw_public path_regexp \.(svg|png|ico|gif|jpg|jpeg|webp|woff|woff2|ttf|eot)$
+    handle @qwenpaw_public {
         reverse_proxy localhost:8088
     }
 
-    # Everything else: oMLX
+    # ── Fallback: oMLX ───────────────────────────────────────
     handle {
         reverse_proxy localhost:8000
     }
@@ -641,16 +648,20 @@ sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/n
 EOF
 ```
 
+> **Why `/console/` and not `/qwenpaw/`?** QwenPaw's frontend hardcodes its React Router basename to `/console` in `console/src/utils/navigationMode.ts`. When the browser URL doesn't start with `/console`, the SPA boots without a basename and renders blank. There is no environment variable or reverse-proxy trick to override this — the SPA reads the URL bar directly at runtime. See [issue #8177](https://github.com/agentscope-ai/QwenPaw/issues/8177) for the feature request to make this configurable.
+
 > **How the routing works:**
 >
 > | Request | Matched by | Forwarded to |
 > |---------|------------|--------------|
 > | `/omlx/admin` | `handle_path /omlx/*` | oMLX, path stripped to `/admin` |
 > | `/omlx/static/...` | `handle_path /omlx/*` | oMLX, path stripped to `/static/...` |
-> | `/qwenpaw/` | `handle_path /qwenpaw/*` | QwenPaw, path stripped to `/` |
-> | `/api/foo` (from QwenPaw page) | `@from_qwenpaw` | QwenPaw (Referer contains `/qwenpaw/`) |
-> | `/static/x.js` (from oMLX page) | fallback `handle` | oMLX |
-> | `/v1/models` | fallback `handle` | oMLX |
+> | `/console/` | `@qwenpaw` | QwenPaw |
+> | `/api/version` | `@qwenpaw` | QwenPaw |
+> | `/assets/index-*.js` | `@qwenpaw` | QwenPaw |
+> | `/online.svg`, `/qwenpaw.png` | `@qwenpaw_public` | QwenPaw |
+> | `/admin`, `/static/*`, `/v1/*` | `@omlx_absolute` | oMLX |
+> | everything else | fallback `handle` | oMLX |
 
 Verify the syntax:
 
@@ -737,11 +748,11 @@ From any device on your tailnet — laptop, phone, tablet — open:
 |---------|-----|
 | **oMLX admin dashboard** | `https://night-thoughts.your-tailnet.ts.net/omlx/admin` |
 | **oMLX API** | `https://night-thoughts.your-tailnet.ts.net/omlx/v1/models` |
-| **QwenPaw web console** | `https://night-thoughts.your-tailnet.ts.net/qwenpaw/` |
+| **QwenPaw web console** | `https://night-thoughts.your-tailnet.ts.net/console/` |
 
 Replace `night-thoughts.your-tailnet.ts.net` with your actual MagicDNS name (`tailscale status --json | grep DNSName`). The tailnet name is the part after the machine name.
 
-Visiting the root URL (`https://night-thoughts.your-tailnet.ts.net/`) redirects to `/omlx/admin` automatically. Both services share port 443 — no ports appear in any URL.
+Both services share port 443 — no ports appear in any URL.
 
 ### 7.8 Enable QwenPaw Authentication
 
@@ -826,7 +837,7 @@ curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 QwenPaw HTTP 200
 ```
 
-> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://night-thoughts.your-tailnet.ts.net/qwenpaw/` in a browser to confirm you're prompted for credentials.
+> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://night-thoughts.your-tailnet.ts.net/console/` in a browser to confirm you're prompted for credentials.
 
 > **Forgot the password?** Reset it with:
 > ```bash
@@ -878,15 +889,16 @@ All four components should be running without any manual intervention:
 |---------|-----|
 | Domains page shows "You are not authorized to access this page" | Expected on shared-domain tailnets (Gmail, GitHub). Custom domains are not available. This guide does not require them. |
 | `omlx` dashboard returns 404 | Confirm oMLX is running (`brew services list \| grep omlx`) and that Caddy is pointing at `localhost:8000`. Check `caddy validate --config /opt/homebrew/etc/Caddyfile`. |
-| QwenPaw loads but its API calls return `{"detail":"Not Found"}` | The `Referer` matcher in the Caddyfile isn't matching. Verify the rule uses `header_regexp Referer /qwenpaw/`. |
+| QwenPaw shows "Failed to load module script: Expected a JavaScript-or-Wasm module" | The SPA is serving HTML for an asset URL. Verify the Caddyfile has both `@qwenpaw` (for `/assets/*`) and `@qwenpaw_public` (for root-level SVGs). Check with `curl -sI http://localhost:9080/assets/index-8OrhnpZF.js \| grep -i content-type` — must be `application/javascript`. |
+| Caddy won't start | Check for port conflicts on 9080: `sudo lsof -i :9080`. Stop any conflicting service before starting Caddy. |
 | Caddy not running after reboot | Run `brew services list \| grep caddy`. If status is `error`, check the log at `/opt/homebrew/var/log/caddy.log`. Restart with `brew services restart caddy`. |
 | Caddyfile changes don't take effect | You must restart Caddy after editing the Caddyfile: `brew services restart caddy`. |
 | `tailscale serve status` shows no configuration | Re-run `tailscale serve --bg --https=443 http://localhost:9080`. Ensure HTTPS Certificates are enabled per §7.2. |
 | Certificate error on `*.ts.net` URL | Verify HTTPS Certificates are enabled in the Tailscale admin console under DNS settings. |
 | `tailscale: command not found` | Add the alias per §7.1b and reload your shell. |
-| Caddy won't start | Check for port conflicts on 9080: `sudo lsof -i :9080`. Stop any conflicting service before starting Caddy. |
 | QwenPaw auth not prompting | Verify the three `QWENPAW_AUTH_*` variables are present in the plist (`plutil -p ~/Library/LaunchAgents/com.qwenpaw.app.plist`) and reload the service per §7.8. |
 | Forgot the QwenPaw password | Reset it with `source ~/.zshrc && qwenpaw auth reset-password`. |
+| Want `/qwenpaw/` instead of `/console/` in the URL | QwenPaw hardcodes `/console` as its router basename. See [issue #8177](https://github.com/agentscope-ai/QwenPaw/issues/8177) for the feature request to make this configurable. |
 
 ### 7.11 Going Beyond: Public Access with Your Own Domain
 
@@ -897,7 +909,7 @@ The result:
 | Service | Public URL |
 |---------|-----------|
 | **oMLX admin dashboard** | `https://night-thoughts.me/omlx/admin` |
-| **QwenPaw web console** | `https://night-thoughts.me/qwenpaw/` |
+| **QwenPaw web console** | `https://night-thoughts.me/console/` |
 
 > **Security warning:** These URLs are reachable by **anyone on the internet**. You **must** have authentication enabled on both services before exposing them publicly. See §7.8 for QwenPaw auth and §4.3 for the oMLX API key. Consider enabling Cloudflare Access (free for up to 50 users) for an additional SSO layer.
 
@@ -985,7 +997,7 @@ Public internet → Cloudflare edge (TLS for night-thoughts.me)
                        ↓
                    Caddy (localhost:9080)
                     ├── /omlx/*    → oMLX
-                    └── /qwenpaw/* → QwenPaw
+                    └── /console/* → QwenPaw
 ```
 
 Your Caddyfile stays exactly as it is in §7.4 — no changes needed. Cloudflare handles TLS at the edge for your custom domain and forwards plain HTTP to Caddy. Your Tailscale Serve setup from §7.6 also continues to work in parallel, so you can reach the services via either URL.
@@ -1030,6 +1042,8 @@ cloudflared tunnel delete night-thoughts
 | oMLX isn't running after reboot | Run `brew services list` — status should be `started` |
 | Caddy isn't running after reboot | Run `brew services list \| grep caddy` — status should be `started`. If not, `brew services restart caddy` |
 | Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
+| QwenPaw shows MIME type error for JS | Verify `/assets/*` is routed to QwenPaw in the Caddyfile. Test: `curl -sI http://localhost:9080/assets/index-8OrhnpZF.js \| grep -i content-type` → `application/javascript` |
+| QwenPaw images (SVG, PNG) return 404 | The `@qwenpaw_public` block must be present in the Caddyfile to route root-level static files to QwenPaw |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
 | `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
