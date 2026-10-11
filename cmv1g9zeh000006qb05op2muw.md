@@ -283,9 +283,9 @@ Before moving on, confirm the key is accepted:
 curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models
 ```
 
-**Expected output:** A JSON list of available models (empty list is fine — you haven't downloaded any yet).
+**Expected output:** `{"object":"list","data":[]}` — an empty list is correct at this stage because no model is loaded yet. The important thing is that you don't see `{"detail":"API key required"}` or a `401`.
 
-If you get `{"detail":"API key required"}` or a `401`, the key wasn't saved. Re-run the `cat > ~/.omlx/settings.json` block from §4.3 and then `brew services restart omlx`.
+If you do get a `401`, the key wasn't saved. Re-run the `cat > ~/.omlx/settings.json` block from §4.3 and then `brew services restart omlx`.
 
 ### 4.7 Download & Deploy a Model
 
@@ -317,17 +317,23 @@ QwenPaw is a local-first AI agent framework that can connect to your oMLX-served
 
 ### 5.1 Install via One-Line Script
 
+The installer writes a `qwenpaw` wrapper to `~/.qwenpaw/bin/` and adds it to your `PATH` via `~/.zshrc`. Because your current shell session hasn't re-read that file yet, the command needs a `source ~/.zshrc` in between:
+
 ```bash
-curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash && qwenpaw init --defaults
+curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash && source ~/.zshrc && qwenpaw init --defaults
 ```
 
 **Expected output:**
 
 ```
-✅ QwenPaw installed successfully to ~/.qwenpaw
+[qwenpaw] QwenPaw installed successfully
+[qwenpaw] Wrapper created at /Users/<you>/.qwenpaw/bin/qwenpaw
+[qwenpaw] Updated /Users/<you>/.zshrc
 ✅ Configuration initialized at ~/.qwenpaw/config.json
 ✅ Default model backend configured
 ```
+
+> **If you already ran the installer and got `command not found: qwenpaw`:** the install itself succeeded — you just need to reload your shell. Run `source ~/.zshrc && qwenpaw init --defaults` and continue.
 
 This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`-managed Python environment. It automatically installs `uv`, creates a virtual environment, and downloads dependencies without requiring manual Python setup.
 
@@ -355,7 +361,7 @@ EOF
 ### 5.3 Start QwenPaw
 
 ```bash
-qwenpaw app
+source ~/.zshrc && qwenpaw app
 ```
 
 **Expected output:**
@@ -666,7 +672,9 @@ If the ping succeeds, Tailscale and MagicDNS are active and your server is reach
 | Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string (e.g., `omlx-night-thoughts`) |
 | `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header. Add `-H "Authorization: Bearer omlx-night-thoughts"` |
+| `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
 | Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` |
+| `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | Services don't start after reboot | Verify auto-login is enabled; check FileVault is OFF |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
 | QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
