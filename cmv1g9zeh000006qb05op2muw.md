@@ -25,7 +25,7 @@ Everything in this guide was verified on the following setup. If your versions a
 | **oMLX** | latest via `jundot/omlx` | Inference server + admin dashboard |
 | **QwenPaw** | latest via `agentscope.io` | Agent framework + web console |
 | **Caddy** | 2.x | Reverse proxy + authentication layer |
-| **Tailscale** | latest via `--cask` | Mesh VPN + TLS termination |
+| **Tailscale** | latest via `--cask` | Mesh VPN, SSH, TLS termination |
 | **cloudflared** | latest via Homebrew | Public access via custom domain |
 
 > **Note:** Version numbers above reflect the state of the ecosystem when this guide was written. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
@@ -487,7 +487,31 @@ omlx-night-thoughts
 
 > **Important:** `omlx-night-thoughts` is just an example. You can replace it with any string you want — as long as you use the **same value** in QwenPaw's config later in §5.2. If you change it here, change it there too.
 
-Write the key into oMLX's settings file (creating the file if needed) and restart the service:
+There are two ways to set this key. **The environment variable is the recommended approach** — it keeps the secret out of the JSON file, survives upgrades cleanly, and lets you rotate the key with a single command.
+
+#### Option A: Environment Variable (Recommended)
+
+oMLX reads the `OMLX_API_KEY` environment variable, which takes precedence over `settings.json`. Since oMLX is managed by `brew services`, the variable goes into its launchd plist.
+
+The command below writes the key into the plist and reloads the service in one shot. Replace `omlx-night-thoughts` with your chosen key, then paste the entire line:
+
+```bash
+PLIST=~/Library/LaunchAgents/sh.brew.omlx.plist; KEY=omlx-night-thoughts; /usr/libexec/PlistBuddy -c "Print :EnvironmentVariables" "$PLIST" >/dev/null 2>&1 || /usr/libexec/PlistBuddy -c "Add :EnvironmentVariables dict" "$PLIST"; /usr/libexec/PlistBuddy -c "Set :EnvironmentVariables:OMLX_API_KEY $KEY" "$PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :EnvironmentVariables:OMLX_API_KEY string $KEY" "$PLIST"; launchctl bootout gui/$(id -u)/sh.brew.omlx 2>/dev/null; launchctl bootstrap gui/$(id -u) "$PLIST" && echo "Key set and service reloaded"
+```
+
+**Expected output:** `Key set and service reloaded`
+
+The command is idempotent — safe to run on a fresh plist, safe to run again after the key is already set, safe to run for rotation.
+
+> **If you still have `auth.api_key` in `~/.omlx/settings.json`**, remove it to avoid confusion. The env var wins, but leaving a stale key in the file makes rotation error-prone:
+> ```bash
+> jq 'del(.auth.api_key)' ~/.omlx/settings.json > ~/.omlx/settings.json.tmp && mv ~/.omlx/settings.json.tmp ~/.omlx/settings.json
+> ```
+> If `jq` isn't installed: `brew install jq`.
+
+#### Option B: Settings File
+
+If you prefer to keep the key in the config file, write it directly:
 
 ```bash
 mkdir -p ~/.omlx && cat > ~/.omlx/settings.json << 'EOF'
@@ -499,17 +523,57 @@ mkdir -p ~/.omlx && cat > ~/.omlx/settings.json << 'EOF'
 EOF
 ```
 
-If you haven't started the service yet, this file is read automatically on first launch. If oMLX is already running, restart it to pick up the key:
+Then restart the service:
 
 ```bash
 brew services restart omlx
 ```
 
+> **Note:** If `~/.omlx/settings.json` already exists (for example, if you've configured other settings), **do not overwrite it with this heredoc**. Use the `jq` approach from §4.3b instead to update just the `api_key` field. The heredoc is only safe for a fresh install.
+
+#### Verify the Key Works
+
+Before moving on, confirm the key is accepted:
+
+```bash
+curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models
+```
+
+**Expected output:** `{"object":"list","data":[]}` — an empty list is correct at this stage because no model is loaded yet. The important thing is that you don't see `{"detail":"API key required"}` or a `401`.
+
+If you do get a `401`, the key wasn't saved. Re-run the single command from Option A, or the `jq` command from §4.3b, then restart the service.
+
 ### 4.3b Rotating the API Key Later
 
-Once oMLX and QwenPaw are running, `~/.omlx/settings.json` and `~/.qwenpaw/config.json` both contain **more than just the API key** — model preferences, backend options, timeouts, workspace paths, and whatever else the services have written. Overwriting them with a heredoc destroys all of that.
+Once oMLX and QwenPaw are running, `~/.qwenpaw/config.json` contains **more than just the API key** — model preferences, backend options, timeouts, and whatever else QwenPaw has written. Overwriting it with a heredoc destroys all of that.
 
-The safe way to update just the key is to use `jq`, which modifies a single JSON field in place without disturbing anything else.
+#### If You Used the Environment Variable
+
+Rotation is two commands.
+
+**Step 1: Update the plist and reload oMLX** — replace `your-new-key` with the new value and paste:
+
+```bash
+PLIST=~/Library/LaunchAgents/sh.brew.omlx.plist; KEY=your-new-key; /usr/libexec/PlistBuddy -c "Set :EnvironmentVariables:OMLX_API_KEY $KEY" "$PLIST"; launchctl bootout gui/$(id -u)/sh.brew.omlx 2>/dev/null; launchctl bootstrap gui/$(id -u) "$PLIST" && echo "Key rotated"
+```
+
+**Step 2: Update QwenPaw's config to match** — QwenPaw doesn't read env vars for the oMLX key, so this one still uses `jq`:
+
+```bash
+jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json && launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app && echo "QwenPaw reloaded"
+```
+
+**Step 3: Verify**
+
+```bash
+curl -s -H "Authorization: Bearer your-new-key" http://localhost:8000/v1/models
+```
+
+A JSON model list means both sides agree.
+
+> **Install `jq` if missing:** `brew install jq`
+
+#### If You Used the Settings File
 
 **Install `jq` if you don't already have it:**
 
@@ -517,13 +581,13 @@ The safe way to update just the key is to use `jq`, which modifies a single JSON
 brew install jq
 ```
 
-**Update oMLX's key** (replace `your-new-key` with the value you want):
+**Update oMLX's key:**
 
 ```bash
 jq '.auth.api_key = "your-new-key"' ~/.omlx/settings.json > ~/.omlx/settings.json.tmp && mv ~/.omlx/settings.json.tmp ~/.omlx/settings.json
 ```
 
-**Update QwenPaw's key to match** (same value):
+**Update QwenPaw's key to match:**
 
 ```bash
 jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json
@@ -809,28 +873,33 @@ All services should return healthy responses without any manual intervention.
 
 > **If services are missing after reboot:** the GUI session likely didn't start. See §1.4 for diagnosis and the LaunchDaemon conversion.
 
-## Part 7: Remote Access from Anywhere with Tailscale Serve + Caddy
+## Part 7: Remote Access from Anywhere
 
-This part sets up secure HTTPS access to both oMLX and QwenPaw from anywhere in the world, using Tailscale's built-in `*.ts.net` hostname. **Caddy** runs locally as a reverse proxy to route each service on a single port.
+This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailscale** provides encrypted SSH and private tailnet access; **Cloudflare Tunnel** provides public HTTPS via your own domain. **Caddy** runs locally as a reverse proxy in front of both services, and serves two routing modes at once:
+
+- **Subdomain routing** for Cloudflare (public): `omlx.nightthoughts.dev`, `qwenpaw.nightthoughts.dev`
+- **Path routing** for Tailscale (private): `night-thoughts.tail305232.ts.net/omlx/*`, `/console/*`
 
 The architecture:
 
 ```
-Client (tailnet) → Tailscale Serve (TLS, port 443)
-                       ↓
-                   Caddy (localhost:9080) ← always-on launchd service
-                    ├── /omlx/*    → oMLX   (localhost:8000)
-                    └── /console/* → QwenPaw (localhost:8088)
+                                        ┌──────────────────────────────┐
+Internet ─── Cloudflare edge (TLS) ────►│  Cloudflare Tunnel (encrypted)│
+                                        └───────────────┬──────────────┘
+                                                        │ plain HTTP
+Tailnet ─── Tailscale Serve (TLS) ──────────────────────┤
+                                                        ▼
+                                          Caddy (localhost:9080)
+                                           ├── Host: omlx.nightthoughts.dev      → oMLX :8000
+                                           ├── Host: qwenpaw.nightthoughts.dev   → QwenPaw :8088
+                                           ├── Path: /omlx/*                     → oMLX :8000
+                                           └── Path: /console/*                  → QwenPaw :8088
 ```
 
-**Caddy is a required always-on component.** It runs as a launchd service managed by `brew services`, which means:
+**Why subdomains for Cloudflare?** Two reasons:
 
-- It starts automatically on login (before you touch anything)
-- It restarts automatically if it crashes
-- It comes back up after every reboot
-- No manual intervention is ever needed
-
-> **Two access tiers.** Parts §7.0–§7.9 expose your services to devices on your Tailscale tailnet — encrypted, private, no domain required. Part §7.10 extends the same stack to the public internet via Cloudflare Tunnel, using your own domain. If you only need tailnet access, stop after §7.9.
+1. **QwenPaw's SPA expects to live at the root of its hostname.** It hardcodes `/console` as its router basename, which forces path-based routing and a stack of workarounds. Serving it on `qwenpaw.nightthoughts.dev` gives it a clean root — no basename hacks, no `/assets` rewrites, no `Referer` matching.
+2. **Subdomains decouple public access from Tailscale.** Tailscale's MagicDNS resolver conflicts with Cloudflare's public DNS on some setups. Subdomains resolve entirely through Cloudflare, so the two systems stop interfering.
 
 ### 7.0 Create a Tailscale Account
 
@@ -842,8 +911,6 @@ If you don't already have a Tailscale account, sign up first. It's free for pers
 4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin).
 
 > **Note:** If you sign up with a public email domain (e.g., `@gmail.com`) or GitHub, you're placed on a **shared-domain tailnet** on the Personal plan — 6 free users, 100 devices, and 50 tagged devices. That's more than enough for this guide.
-
-> **Important:** Shared-domain tailnets **cannot** use custom domains (the Domains page in the admin console will show "You are not authorized to access this page"). This guide does not require custom domains — Tailscale's built-in `*.ts.net` hostname works for everything below. If you own a domain and want public access, see §7.10.
 
 > **Tip:** The same account must be used on every device you want on your tailnet. If you sign in with Google on your Mac server, sign in with Google on your laptop too — otherwise they won't see each other.
 
@@ -872,15 +939,72 @@ echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >>
 **Expected output:**
 
 ```
-100.97.x.x    my-mac-mini     user@example.com  macOS    -
-100.88.x.x    my-laptop       user@example.com  macOS    -
+100.x.x.x    my-mac-mini     user@example.com  macOS    -
+100.x.x.x    my-laptop       user@example.com  macOS    -
 ```
 
 If you see your machine list, the CLI is working and you can proceed.
 
 > **Tip:** Your machine name may be long and awkward to type. You can rename it to something memorable like `night-thoughts` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
 
-### 7.2 Enable HTTPS Certificates
+### 7.2 SSH Config for Tailnet Access (No MagicDNS Required)
+
+MagicDNS is convenient but it isn't always compatible with other DNS setups on your Mac — particularly when Cloudflare is managing a public domain. If `tailscale set --accept-dns=false` has been applied (which the Cloudflare section below recommends), the short name `night-thoughts` and the FQDN `night-thoughts.tail305232.ts.net` will both fail to resolve.
+
+The fix is a **per-client SSH config file**. This replaces DNS resolution with a static hostname-to-IP mapping, so `ssh nt` works regardless of the DNS state.
+
+**Get the Tailscale IP first** (from the server or any tailnet device):
+
+```bash
+tailscale status | grep night-thoughts | awk '{print $1}'
+```
+
+**Expected output:** Something like `100.64.x.x` — the Tailscale IP of your Mac server. Tailscale assigns addresses in the `100.64.0.0/10` range.
+
+**Then, on every client device you SSH from** (not the server itself), append the alias to `~/.ssh/config`:
+
+```bash
+mkdir -p ~/.ssh && cat >> ~/.ssh/config << 'EOF'
+
+Host nt
+    HostName 100.64.x.x
+    User your-macos-username
+EOF
+```
+
+Replace:
+
+- `100.64.x.x` with the actual Tailscale IP from above
+- `your-macos-username` with the account you log in as on the Mac server
+
+**Verify:**
+
+```bash
+ssh nt
+```
+
+You should land on the Mac server without any hostname lookup. If you get `Permission denied`, the username is wrong — check `whoami` on the server. If you get `Connection timed out`, the Tailscale IP is wrong or Tailscale isn't running on one of the two devices.
+
+> **This must be done on every client device separately.** `~/.ssh/config` is per-user, per-machine. There's no central place to configure it. If you SSH from three laptops and a phone, you configure it four times.
+
+> **Why not `/etc/hosts`?** It requires `sudo`, breaks on OS updates that re-generate the file, and is global to the machine. `~/.ssh/config` is scoped to SSH, requires no elevated privileges, and survives system updates. For a single-use hostname alias, it's the right tool.
+
+> **Tip:** You can add multiple aliases pointing at the same host. Some people prefer `ssh nt` for brevity, others prefer `ssh night-thoughts` for clarity. Both can coexist:
+>
+> ```bash
+> cat >> ~/.ssh/config << 'EOF'
+>
+> Host nt
+>     HostName 100.64.x.x
+>     User your-macos-username
+>
+> Host night-thoughts
+>     HostName 100.64.x.x
+>     User your-macos-username
+> EOF
+> ```
+
+### 7.3 Enable HTTPS Certificates
 
 Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can terminate TLS on port 443.
 
@@ -889,7 +1013,7 @@ Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can 
 
 > **Note:** This is separate from custom domains. Enabling HTTPS certificates for your `*.ts.net` hostname works on **all** plans, including shared-domain tailnets.
 
-### 7.3 Install Caddy
+### 7.4 Install Caddy
 
 Caddy is the always-on reverse proxy that routes each service and provides a single entry point. Install it via Homebrew:
 
@@ -907,14 +1031,29 @@ caddy version
 
 **Expected output:** `v2.x.x`
 
-### 7.4 Configure Caddy
+### 7.5 Configure Caddy
 
-Caddy serves both services on a single local port (9080). oMLX is mounted under `/omlx/`, and QwenPaw's console is served under `/console/` — the subpath QwenPaw's SPA is hardcoded to use as its router basename.
+Caddy handles two routing modes at once:
+
+1. **Subdomain routing** for Cloudflare — `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` each map to their service at the root.
+2. **Path routing** for Tailscale Serve — a single hostname (`night-thoughts.tail305232.ts.net`) with `/omlx/*` and `/console/*` prefixes.
+
+Because Cloudflare and Tailscale both send **plain HTTP** to Caddy (each terminates TLS at its own edge), the subdomain blocks use the `http://` prefix to disable Caddy's automatic HTTPS.
 
 ```bash
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
+# ── Cloudflare subdomains (plain HTTP, tunnel forwards here) ──
+http://omlx.nightthoughts.dev:9080 {
+    reverse_proxy localhost:8000
+}
+
+http://qwenpaw.nightthoughts.dev:9080 {
+    reverse_proxy localhost:8088
+}
+
+# ── Tailscale Serve target (path-based, single hostname) ──────
 :9080 {
-    # ── oMLX entry point ─────────────────────────────────────
+    # oMLX entry point
     @omlx_bare path /omlx
     redir @omlx_bare /omlx/admin 302
 
@@ -928,23 +1067,20 @@ sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/n
         reverse_proxy localhost:8000
     }
 
-    # ── QwenPaw: full console + backend ──────────────────────
-    # QwenPaw's SPA uses /console as its router basename and
-    # serves assets + API from root-level paths (/assets, /api).
+    # QwenPaw: full console + backend
+    # QwenPaw's SPA uses /console as its router basename
     @qwenpaw path /console/* /api/* /assets/* /login /logout /voice/* /favicon.ico
     handle @qwenpaw {
         reverse_proxy localhost:8088
     }
 
-    # ── QwenPaw: public files (SVG, PNG) at root ─────────────
-    # Files in console/public/ are served at the domain root,
-    # e.g. /online.svg, /qwenpaw.png, /logo-dark.svg
+    # QwenPaw: public files (SVG, PNG) at root
     @qwenpaw_public path_regexp \.(svg|png|ico|gif|jpg|jpeg|webp|woff|woff2|ttf|eot)$
     handle @qwenpaw_public {
         reverse_proxy localhost:8088
     }
 
-    # ── Fallback: oMLX ───────────────────────────────────────
+    # Fallback: oMLX
     handle {
         reverse_proxy localhost:8000
     }
@@ -952,20 +1088,11 @@ sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/n
 EOF
 ```
 
-> **Why `/console/` and not `/qwenpaw/`?** QwenPaw's frontend hardcodes its React Router basename to `/console` in `console/src/utils/navigationMode.ts`. When the browser URL doesn't start with `/console`, the SPA boots without a basename and renders blank. There is no environment variable or reverse-proxy trick to override this — the SPA reads the URL bar directly at runtime. See [issue #8177](https://github.com/agentscope-ai/QwenPaw/issues/8177) for the feature request to make this configurable.
+> **Why both blocks?** The subdomain blocks (`http://omlx.nightthoughts.dev:9080`) only match requests where the `Host` header is that subdomain — which is what Cloudflare sends. The `:9080` block catches everything else, which is what Tailscale Serve sends (a request to `/omlx/*` or `/console/*` with the `.ts.net` host header).
 
-> **How the routing works:**
->
-> | Request | Matched by | Forwarded to |
-> |---------|------------|--------------|
-> | `/omlx/admin` | `handle_path /omlx/*` | oMLX, path stripped to `/admin` |
-> | `/omlx/static/...` | `handle_path /omlx/*` | oMLX, path stripped to `/static/...` |
-> | `/console/` | `@qwenpaw` | QwenPaw |
-> | `/api/version` | `@qwenpaw` | QwenPaw |
-> | `/assets/index-*.js` | `@qwenpaw` | QwenPaw |
-> | `/online.svg`, `/qwenpaw.png` | `@qwenpaw_public` | QwenPaw |
-> | `/admin`, `/static/*`, `/v1/*` | `@omlx_absolute` | oMLX |
-> | everything else | fallback `handle` | oMLX |
+> **Why `http://` on the subdomains?** Without it, Caddy would try to provision its own TLS certificate for `omlx.nightthoughts.dev`, which fails because Cloudflare already holds one for that hostname and Caddy can't complete the ACME challenge. The `http://` prefix tells Caddy to serve that hostname over plain HTTP only — the tunnel handles encryption at Cloudflare's edge.
+
+> **Why `/console/` for Tailscale?** QwenPaw's frontend hardcodes its React Router basename to `/console`. Under Cloudflare's subdomain, QwenPaw runs at the root (`https://qwenpaw.nightthoughts.dev/`) and the SPA's routing works naturally. Under Tailscale's single-hostname model, path-based routing is the only option, so the `/console` basename is exactly what QwenPaw expects. See [issue #8177](https://github.com/agentscope-ai/QwenPaw/issues/8177) for the feature request to make this configurable.
 
 Verify the syntax:
 
@@ -975,7 +1102,7 @@ caddy validate --config /opt/homebrew/etc/Caddyfile
 
 **Expected output:** `Valid configuration`
 
-### 7.5 Start Caddy as an Always-On Service
+### 7.6 Start Caddy as an Always-On Service
 
 Caddy must run as a launchd service so it survives reboots and restarts automatically. `brew services` handles all of this for you — it writes a launchd plist to `~/Library/LaunchAgents/` and keeps the process supervised.
 
@@ -1011,23 +1138,18 @@ brew services info caddy      # show detailed status
 
 > **After editing the Caddyfile**, you must reload Caddy: `brew services restart caddy`.
 
-### 7.6 Point Tailscale Serve at Caddy
+### 7.7 Point Tailscale Serve at Caddy
 
-Tell Tailscale to forward all HTTPS traffic on port 443 to Caddy on port 9080.
+Tailscale Serve exposes your services to devices on your tailnet — encrypted, private, and without requiring a public domain. This is a supplementary access method; the Cloudflare subdomain setup in §7.9 provides public access.
 
-First, clear any existing serve configuration:
+Set it up:
 
 ```bash
 tailscale serve reset
-```
-
-Then set up the proxy to Caddy:
-
-```bash
 tailscale serve --bg --https=443 http://localhost:9080
 ```
 
-Verify the serve configuration:
+Verify:
 
 ```bash
 tailscale serve status
@@ -1036,46 +1158,24 @@ tailscale serve status
 **Expected output:**
 
 ```
-https://night-thoughts.your-tailnet.ts.net (tailnet only)
+https://night-thoughts.tail305232.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
-Tailscale is now terminating TLS for your `*.ts.net` hostname and forwarding all requests to Caddy.
+> **Note:** Tailscale Serve configurations persist across reboots automatically.
 
-> **Note:** Tailscale Serve configurations persist across reboots automatically. Combined with Caddy's launchd service, the entire stack comes back up on its own after a restart.
-
-> **Important — Tailscale DNS hijack:** If `dig` resolves your public domains but `curl` returns `Could not resolve host`, Tailscale's MagicDNS resolver is capturing all system DNS queries. Fix it with:
+> **Important — Tailscale DNS hijack:** If `dig` resolves your Cloudflare subdomains but `curl` from the server returns `Could not resolve host`, Tailscale's MagicDNS resolver is capturing all system DNS queries. Fix it with:
+>
 > ```bash
 > tailscale set --accept-dns=false
 > sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 > ```
-> You lose MagicDNS short names (`ping night-thoughts`) but gain the ability to resolve public domains. Reach tailnet devices by their full `.ts.net` names or `100.x.x.x` IPs instead. If you still want the short name for SSH, add a permanent entry to your SSH config:
-> ```bash
-> cat >> ~/.ssh/config << 'EOF'
-> Host night-thoughts
->     HostName 100.97.7.34
->     User your-username
-> EOF
-> ```
-> Replace `100.97.7.34` with your Mac's Tailscale IP (`tailscale status | grep night-thoughts`). This is per-client and survives DNS changes.
-
-### 7.7 Access Your Services
-
-From any device on your tailnet — laptop, phone, tablet — open:
-
-| Service | URL |
-|---------|-----|
-| **oMLX admin dashboard** | `https://night-thoughts.your-tailnet.ts.net/omlx/admin` |
-| **oMLX API** | `https://night-thoughts.your-tailnet.ts.net/omlx/v1/models` |
-| **QwenPaw web console** | `https://night-thoughts.your-tailnet.ts.net/console/` |
-
-Replace `night-thoughts.your-tailnet.ts.net` with your actual MagicDNS name (`tailscale status --json | grep DNSName`). The tailnet name is the part after the machine name.
-
-Both services share port 443 — no ports appear in any URL.
+>
+> This disables MagicDNS short names on the server. That's why §7.2 above uses an SSH config file instead — it replaces what MagicDNS would have provided, without interfering with Cloudflare's public DNS.
 
 ### 7.8 Enable QwenPaw Authentication
 
-Tailscale controls network-level access, but **anyone on your tailnet can reach QwenPaw**. Enabling QwenPaw's built-in web authentication adds a login prompt at the application layer.
+Tailscale controls network-level access, but **anyone on your tailnet — and anyone on the internet once §7.9 is set up — can reach QwenPaw**. Enabling QwenPaw's built-in web authentication adds a login prompt at the application layer.
 
 QwenPaw uses three environment variables to enable auth. When all three are set, QwenPaw automatically creates the admin account on first startup — no manual registration step is needed.
 
@@ -1157,73 +1257,31 @@ curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 QwenPaw HTTP 200
 ```
 
-> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://night-thoughts.your-tailnet.ts.net/console/` in a browser to confirm you're prompted for credentials.
+> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://qwenpaw.nightthoughts.dev/` in a browser once §7.9 is complete to confirm you're prompted for credentials.
 
 > **Forgot the password?** Reset it with:
 > ```bash
 > source ~/.zshrc && qwenpaw auth reset-password
 > ```
 
-### 7.9 Verify Everything Survives Reboot
+### 7.9 Public Access with Subdomains
 
-Restart your Mac:
-
-```bash
-sudo reboot
-```
-
-After reboot, wait 30 seconds, then SSH in from another machine:
-
-```bash
-ssh your-username@your-mac-ip
-```
-
-Check all services in one command:
-
-```bash
-brew services list | grep -E "omlx|caddy" && launchctl list | grep -E "qwenpaw|caffeinate" && tailscale serve status
-```
-
-**Expected output:**
-
-```
-omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
-caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
--   0   com.qwenpaw.app
--   0   com.caffeinate.server
-https://night-thoughts.your-tailnet.ts.net (tailnet only)
-|-- / proxy http://localhost:9080
-```
-
-All components should be running without any manual intervention:
-
-| Component | Managed by | Auto-starts on login? | Auto-restarts on crash? |
-|-----------|------------|-----------------------|--------------------------|
-| **oMLX** | `brew services` | ✅ | ✅ |
-| **Caddy** | `brew services` | ✅ | ✅ |
-| **QwenPaw** | `launchd` (`KeepAlive`) | ✅ | ✅ |
-| **caffeinate** | `launchd` (`KeepAlive`) | ✅ | ✅ |
-| **Tailscale Serve** | Tailscale daemon | ✅ | ✅ |
-
-> **If any of these are missing after a reboot**, the GUI session probably didn't start. See §1.4 for the LaunchDaemon conversion, which makes cloudflared and QwenPaw independent of the desktop session.
-
-### 7.10 Public Access with Your Own Domain
-
-This section extends your setup from tailnet-only access to the public internet. After completing the steps below, your services become reachable from any browser — no Tailscale client required — using your own domain. Public access is provided by **Cloudflare Tunnel**, which routes external traffic to your local Caddy instance without opening any ports on your router.
+This section extends your setup from tailnet-only access to the public internet. After completing these steps, your services become reachable from any browser — no Tailscale client required — using subdomains on your own domain.
 
 The result:
 
 | Service | Public URL |
 |---------|-----------|
-| **oMLX admin dashboard** | `https://night-thoughts.dev/omlx/admin` |
-| **QwenPaw web console** | `https://night-thoughts.dev/console/` |
+| **oMLX admin dashboard** | `https://omlx.nightthoughts.dev/` |
+| **oMLX API** | `https://omlx.nightthoughts.dev/v1/models` |
+| **QwenPaw web console** | `https://qwenpaw.nightthoughts.dev/` |
 
 > **Security warning:** These URLs are reachable by **anyone on the internet**. You **must** have authentication enabled on both services before exposing them publicly. See §7.8 for QwenPaw auth and §4.3 for the oMLX API key. Consider enabling Cloudflare Access (free for up to 50 users) for an additional SSO layer.
 
 **Step 1: Add your domain to Cloudflare**
 
 1. Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
-2. Click **Add a site** and enter `night-thoughts.dev`.
+2. Click **Add a site** and enter `nightthoughts.dev`.
 3. Choose the **Free** plan.
 4. Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account. They will look like `<name>.ns.cloudflare.com`. **Copy both** — you'll need them in Step 2.
 
@@ -1233,13 +1291,13 @@ Cloudflare needs to be the authoritative DNS provider for your domain. This mean
 
 The process is the same for every registrar:
 
-1. Log in to your registrar account and find the DNS or nameserver settings for `night-thoughts.dev`.
+1. Log in to your registrar account and find the DNS or nameserver settings for `nightthoughts.dev`.
 2. Locate the current nameservers (they'll be the registrar's defaults, e.g., `ns1.godaddy.com`).
 3. **Delete** them.
 4. **Paste** the two Cloudflare nameservers from Step 1. For this guide, they are:
    ```
-   lamar.ns.cloudflare.com
-   rosemary.ns.cloudflare.com
+   april.ns.cloudflare.com
+   damien.ns.cloudflare.com
    ```
 5. **Save** your changes.
 
@@ -1252,13 +1310,13 @@ The process is the same for every registrar:
 If your registrar is GoDaddy:
 
 1. Log in to [GoDaddy](https://godaddy.com) and go to **My Products**.
-2. Find `night-thoughts.dev` and click **DNS** (or **Manage DNS**).
+2. Find `nightthoughts.dev` and click **DNS** (or **Manage DNS**).
 3. Scroll to the **Nameservers** section and click **Change**.
 4. Select **I'll use my own nameservers** (or **Custom**).
 5. Delete the existing GoDaddy nameservers and paste:
    ```
-   lamar.ns.cloudflare.com
-   rosemary.ns.cloudflare.com
+   april.ns.cloudflare.com
+   damien.ns.cloudflare.com
    ```
 6. Click **Save**, then **Continue** to confirm.
 
@@ -1267,14 +1325,14 @@ If your registrar is GoDaddy:
 After saving, check that the new nameservers are live:
 
 ```bash
-dig +short NS night-thoughts.dev @1.1.1.1
+dig +short NS nightthoughts.dev @1.1.1.1
 ```
 
 **Expected output:**
 
 ```
-lamar.ns.cloudflare.com.
-rosemary.ns.cloudflare.com.
+april.ns.cloudflare.com.
+damien.ns.cloudflare.com.
 ```
 
 If you see your registrar's nameservers instead, wait and retry — propagation can take up to 48 hours, though it's often much faster.
@@ -1291,7 +1349,7 @@ brew install cloudflared
 cloudflared tunnel login
 ```
 
-This opens a browser — select `night-thoughts.dev` and authorize.
+This opens a browser — select `nightthoughts.dev` and authorize.
 
 > **Note:** If you see `You have an existing certificate at ~/.cloudflared/cert.pem which login would overwrite`, that means you're already authenticated. Skip this step — the existing cert is valid and being used by your running tunnel.
 
@@ -1303,13 +1361,23 @@ cloudflared tunnel list | grep -q night-thoughts || cloudflared tunnel create ni
 
 This generates a tunnel ID and credentials file in `~/.cloudflared/`. The `grep -q` guard skips creation if the tunnel already exists, so it's safe to re-run.
 
-**Step 6: Route DNS**
+**Step 6: Route DNS for both subdomains**
 
 ```bash
-cloudflared tunnel route dns night-thoughts night-thoughts.dev
+cloudflared tunnel route dns night-thoughts omlx.nightthoughts.dev
+cloudflared tunnel route dns night-thoughts qwenpaw.nightthoughts.dev
 ```
 
-This creates a proxied CNAME record at Cloudflare pointing `night-thoughts.dev` to your tunnel. If it fails with "neither the ID nor the name of any of your tunnels", run `cloudflared tunnel list` to see the actual tunnel names and retry with the exact name or ID.
+Each command creates a **proxied CNAME** at Cloudflare pointing the subdomain to your tunnel. Two commands, two records.
+
+**Expected output per command:**
+
+```
+INF Added CNAME omlx.nightthoughts.dev which will route to this tunnel tunnelID=<uuid>
+INF Added CNAME qwenpaw.nightthoughts.dev which will route to this tunnel tunnelID=<uuid>
+```
+
+> **Why subdomains instead of paths?** QwenPaw's frontend is hardcoded to expect its router basename at `/console`. Serving it under a path like `/qwenpaw/*` breaks its internal navigation. Serving it at the root of `qwenpaw.nightthoughts.dev` matches what the SPA expects — no workarounds needed.
 
 **Step 7: Configure the tunnel**
 
@@ -1322,7 +1390,9 @@ tunnel: $TUNNEL_ID
 credentials-file: $HOME/.cloudflared/$TUNNEL_ID.json
 
 ingress:
-  - hostname: night-thoughts.dev
+  - hostname: omlx.nightthoughts.dev
+    service: http://localhost:9080
+  - hostname: qwenpaw.nightthoughts.dev
     service: http://localhost:9080
   - service: http_status:404
 EOF
@@ -1339,11 +1409,13 @@ cat ~/.cloudflared/config.yml
 **Expected output:**
 
 ```
-tunnel: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-credentials-file: /Users/YOUR_USERNAME/.cloudflared/a1b2c3d4-e5f6-7890-abcd-ef1234567890.json
+tunnel: <uuid>
+credentials-file: /Users/<you>/.cloudflared/<uuid>.json
 
 ingress:
-  - hostname: night-thoughts.dev
+  - hostname: omlx.nightthoughts.dev
+    service: http://localhost:9080
+  - hostname: qwenpaw.nightthoughts.dev
     service: http://localhost:9080
   - service: http_status:404
 ```
@@ -1447,120 +1519,12 @@ CONNECTOR ID                         CREATED              ARCHITECTURE VERSION  
 Then test publicly:
 
 ```bash
-curl -s -o /dev/null -w "oMLX:    HTTP %{http_code}\n" https://night-thoughts.dev/omlx/admin
-curl -s -o /dev/null -w "QwenPaw: HTTP %{http_code}\n" https://night-thoughts.dev/console/
+curl -s -o /dev/null -w "oMLX dashboard:    HTTP %{http_code}\n" https://omlx.nightthoughts.dev/
+curl -s -o /dev/null -w "oMLX API:          HTTP %{http_code}\n" https://omlx.nightthoughts.dev/v1/models
+curl -s -o /dev/null -w "QwenPaw console:   HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
 ```
 
-**Expected output:** `HTTP 200` for both.
-
-#### 7.10.1 Serving Multiple Domains on the Same Tunnel
-
-A single Cloudflare Tunnel can serve any number of hostnames. If you own a second domain — say `nightthoughts.dev` alongside `night-thoughts.dev` — you can point it at the same tunnel without creating a new one or reconfiguring Caddy.
-
-> **Why this comes up:** Each Cloudflare zone is managed independently. Adding a second domain to the tunnel is not a one-liner — you must first add it to Cloudflare as its own zone, switch its nameservers at the registrar, and then route it to the tunnel. Skipping any step results in the domain not resolving at all, even though everything looks configured in the first zone.
-
-**Step A: Add the second domain to Cloudflare**
-
-1. In the Cloudflare dashboard, click **Add a site** and enter `nightthoughts.dev`.
-2. Choose the **Free** plan.
-3. Cloudflare will assign **two new nameservers** to this zone. They will be different from the ones assigned to `night-thoughts.dev` — for example:
-   ```
-   april.ns.cloudflare.com
-   damien.ns.cloudflare.com
-   ```
-4. **Copy both** — you'll need them in the next step.
-
-**Step B: Update nameservers at your registrar**
-
-Repeat the same nameserver change you did for the first domain, this time for the second:
-
-1. Log in to your registrar and go to the DNS settings for `nightthoughts.dev`.
-2. Delete the existing nameservers.
-3. Paste the two new Cloudflare nameservers assigned to `nightthoughts.dev`.
-4. Save.
-
-> **Important:** If DNSSEC is enabled for the second domain, disable it before changing nameservers — same reason as the first domain. DNSSEC conflicts with the new authoritative DNS provider.
-
-Verify propagation once it's live:
-
-```bash
-dig +short NS nightthoughts.dev @1.1.1.1
-```
-
-**Expected output:** The two new Cloudflare nameservers.
-
-**Step C: Route the second domain to your existing tunnel**
-
-Once the domain is active in Cloudflare (you'll get a confirmation email), run:
-
-```bash
-cloudflared tunnel route dns night-thoughts nightthoughts.dev
-```
-
-The `night-thoughts` here is the **tunnel name** you chose in Step 5 — it does not have to match any of your domain names. This creates a proxied CNAME at the second zone pointing at the same tunnel.
-
-**Step D: Add the hostname to the tunnel config**
-
-The tunnel config (`~/.cloudflared/config.yml`) currently has a single ingress rule. Add the second hostname as an additional rule, keeping the catch-all at the end:
-
-```bash
-TUNNEL_ID=$(cloudflared tunnel list | awk '/night-thoughts/ {print $1}') && \
-cat > ~/.cloudflared/config.yml << EOF
-tunnel: $TUNNEL_ID
-credentials-file: $HOME/.cloudflared/$TUNNEL_ID.json
-
-ingress:
-  - hostname: night-thoughts.dev
-    service: http://localhost:9080
-  - hostname: nightthoughts.dev
-    service: http://localhost:9080
-  - service: http_status:404
-EOF
-```
-
-Each `hostname` becomes its own ingress rule. All hostnames point to the same Caddy instance on port 9080 — Caddy handles the actual routing based on the request's `Host` header, which it already does for the first domain.
-
-**Step E: Restart the tunnel agent**
-
-```bash
-launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
-sleep 5
-```
-
-**Step F: Verify**
-
-```bash
-curl -s -o /dev/null -w "night-thoughts.dev:     HTTP %{http_code}\n" https://night-thoughts.dev/omlx/admin
-curl -s -o /dev/null -w "nightthoughts.dev:     HTTP %{http_code}\n" https://nightthoughts.dev/omlx/admin
-```
-
-**Expected output:** `HTTP 200` for both.
-
-You can also confirm the tunnel is announcing both hostnames:
-
-```bash
-cloudflared tunnel info night-thoughts
-```
-
-Both domains will appear in Cloudflare's Zero Trust → Networks → Tunnels view under the same tunnel's **Public Hostnames** tab.
-
-> **Note about DNS propagation for the second domain:** The nameserver change for the second domain follows the same timeline as the first — a few minutes to a couple of hours in most cases. Until Cloudflare confirms the zone is active, `cloudflared tunnel route dns` will fail with a "zone not found" error. Wait for the confirmation email, then retry.
-
-**How it fits together:**
-
-```
-Public internet → Cloudflare edge (TLS for both domains)
-                       ↓
-                   Cloudflare Tunnel (encrypted)
-                       ↓
-                   cloudflared (localhost, managed by launchd user agent)
-                       ↓
-                   Caddy (localhost:9080)
-                    ├── /omlx/*    → oMLX
-                    └── /console/* → QwenPaw
-```
-
-Your Caddyfile stays exactly as it is in §7.4 — no changes needed. Cloudflare handles TLS at the edge for your custom domain and forwards plain HTTP to Caddy. Your Tailscale Serve setup from §7.6 also continues to work in parallel, so you can reach the services via either URL.
+**Expected output:** `HTTP 200` for the dashboard and console; `HTTP 401` for the API (no key sent).
 
 **Access control (recommended):**
 
@@ -1593,7 +1557,91 @@ rm ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
 cloudflared tunnel delete night-thoughts
 ```
 
-> **Note about Tailscale Funnel:** Tailscale also offers Funnel for public exposure, but custom domains with Funnel require the Tailscale PAM beta (which may need a Premium plan). Cloudflare Tunnel is free, works today, and gives you the same result without any Tailscale-side changes.
+#### 7.9.1 Serving Additional Domains
+
+You can add as many hostnames to the same tunnel as you want. The pattern is the same for each one:
+
+1. **Add the domain as a new zone in Cloudflare** — click **Add a site**, choose Free.
+2. **Update nameservers at your registrar** to the two new Cloudflare nameservers assigned to that zone.
+3. **Route the hostname to your tunnel** once the zone is active:
+   ```bash
+   cloudflared tunnel route dns night-thoughts <subdomain>.<yourdomain>
+   ```
+4. **Add the hostname to `~/.cloudflared/config.yml`** — same pattern as Step 7, one ingress rule per hostname.
+5. **Restart the tunnel:**
+   ```bash
+   launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
+   ```
+
+The Caddyfile already handles subdomains generically, so no changes are needed there unless the new hostname maps to a service Caddy doesn't know about.
+
+> **Note about DNS propagation:** Nameserver changes for a new zone follow the same timeline as the first — a few minutes to a couple of hours. Until Cloudflare confirms the zone is active, `cloudflared tunnel route dns` will fail with a "zone not found" error. Wait for the confirmation email, then retry.
+
+**How it fits together:**
+
+```
+Public internet → Cloudflare edge (TLS for both subdomains)
+                       ↓
+                   Cloudflare Tunnel (encrypted)
+                       ↓
+                   cloudflared (localhost, managed by launchd user agent)
+                       ↓
+                   Caddy (localhost:9080)
+                    ├── Host: omlx.nightthoughts.dev    → oMLX
+                    └── Host: qwenpaw.nightthoughts.dev → QwenPaw
+```
+
+### 7.10 Verify Everything Survives Reboot
+
+Restart your Mac:
+
+```bash
+sudo reboot
+```
+
+After reboot, wait 30 seconds, then SSH in from another machine:
+
+```bash
+ssh nt
+```
+
+Check all services in one command:
+
+```bash
+brew services list | grep -E "omlx|caddy" && launchctl list | grep -E "qwenpaw|cloudflared|caffeinate" && tailscale serve status
+```
+
+**Expected output:**
+
+```
+omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
+caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
+-   0   com.qwenpaw.app
+46761	0	com.cloudflare.cloudflared
+-   0   com.caffeinate.server
+https://night-thoughts.tail305232.ts.net (tailnet only)
+|-- / proxy http://localhost:9080
+```
+
+All components should be running without any manual intervention:
+
+| Component | Managed by | Auto-starts on login? | Auto-restarts on crash? |
+|-----------|------------|-----------------------|--------------------------|
+| **oMLX** | `brew services` | ✅ | ✅ |
+| **Caddy** | `brew services` | ✅ | ✅ |
+| **QwenPaw** | `launchd` (`KeepAlive`) | ✅ | ✅ |
+| **cloudflared** | `launchd` (`KeepAlive`) | ✅ | ✅ |
+| **caffeinate** | `launchd` (`KeepAlive`) | ✅ | ✅ |
+| **Tailscale Serve** | Tailscale daemon | ✅ | ✅ |
+
+Then verify public access works end-to-end:
+
+```bash
+curl -s -o /dev/null -w "Public oMLX:    HTTP %{http_code}\n" https://omlx.nightthoughts.dev/
+curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
+```
+
+> **If any of these are missing after a reboot**, the GUI session probably didn't start. See §1.4 for the LaunchDaemon conversion, which makes cloudflared and QwenPaw independent of the desktop session.
 
 ## Troubleshooting Quick Reference
 
@@ -1614,26 +1662,27 @@ cloudflared tunnel delete night-thoughts
 | oMLX isn't running after reboot | Run `brew services list` — status should be `started` |
 | Caddy isn't running after reboot | Run `brew services list \| grep caddy` — status should be `started`. If not, `brew services restart caddy` |
 | Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
-| QwenPaw shows MIME type error for JS | Verify `/assets/*` is routed to QwenPaw in the Caddyfile. Test: `curl -sI http://localhost:9080/assets/index-8OrhnpZF.js \| grep -i content-type` → `application/javascript` |
-| QwenPaw images (SVG, PNG) return 404 | The `@qwenpaw_public` block must be present in the Caddyfile to route root-level static files to QwenPaw |
-| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
+| QwenPaw shows MIME type error for JS | Under Tailscale paths, verify `/assets/*` is routed to QwenPaw. Under Cloudflare subdomains, this shouldn't happen — if it does, `caddy validate --config /opt/homebrew/etc/Caddyfile` and check for a typo in the subdomain block |
+| QwenPaw images (SVG, PNG) return 404 | Under Tailscale paths, the `@qwenpaw_public` block must be present. Under Cloudflare subdomains, this shouldn't happen — the SPA runs at the root |
+| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in oMLX's env var or `~/.omlx/settings.json`. Both must be **exactly** the same string |
 | **Need to change the oMLX API key without losing other settings** | Use `jq` per §4.3b — never overwrite `settings.json` or `config.json` with a heredoc once they contain other fields |
 | `jq: command not found` | Install with `brew install jq` |
 | `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
 | `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
-| Forgot the oMLX API key | Read it back with `cat ~/.omlx/settings.json \| grep api_key` or `jq -r '.auth.api_key' ~/.omlx/settings.json` |
+| Forgot the oMLX API key | Read it back with `jq -r '.auth.api_key' ~/.omlx/settings.json` or `/usr/libexec/PlistBuddy -c "Print :EnvironmentVariables:OMLX_API_KEY" ~/Library/LaunchAgents/sh.brew.omlx.plist` |
 | Forgot the QwenPaw password | Run `source ~/.zshrc && qwenpaw auth reset-password` |
 | `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
 | `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
 | `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
-| `cloudflared tunnel route dns` fails with "zone not found" for a second domain | The second domain hasn't finished activating in Cloudflare yet. Wait for the confirmation email, verify with `dig +short NS <domain> @1.1.1.1`, then retry |
+| `cloudflared tunnel route dns` fails with "zone not found" | The domain hasn't finished activating in Cloudflare yet. Wait for the confirmation email, verify with `dig +short NS <domain> @1.1.1.1`, then retry |
 | `cloudflared tunnel login` says "existing certificate ... would overwrite" | You're already authenticated. Skip the login step — the cert at `~/.cloudflared/cert.pem` is valid |
-| cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist on macOS. Remove it and write a user launch agent per §7.10 Step 8 |
+| cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist on macOS. Remove it and write a user launch agent per §7.9 Step 8 |
 | Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS <domain> @1.1.1.1` — should return `*.ns.cloudflare.com` servers |
-| `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
+| `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`. See §7.7 for the SSH config workaround |
 | `dscacheutil -q host -a name <domain>` returns nothing but `dig` works | `mDNSResponder` is in a zombie state. Fix: `sudo killall -9 mDNSResponder mDNSResponderHelper && sudo dscacheutil -flushcache && sudo ifconfig en0 down && sleep 2 && sudo ifconfig en0 up`. If that fails, reboot |
-| `sudo launchctl kickstart -k system/com.apple.mDNSResponder` returns "Could not find service" | The launchd label differs on your macOS version. Use `sudo killall -9 mDNSResponder` instead — launchd's KeepAlive restarts it |
-| `ssh night-thoughts` fails after `--accept-dns=false` | MagicDNS short names are disabled. Add an SSH config entry per §7.6: `Host night-thoughts` → `HostName 100.x.x.x` |
+| `ssh nt` returns `Could not resolve hostname` | Your `~/.ssh/config` entry is missing or malformed. See §7.2 |
+| `ssh nt` returns `Permission denied` | Wrong username in `~/.ssh/config`. Verify with `whoami` on the server |
+| `ssh nt` returns `Connection timed out` | Wrong Tailscale IP, or Tailscale isn't running on one of the two devices. Check with `tailscale status` on both |
 | `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
 | `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
 | `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
@@ -1641,5 +1690,5 @@ cloudflared tunnel delete night-thoughts
 | Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
 | Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
 | Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
-| Custom domain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for the domain entry. |
-| Cloudflare Tunnel not running | Run `launchctl list \| grep cloudflared`. If missing, write the launch agent per §7.10 Step 8 |
+| Public subdomain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for both `omlx.` and `qwenpaw.` records |
+| Cloudflare Tunnel not running | Run `launchctl list \| grep cloudflared`. If missing, write the launch agent per §7.9 Step 8 |
