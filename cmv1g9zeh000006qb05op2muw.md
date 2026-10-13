@@ -878,7 +878,7 @@ All services should return healthy responses without any manual intervention.
 This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailscale** provides encrypted SSH and private tailnet access; **Cloudflare Tunnel** provides public HTTPS via your own domain. **Caddy** runs locally as a reverse proxy in front of both services, and serves two routing modes at once:
 
 - **Subdomain routing** for Cloudflare (public): `omlx.nightthoughts.dev`, `qwenpaw.nightthoughts.dev`
-- **Path routing** for Tailscale (private): `night-thoughts.tail305232.ts.net/omlx/*`, `/console/*`
+- **Path routing** for Tailscale (private): `night-thoughts.<your-tailnet>.ts.net/omlx/*`, `/console/*`
 
 The architecture:
 
@@ -900,6 +900,8 @@ Tailnet ─── Tailscale Serve (TLS) ─────────────�
 
 1. **QwenPaw's SPA expects to live at the root of its hostname.** It hardcodes `/console` as its router basename, which forces path-based routing and a stack of workarounds. Serving it on `qwenpaw.nightthoughts.dev` gives it a clean root — no basename hacks, no `/assets` rewrites, no `Referer` matching.
 2. **Subdomains decouple public access from Tailscale.** Tailscale's MagicDNS resolver conflicts with Cloudflare's public DNS on some setups. Subdomains resolve entirely through Cloudflare, so the two systems stop interfering.
+
+> **Finding your tailnet name:** Every Tailscale tailnet has a unique DNS suffix of the form `<something>.ts.net`. Yours is shown in the [admin console](https://console.tailscale.com/admin/dns) under **Tailnet name**, or by running `tailscale status --json | grep DNSName`. Throughout this guide, `<your-tailnet>` is a placeholder for that suffix.
 
 ### 7.0 Create a Tailscale Account
 
@@ -949,7 +951,7 @@ If you see your machine list, the CLI is working and you can proceed.
 
 ### 7.2 SSH Config for Tailnet Access (No MagicDNS Required)
 
-MagicDNS is convenient but it isn't always compatible with other DNS setups on your Mac — particularly when Cloudflare is managing a public domain. If `tailscale set --accept-dns=false` has been applied (which the Cloudflare section below recommends), the short name `night-thoughts` and the FQDN `night-thoughts.tail305232.ts.net` will both fail to resolve.
+MagicDNS is convenient but it isn't always compatible with other DNS setups on your Mac — particularly when Cloudflare is managing a public domain. If `tailscale set --accept-dns=false` has been applied (which the Cloudflare section below recommends), the short name `night-thoughts` and the FQDN `night-thoughts.<your-tailnet>.ts.net` will both fail to resolve.
 
 The fix is a **per-client SSH config file**. This replaces DNS resolution with a static hostname-to-IP mapping, so `ssh nt` works regardless of the DNS state.
 
@@ -1011,7 +1013,7 @@ Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can 
 1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
 2. Under the **HTTPS Certificates** section, click **Enable HTTPS**.
 
-> **Note:** This is separate from custom domains. Enabling HTTPS certificates for your `*.ts.net` hostname works on **all** plans, including shared-domain tailnets.
+> **Note:** This is separate from custom domains. Enabling HTTPS certificates for your `<machine>.<your-tailnet>.ts.net` hostname works on **all** plans, including shared-domain tailnets.
 
 ### 7.4 Install Caddy
 
@@ -1036,7 +1038,7 @@ caddy version
 Caddy handles two routing modes at once:
 
 1. **Subdomain routing** for Cloudflare — `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` each map to their service at the root.
-2. **Path routing** for Tailscale Serve — a single hostname (`night-thoughts.tail305232.ts.net`) with `/omlx/*` and `/console/*` prefixes.
+2. **Path routing** for Tailscale Serve — a single hostname (`night-thoughts.<your-tailnet>.ts.net`) with `/omlx/*` and `/console/*` prefixes.
 
 Because Cloudflare and Tailscale both send **plain HTTP** to Caddy (each terminates TLS at its own edge), the subdomain blocks use the `http://` prefix to disable Caddy's automatic HTTPS.
 
@@ -1169,7 +1171,7 @@ tailscale serve status
 **Expected output:**
 
 ```
-https://night-thoughts.tail305232.ts.net (tailnet only)
+https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
@@ -1638,7 +1640,7 @@ caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 -   0   com.qwenpaw.app
 46761	0	com.cloudflare.cloudflared
 -   0   com.caffeinate.server
-https://night-thoughts.tail305232.ts.net (tailnet only)
+https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
