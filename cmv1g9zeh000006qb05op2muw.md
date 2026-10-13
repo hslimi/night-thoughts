@@ -1044,7 +1044,16 @@ Because Cloudflare and Tailscale both send **plain HTTP** to Caddy (each termina
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
 # ── Cloudflare subdomains (plain HTTP, tunnel forwards here) ──
 http://omlx.nightthoughts.dev:9080 {
-    reverse_proxy localhost:8000
+    # Paths oMLX actually owns — pass through to the backend
+    @known path /admin /admin/* /v1 /v1/* /static/* /health /favicon.ico
+    handle @known {
+        reverse_proxy localhost:8000
+    }
+
+    # Root and any unmatched path → redirect to the dashboard
+    handle {
+        redir /admin 302
+    }
 }
 
 http://qwenpaw.nightthoughts.dev:9080 {
@@ -1091,6 +1100,8 @@ EOF
 > **Why both blocks?** The subdomain blocks (`http://omlx.nightthoughts.dev:9080`) only match requests where the `Host` header is that subdomain — which is what Cloudflare sends. The `:9080` block catches everything else, which is what Tailscale Serve sends (a request to `/omlx/*` or `/console/*` with the `.ts.net` host header).
 
 > **Why `http://` on the subdomains?** Without it, Caddy would try to provision its own TLS certificate for `omlx.nightthoughts.dev`, which fails because Cloudflare already holds one for that hostname and Caddy can't complete the ACME challenge. The `http://` prefix tells Caddy to serve that hostname over plain HTTP only — the tunnel handles encryption at Cloudflare's edge.
+
+> **Root and unmatched paths redirect to `/admin`.** oMLX's dashboard lives at `/admin`, not `/`. Rather than show users a 404 when they hit `https://omlx.nightthoughts.dev/`, the catch-all `handle` block sends a 302 redirect to `/admin`. The `@known` matcher lists every path oMLX actually serves, so API calls (`/v1/*`), static assets (`/static/*`), and health checks pass through untouched. Only requests that don't match any real oMLX route get redirected.
 
 > **Why `/console/` for Tailscale?** QwenPaw's frontend hardcodes its React Router basename to `/console`. Under Cloudflare's subdomain, QwenPaw runs at the root (`https://qwenpaw.nightthoughts.dev/`) and the SPA's routing works naturally. Under Tailscale's single-hostname model, path-based routing is the only option, so the `/console` basename is exactly what QwenPaw expects. See [issue #8177](https://github.com/agentscope-ai/QwenPaw/issues/8177) for the feature request to make this configurable.
 
@@ -1272,7 +1283,7 @@ The result:
 
 | Service | Public URL |
 |---------|-----------|
-| **oMLX admin dashboard** | `https://omlx.nightthoughts.dev/` |
+| **oMLX admin dashboard** | `https://omlx.nightthoughts.dev/admin` |
 | **oMLX API** | `https://omlx.nightthoughts.dev/v1/models` |
 | **QwenPaw web console** | `https://qwenpaw.nightthoughts.dev/` |
 
@@ -1519,12 +1530,20 @@ CONNECTOR ID                         CREATED              ARCHITECTURE VERSION  
 Then test publicly:
 
 ```bash
-curl -s -o /dev/null -w "oMLX dashboard:    HTTP %{http_code}\n" https://omlx.nightthoughts.dev/
-curl -s -o /dev/null -w "oMLX API:          HTTP %{http_code}\n" https://omlx.nightthoughts.dev/v1/models
-curl -s -o /dev/null -w "QwenPaw console:   HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
+curl -s -o /dev/null -w "oMLX root redirect:  HTTP %{http_code}\n" https://omlx.nightthoughts.dev/
+curl -s -o /dev/null -w "oMLX dashboard:      HTTP %{http_code}\n" https://omlx.nightthoughts.dev/admin
+curl -s -o /dev/null -w "oMLX API:            HTTP %{http_code}\n" https://omlx.nightthoughts.dev/v1/models
+curl -s -o /dev/null -w "QwenPaw console:     HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
 ```
 
-**Expected output:** `HTTP 200` for the dashboard and console; `HTTP 401` for the API (no key sent).
+**Expected output:**
+
+```
+oMLX root redirect:  HTTP 302    (redirects to /admin)
+oMLX dashboard:      HTTP 200
+oMLX API:            HTTP 401    (no key sent)
+QwenPaw console:     HTTP 200
+```
 
 **Access control (recommended):**
 
@@ -1637,7 +1656,7 @@ All components should be running without any manual intervention:
 Then verify public access works end-to-end:
 
 ```bash
-curl -s -o /dev/null -w "Public oMLX:    HTTP %{http_code}\n" https://omlx.nightthoughts.dev/
+curl -s -o /dev/null -w "Public oMLX:    HTTP %{http_code}\n" https://omlx.nightthoughts.dev/admin
 curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
 ```
 
@@ -1661,7 +1680,8 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` |
 | oMLX isn't running after reboot | Run `brew services list` — status should be `started` |
 | Caddy isn't running after reboot | Run `brew services list \| grep caddy` — status should be `started`. If not, `brew services restart caddy` |
-| Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. Use `http://localhost:8000/admin` |
+| Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. The Caddyfile in §7.5 already redirects `/` to `/admin` on the public subdomain, but the local oMLX port doesn't redirect |
+| `omlx.nightthoughts.dev` root returns 404 | Your Caddyfile is missing the `handle { redir /admin 302 }` catch-all. Re-apply §7.5 |
 | QwenPaw shows MIME type error for JS | Under Tailscale paths, verify `/assets/*` is routed to QwenPaw. Under Cloudflare subdomains, this shouldn't happen — if it does, `caddy validate --config /opt/homebrew/etc/Caddyfile` and check for a typo in the subdomain block |
 | QwenPaw images (SVG, PNG) return 404 | Under Tailscale paths, the `@qwenpaw_public` block must be present. Under Cloudflare subdomains, this shouldn't happen — the SPA runs at the root |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in oMLX's env var or `~/.omlx/settings.json`. Both must be **exactly** the same string |
