@@ -27,9 +27,9 @@ Almost every computer in use today follows the same basic design. A processing u
 
 The design has one inherent weakness. Every piece of data that needs to be processed must first travel from memory to the processor. Then the result travels back. For simple tasks, this is negligible. For AI workloads, which involve massive matrices of numbers and repeated passes over model weights, the travel becomes the dominant cost.
 
-Researchers call this the memory wall [1]. Over the past 20 years, peak server compute has scaled at roughly 3× every two years, while DRAM bandwidth has grown at only 1.6× and interconnect bandwidth at 1.4×. The gap is still widening.
+Researchers call this the memory wall <sup><a href="#ref-1">[1]</a></sup>. Over the past 20 years, peak server compute has scaled at roughly 3× every two years, while DRAM bandwidth has grown at only 1.6× and interconnect bandwidth at 1.4×. The gap is still widening.
 
-Google confirmed this at data-center scale. Compute performance has grown roughly 80× over the last decade, while memory bandwidth has grown closer to 17× [2]. Modern LLM inference is bottlenecked by memory bandwidth and memory latency, not compute.
+Google confirmed this at data-center scale. Compute performance has grown roughly 80× over the last decade, while memory bandwidth has grown closer to 17× <sup><a href="#ref-2">[2]</a></sup>. Modern LLM inference is bottlenecked by memory bandwidth and memory latency, not compute.
 
 ### Why AI Makes It Worse
 
@@ -60,7 +60,7 @@ These are two separate pools, in two separate physical locations, connected by a
 
 The NVIDIA RTX Spark takes a different approach. Instead of having separate RAM and VRAM pools, it uses **unified memory**. The CPU and GPU share the exact same pool of physical memory addresses.
 
-NVIDIA officially announced the RTX Spark in 2026. It is an Arm-based system-on-a-chip (SoC) that combines a 20-core Grace CPU, a 6,144-core Blackwell RTX GPU, and up to 128 GB of LPDDR5X unified memory on a single piece of silicon [7]. The highest configuration supports models with up to 120 billion parameters and a context window of one million tokens.
+NVIDIA officially announced the RTX Spark in 2026. It is an Arm-based system-on-a-chip (SoC) that combines a 20-core Grace CPU, a 6,144-core Blackwell RTX GPU, and up to 128 GB of LPDDR5X unified memory on a single piece of silicon <sup><a href="#ref-7">[7]</a></sup>. The highest configuration supports models with up to 120 billion parameters and a context window of one million tokens.
 
 ### Why This Matters
 
@@ -102,10 +102,10 @@ Training and fine-tuning are even more memory-hungry than inference. You need me
 
 1. **Model weights.** The parameters of the model itself.
 2. **Gradients.** The values computed during backpropagation.
-3. **Optimizer states.** The internal state of the optimizer algorithm. Research shows optimizer states can account for up to 42% of total memory usage during fine-tuning [9].
+3. **Optimizer states.** The internal state of the optimizer algorithm. Research shows optimizer states can account for up to 42% of total memory usage during fine-tuning <sup><a href="#ref-9">[9]</a></sup>.
 4. **Activations.** The intermediate outputs of each layer during the forward pass.
 
-A practical rule of thumb is that fine-tuning requires 4 to 6 times the memory of the model itself [9]. For a 7B model, that means 28 to 42 GB. For a 70B model, 280 to 420 GB. On a traditional GPU with 24 GB of VRAM, fine-tuning anything beyond a small model is impractical.
+A practical rule of thumb is that fine-tuning requires 4 to 6 times the memory of the model itself <sup><a href="#ref-9">[9]</a></sup>. For a 7B model, that means 28 to 42 GB. For a 70B model, 280 to 420 GB. On a traditional GPU with 24 GB of VRAM, fine-tuning anything beyond a small model is impractical.
 
 ### What the RTX Spark Changes
 
@@ -135,7 +135,7 @@ This is the speed of the path between the processor and memory. In a traditional
 
 This is the speed of the memory itself — how fast the DRAM can produce data once the processor asks for it. This is a property of the memory technology, not the bus. Even with a superhighway connecting the processor to memory, the memory can only produce data so fast. HBM produces data far faster than LPDDR5X.
 
-For context: NVIDIA's Rubin data-center GPUs pack 288 GB of HBM4 with up to 22 TB/s of peak bandwidth [6]. By comparison, the RTX Spark's LPDDR5X memory tops out at around 600 GB/s [7]. The gap is roughly 36x in raw bandwidth.
+For context: NVIDIA's Rubin data-center GPUs pack 288 GB of HBM4 with up to 22 TB/s of peak bandwidth <sup><a href="#ref-6">[6]</a></sup>. By comparison, the RTX Spark's LPDDR5X memory tops out at around 600 GB/s <sup><a href="#ref-7">[7]</a></sup>. The gap is roughly 36x in raw bandwidth.
 
 The RTX Spark solves the road problem. It does not solve the forklift problem. The LPDDR5X memory itself has a physical speed limit that is lower than HBM. This is the honest caveat.
 
@@ -146,19 +146,19 @@ The RTX Spark solves the road problem. It does not solve the forklift problem. T
 
 The memory wall is not just a performance problem. It is also a power problem.
 
-In traditional systems, data movement consumes the majority of energy. NVIDIA's own research states that 73% of computing energy in AI workloads goes to moving data, while only 9% is used for actual computation [3]. Every byte that crosses the PCIe bus costs energy. The RTX Spark's architecture directly attacks this.
+In traditional systems, data movement consumes the majority of energy. NVIDIA's own research states that 73% of computing energy in AI workloads goes to moving data, while only 9% is used for actual computation <sup><a href="#ref-3">[3]</a></sup>. Every byte that crosses the PCIe bus costs energy. The RTX Spark's architecture directly attacks this.
 
 ### NVLink-C2C: The Efficiency Breakthrough
 
-The specific technology enabling the efficiency gain is NVLink-C2C, a chip-to-chip interconnect that replaces the PCIe bus entirely. NVIDIA states that NVLink-C2C delivers up to 5x more energy efficiency than PCIe Gen 5, with data transfers consuming just 1.3 picojoules per bit [4].
+The specific technology enabling the efficiency gain is NVLink-C2C, a chip-to-chip interconnect that replaces the PCIe bus entirely. NVIDIA states that NVLink-C2C delivers up to 5x more energy efficiency than PCIe Gen 5, with data transfers consuming just 1.3 picojoules per bit <sup><a href="#ref-4">[4]</a></sup>.
 
-One academic study measured the actual power consumption of both interconnects. NVLink consumed 70.9 picojoules per bit, while PCIe consumed 167.9 picojoules per bit [5]. That is 2.4x less energy per bit moved — a tangible, measurable improvement.
+One academic study measured the actual power consumption of both interconnects. NVLink consumed 70.9 picojoules per bit, while PCIe consumed 167.9 picojoules per bit <sup><a href="#ref-5">[5]</a></sup>. That is 2.4x less energy per bit moved — a tangible, measurable improvement.
 
 ### The User-Facing Benefit: Real Battery Life
 
-This efficiency translates into real-world battery life. The RTX Spark operates at a TDP of 45-80W [7]. It can drop to single-digit wattage during light tasks like typing or browsing. NVIDIA claims it is its most power-efficient RTX chip ever made and delivers all-day battery life in a thin chassis.
+This efficiency translates into real-world battery life. The RTX Spark operates at a TDP of 45-80W <sup><a href="#ref-7">[7]</a></sup>. It can drop to single-digit wattage during light tasks like typing or browsing. NVIDIA claims it is its most power-efficient RTX chip ever made and delivers all-day battery life in a thin chassis.
 
-An independent battery test at IFA 2026 confirmed this. A Surface Laptop Ultra running Blender — an intensive 3D rendering application — was unplugged at 9 AM. After 5.5 hours, the 10% battery warning had only just appeared [8]. A comparable MacBook Pro would typically last 4-5 hours under similar workloads.
+An independent battery test at IFA 2026 confirmed this. A Surface Laptop Ultra running Blender — an intensive 3D rendering application — was unplugged at 9 AM. After 5.5 hours, the 10% battery warning had only just appeared <sup><a href="#ref-8">[8]</a></sup>. A comparable MacBook Pro would typically last 4-5 hours under similar workloads.
 
 ### The Trade-off
 
@@ -182,12 +182,20 @@ Whether this bet pays off depends on whether developers and creators actually ne
 
 ## References
 
-1. Wulf, W., & McKee, S. (1995). Hitting the Memory Wall: Implications of the Obvious.
-2. Google Research. (2025). Hardware scaling disparities in AI data centers.
-3. NVIDIA GTC 2026 keynote and developer blog. Energy consumption in AI workloads.
-4. NVIDIA NVLink-C2C specifications. Energy efficiency comparisons.
-5. Academic study on interconnect power consumption. (70.9 pJ/bit vs. 167.9 pJ/bit)
-6. NVIDIA Rubin GPU specifications (288 GB HBM4, 22 TB/s).
-7. RTX Spark specifications (128 GB LPDDR5X, 600 GB/s, 45-80W TDP).
-8. IFA 2026 Surface Laptop Ultra battery test.
-9. Fine-tuning memory requirements research (optimizer states, 4-6x rule).
+<a id="ref-1"></a>1. Wulf, W., & McKee, S. (1995). Hitting the Memory Wall: Implications of the Obvious.
+
+<a id="ref-2"></a>2. Google Research. (2025). Hardware scaling disparities in AI data centers.
+
+<a id="ref-3"></a>3. NVIDIA GTC 2026 keynote and developer blog. Energy consumption in AI workloads.
+
+<a id="ref-4"></a>4. NVIDIA NVLink-C2C specifications. Energy efficiency comparisons.
+
+<a id="ref-5"></a>5. Academic study on interconnect power consumption. (70.9 pJ/bit vs. 167.9 pJ/bit)
+
+<a id="ref-6"></a>6. NVIDIA Rubin GPU specifications (288 GB HBM4, 22 TB/s).
+
+<a id="ref-7"></a>7. RTX Spark specifications (128 GB LPDDR5X, 600 GB/s, 45-80W TDP).
+
+<a id="ref-8"></a>8. IFA 2026 Surface Laptop Ultra battery test.
+
+<a id="ref-9"></a>9. Fine-tuning memory requirements research (optimizer states, 4-6x rule).
