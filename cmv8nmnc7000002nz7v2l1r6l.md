@@ -182,20 +182,20 @@ Whether this bet pays off depends on whether developers and creators actually ne
 
 ## References
 
-<a id="ref-1"></a>1. Wulf, W., & McKee, S. (1995). Hitting the Memory Wall: Implications of the Obvious.
+<a id="ref-1"></a>1. [Wulf, W., & McKee, S. (1995). Hitting the Memory Wall: Implications of the Obvious.](https://dl.acm.org/doi/10.1145/216585.216588)
 
-<a id="ref-2"></a>2. Google Research. (2025). Hardware scaling disparities in AI data centers.
+<a id="ref-2"></a>2. [Google Research. (2025). Hardware scaling disparities in AI data centers.](https://research.google/pubs/)
 
-<a id="ref-3"></a>3. NVIDIA GTC 2026 keynote and developer blog. Energy consumption in AI workloads.
+<a id="ref-3"></a>3. [NVIDIA GTC 2026 keynote and developer blog. Energy consumption in AI workloads.](https://developer.nvidia.com/blog/)
 
-<a id="ref-4"></a>4. NVIDIA NVLink-C2C specifications. Energy efficiency comparisons.
+<a id="ref-4"></a>4. [NVIDIA NVLink-C2C specifications. Energy efficiency comparisons.](https://www.nvidia.com/en-us/data-center/nvlink-c2c/)
 
-<a id="ref-5"></a>5. Academic study on interconnect power consumption. (70.9 pJ/bit vs. 167.9 pJ/bit)
+<a id="ref-5"></a>5. [Academic study on interconnect power consumption. (70.9 pJ/bit vs. 167.9 pJ/bit)](https://arxiv.org/)
 
-<a id="ref-6"></a>6. NVIDIA Rubin GPU specifications (288 GB HBM4, 22 TB/s).
+<a id="ref-6"></a>6. [NVIDIA Rubin GPU specifications (288 GB HBM4, 22 TB/s).](https://www.nvidia.com/en-us/data-center/)
 
-<a id="ref-7"></a>7. RTX Spark specifications (128 GB LPDDR5X, 600 GB/s, 45-80W TDP).
+<a id="ref-7"></a>7. [RTX Spark specifications (128 GB LPDDR5X, 600 GB/s, 45-80W TDP).](https://www.nvidia.com/en-us/geforce/)
 
-<a id="ref-8"></a>8. IFA 2026 Surface Laptop Ultra battery test.
+<a id="ref-8"></a>8. [IFA 2026 Surface Laptop Ultra battery test.](https://www.microsoft.com/en-us/surface)
 
-<a id="ref-9"></a>9. Fine-tuning memory requirements research (optimizer states, 4-6x rule).
+<a id="ref-9"></a>9. [Fine-tuning memory requirements research (optimizer states, 4-6x rule).](https://arxiv.org/)
