@@ -8,12 +8,14 @@ tags: ai, mlx, macmini, qwenpaw
 
 ---
 
+# Complete Guide: Always-On Mac Server with MLX, oMLX & QwenPaw
+
 ## Tested Environment
 
 Everything in this guide was verified on the following setup. If your versions are close, the commands should work unchanged.
 
 | Component | Version | Notes |
-|-----------|---------|-------|
+| --- | --- | --- |
 | **macOS** | 15.x (Sequoia) or later | Required for oMLX |
 | **Chip** | Apple Silicon (M1/M2/M3/M4/M5) | Required for MLX and oMLX |
 | **Homebrew** | 4.x | Package manager for oMLX, Caddy, and Tailscale |
@@ -52,7 +54,7 @@ pmset -g
 
 **Expected output:**
 
-```
+```plaintext
 System-wide power settings:
  SleepDisabled		1
 Currently in use:
@@ -73,7 +75,7 @@ Currently in use:
 ```
 
 > **Note:** On macOS Ventura (13) and later, `pmset` reports the disablesleep setting as `SleepDisabled 1` instead of `disablesleep 1`. This is expected — it means the same thing.
->
+> 
 > The annotation `(sleep prevented by powerd, bluetoothd)` next to `sleep 0` is **informational, not an error**. It simply means that in addition to your `pmset` settings, system daemons are also actively preventing sleep. Your server will stay awake.
 
 ### 1.1b Prevent App Nap with caffeinate
@@ -87,7 +89,7 @@ caffeinate -dimsu -t 2147483647
 ```
 
 | Flag | Effect |
-|------|--------|
+| --- | --- |
 | `-d` | Prevent the display from sleeping |
 | `-i` | Prevent idle system sleep — this is what blocks App Nap |
 | `-m` | Prevent disk idle sleep |
@@ -136,7 +138,7 @@ launchctl list | grep caffeinate
 
 **Expected output:**
 
-```
+```plaintext
 -	0	com.caffeinate.server
 ```
 
@@ -154,7 +156,7 @@ pmset -g assertions | grep -A 5 "caffeinate"
 
 On macOS Catalina (10.15) and later, the `systemsetup` command requires **Full Disk Access** to toggle Remote Login. Running it without that permission will fail with:
 
-```
+```plaintext
 setremotelogin: Turning Remote Login on or off requires Full Disk Access privileges.
 ```
 
@@ -162,12 +164,18 @@ This is a macOS security feature (TCC), and `sudo` alone does not bypass it. Fol
 
 **Step 1: Grant Full Disk Access to Terminal**
 
-1. Open **System Settings**.
-2. Go to **Privacy & Security** → **Full Disk Access**.
-3. Click the **+** button.
-4. Navigate to **Applications** → **Utilities** and select **Terminal.app** (or your terminal of choice, e.g., iTerm).
-5. Toggle Terminal **on** in the list.
-6. **Quit Terminal completely** (`Cmd+Q`) and reopen it. The permission only takes effect for new sessions.
+1.  Open **System Settings**.
+    
+2.  Go to **Privacy & Security** → **Full Disk Access**.
+    
+3.  Click the **+** button.
+    
+4.  Navigate to **Applications** → **Utilities** and select **Terminal.app** (or your terminal of choice, e.g., iTerm).
+    
+5.  Toggle Terminal **on** in the list.
+    
+6.  **Quit Terminal completely** (`Cmd+Q`) and reopen it. The permission only takes effect for new sessions.
+    
 
 **Step 2: Enable Remote Login**
 
@@ -189,186 +197,38 @@ sudo systemsetup -getremotelogin
 
 Now you can SSH from another Mac: `ssh username@your-mac-ip`
 
-### 1.3 Enable Auto-Login (Required for launchd Services at Boot)
+### 1.3 Enable Auto-Login (Required for LaunchAgents)
 
 launchd user agents only start after a user logs in. Without auto-login, your services won't run after a reboot.
 
-1. Open **System Settings** → **Users & Groups**
-2. Click **Automatic Login** → select your user account
-3. Enter your password when prompted
+1.  Open **System Settings** → **Users & Groups**
+    
+2.  Click **Automatic Login** → select your user account
+    
+3.  Enter your password when prompted
+    
 
 > **Note:** FileVault must be OFF for auto-login to work. Go to **System Settings → Privacy & Security → FileVault** and turn it off if it's enabled. This is acceptable for a physically secure home server.
 
-### 1.4 Make Services Truly Reboot-Proof (LaunchDaemons vs. LaunchAgents)
+### 1.4 LaunchAgents vs. LaunchDaemons (Understanding the Difference)
 
-There's a subtle problem with the approach so far. Everything created in `~/Library/LaunchAgents/` is a **LaunchAgent**, and LaunchAgents only load **after a user logs into the GUI session** — `WindowServer` and `loginwindow` must both be running. If the desktop session fails to start on reboot (which happens on headless Macs more often than you'd expect), none of your services come up. You're locked out until you walk over with a keyboard.
+As you build this server, you'll encounter two types of background services. It's important to know the difference:
 
-**LaunchDaemons** in `/Library/LaunchDaemons/` run **at boot, before any login**, in a system context. They don't need a GUI session. This is the correct mechanism for infrastructure that must survive unattended reboots.
+- **LaunchAgents** (`~/Library/LaunchAgents/`) run **only after you log in** to the Mac. The graphical user interface (`WindowServer` and `loginwindow`) must be running. If the Mac boots headless and fails to start the GUI, LaunchAgents never start. Examples in this guide: **oMLX**, **Caddy**, and **caffeinate**.
+- **LaunchDaemons** (`/Library/LaunchDaemons/`) run **at system boot**, long before any user logs in. They run in the background and do not need a GUI. Examples in this guide: **QwenPaw** and **cloudflared**.
 
-#### Why the desktop session sometimes fails on headless Macs
+**Why does this matter?** If your Mac mini reboots but the desktop session gets stuck (which happens on headless Macs), your LaunchAgents won't load. By installing the core external-access services (QwenPaw and cloudflared) as LaunchDaemons, we guarantee you can reach the server from the internet even if the GUI hangs.
 
-Three causes, in order of likelihood:
-
-| Cause | Symptom | Fix |
-|-------|---------|-----|
-| **FileVault enabled** | Mac waits at pre-boot unlock screen; auto-login never fires | Turn off FileVault |
-| **No display attached** | `WindowServer` refuses to start without a display signal | Add an HDMI dummy plug (~$10) |
-| **Stuck `loginwindow`** | Mac boots, network up, but no user session starts | `pkill` sequence below over SSH |
-
-Before converting to LaunchDaemons, diagnose which layer is failing. SSH in after a reboot and run:
+If the GUI *does* fail to start, SSH in and run this diagnostic to see what's happening:
 
 ```bash
 echo "=== Login window running? ===" && pgrep -l loginwindow
 echo "=== WindowServer running? ===" && pgrep -l WindowServer
-echo "=== User session exists? ===" && launchctl print gui/$(id -u) 2>&1 | head -3
-echo "=== Services loaded? ===" && launchctl list | grep -E "qwenpaw|cloudflared|caffeinate"
 ```
 
-**Interpretation:**
+If both return nothing, the GUI never started. Check that FileVault is OFF, auto-login is enabled, and consider adding an HDMI dummy plug (a cheap hardware trick that forces the Mac to output a video signal so `WindowServer` starts).
 
-| Result | Meaning | Action |
-|--------|---------|--------|
-| No `loginwindow` process | GUI never started | Check FileVault, auto-login, display dongle |
-| `loginwindow` running, no `WindowServer` | GUI stuck mid-boot | `pkill` sequence, or display dongle |
-| Both running, services missing | LaunchAgents not loading | Convert to LaunchDaemons |
-| `launchctl print gui/$(id -u)` says "Domain does not support specified action" | No GUI session at all | LaunchDaemons are the only fix |
-
-If the desktop is stuck, this SSH sequence usually revives it:
-
-```bash
-sudo pkill -9 loginwindow
-sudo pkill -9 WindowServer
-sleep 5
-sudo launchctl kickstart -k system/com.apple.loginwindow
-```
-
-#### Convert cloudflared and QwenPaw to LaunchDaemons
-
-The two services you wrote by hand are the easiest to migrate. Replace the LaunchAgent with a LaunchDaemon that specifies which user it runs as.
-
-**cloudflared:**
-
-```bash
-# Remove the LaunchAgent
-launchctl bootout gui/$(id -u)/com.cloudflare.cloudflared 2>/dev/null
-rm -f ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
-
-# Create the LaunchDaemon
-sudo tee /Library/LaunchDaemons/com.cloudflare.cloudflared.plist > /dev/null << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>com.cloudflare.cloudflared</string>
-  <key>UserName</key>
-  <string>YOUR_USERNAME</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/opt/homebrew/bin/cloudflared</string>
-    <string>tunnel</string>
-    <string>run</string>
-  </array>
-  <key>RunAtLoad</key>
-  <true/>
-  <key>KeepAlive</key>
-  <true/>
-  <key>StandardOutPath</key>
-  <string>/tmp/cloudflared.out.log</string>
-  <key>StandardErrorPath</key>
-  <string>/tmp/cloudflared.err.log</string>
-</dict>
-</plist>
-EOF
-
-# Load the daemon
-sudo launchctl bootstrap system /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
-```
-
-> **Replace `YOUR_USERNAME` with your actual macOS username** (`whoami` to check). The `UserName` key is what makes the daemon run as you, so it can still read `~/.cloudflared/`.
-
-**QwenPaw:**
-
-```bash
-# Remove the LaunchAgent
-launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null
-rm -f ~/Library/LaunchAgents/com.qwenpaw.app.plist
-
-# Create the LaunchDaemon (uses your absolute home path, not $HOME)
-sudo tee /Library/LaunchDaemons/com.qwenpaw.app.plist > /dev/null << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>com.qwenpaw.app</string>
-  <key>UserName</key>
-  <string>YOUR_USERNAME</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/Users/YOUR_USERNAME/.qwenpaw/bin/qwenpaw</string>
-    <string>app</string>
-  </array>
-  <key>RunAtLoad</key>
-  <true/>
-  <key>KeepAlive</key>
-  <true/>
-  <key>WorkingDirectory</key>
-  <string>/Users/YOUR_USERNAME</string>
-  <key>EnvironmentVariables</key>
-  <dict>
-    <key>QWENPAW_LOG_MAX_SIZE</key>
-    <string>2MiB</string>
-    <key>QWENPAW_LOG_MAX_BACKUPS</key>
-    <string>2</string>
-  </dict>
-  <key>StandardOutPath</key>
-  <string>/tmp/qwenpaw.out.log</string>
-  <key>StandardErrorPath</key>
-  <string>/tmp/qwenpaw.err.log</string>
-</dict>
-</plist>
-EOF
-
-sudo launchctl bootstrap system /Library/LaunchDaemons/com.qwenpaw.app.plist
-```
-
-> **Note:** LaunchDaemons don't expand `$HOME` — you must use the absolute path `/Users/YOUR_USERNAME/`. Replace both instances.
-
-**caffeinate** follows the same pattern if you want it to run without a GUI session — though it only matters if the desktop itself is running, so leaving it as a LaunchAgent is fine.
-
-#### What about oMLX and Caddy?
-
-Both are managed by `brew services`, which writes LaunchAgents. Converting them means taking over their plists manually. If you need oMLX and Caddy to come up before login, you'd have to:
-
-1. Copy their Homebrew-generated plists from `~/Library/LaunchAgents/` to `/Library/LaunchDaemons/`
-2. Add the `UserName` key
-3. Add `EnvironmentVariables` for `PATH` (Homebrew's binaries aren't in the default daemon path)
-
-For most setups, converting just cloudflared and QwenPaw is enough — those are the two that matter for "I need to reach the server from outside." oMLX and Caddy can come up once you log in via SSH and the session starts, or you can walk to the machine once.
-
-#### Verify the conversion
-
-```bash
-sudo launchctl list | grep -E "cloudflared|qwenpaw"
-```
-
-**Expected output:** Both services listed with a numeric PID.
-
-Reboot and verify without logging in:
-
-```bash
-sudo reboot
-```
-
-After the Mac comes back, SSH in and check:
-
-```bash
-sudo launchctl list | grep -E "cloudflared|qwenpaw"
-curl -s -o /dev/null -w "QwenPaw: HTTP %{http_code}\n" http://localhost:8088/
-```
-
-Both should be up before any GUI session exists.
+> **Managing LaunchDaemons:** Because they run in the system domain, you must use `sudo` and the `system/` path to manage them. For example: `sudo launchctl kickstart -k system/com.qwenpaw.app`. Attempting to use `gui/$(id -u)` will fail with `Could not find service`.
 
 ### 1.5 Optional: Menu Bar Server Mode Toggle
 
@@ -412,7 +272,7 @@ uv venv --python 3.11 ~/.mlx-venv && source ~/.mlx-venv/bin/activate && python -
 
 **Expected output:**
 
-```
+```plaintext
 Python 3.11.x
 arm
 ```
@@ -432,6 +292,7 @@ source ~/.mlx-venv/bin/activate && uv pip install mlx mlx-lm && python -c "impor
 **Expected output:** `Successfully installed mlx-x.x.x mlx-lm-x.x.x ...` followed by `0.32.x`.
 
 > **Note:** The top-level `mlx` module does **not** export `__version__`. If you try `python -c "import mlx; print(mlx.__version__)"`, you'll get `AttributeError: module 'mlx' has no attribute '__version__'`. The version attribute lives on `mlx.core`. Alternatively, you can read the version from package metadata:
+> 
 > ```bash
 > python -c "import importlib.metadata as md; print(md.version('mlx'))"
 > ```
@@ -466,7 +327,7 @@ brew tap jundot/omlx https://github.com/jundot/omlx && brew trust jundot/omlx &&
 
 **Expected output:**
 
-```
+```plaintext
 ==> Tapping jundot/omlx
 Cloning into '/opt/homebrew/Library/Taps/jundot/homebrew-omlx'...
 Tapped 1 formula.
@@ -475,13 +336,13 @@ Tapped 1 formula.
 /opt/homebrew/Cellar/omlx/x.x.x: ...
 ```
 
-> **Why `brew trust` is needed:** Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — a security feature to prevent arbitrary code execution from untrusted sources. If you skip this, you'll see `Error: Refusing to load formula jundot/omlx/omlx from untrusted tap jundot/omlx.`
+> **Why** `brew trust` **is needed:** Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — a security feature to prevent arbitrary code execution from untrusted sources. If you skip this, you'll see `Error: Refusing to load formula jundot/omlx/omlx from untrusted tap jundot/omlx.`
 
 ### 4.3 Set the API Key
 
 oMLX requires an API key for all requests to the `/v1/*` endpoints. **You choose this key yourself** — it's not generated. For this guide, we'll use:
 
-```
+```plaintext
 omlx-night-thoughts
 ```
 
@@ -503,10 +364,12 @@ PLIST=~/Library/LaunchAgents/sh.brew.omlx.plist; KEY=omlx-night-thoughts; /usr/l
 
 The command is idempotent — safe to run on a fresh plist, safe to run again after the key is already set, safe to run for rotation.
 
-> **If you still have `auth.api_key` in `~/.omlx/settings.json`**, remove it to avoid confusion. The env var wins, but leaving a stale key in the file makes rotation error-prone:
+> **If you still have** `auth.api_key` **in** `~/.omlx/settings.json`, remove it to avoid confusion. The env var wins, but leaving a stale key in the file makes rotation error-prone:
+> 
 > ```bash
 > jq 'del(.auth.api_key)' ~/.omlx/settings.json > ~/.omlx/settings.json.tmp && mv ~/.omlx/settings.json.tmp ~/.omlx/settings.json
 > ```
+> 
 > If `jq` isn't installed: `brew install jq`.
 
 #### Option B: Settings File
@@ -560,7 +423,7 @@ PLIST=~/Library/LaunchAgents/sh.brew.omlx.plist; KEY=your-new-key; /usr/libexec/
 **Step 2: Update QwenPaw's config to match** — QwenPaw doesn't read env vars for the oMLX key, so this one still uses `jq`:
 
 ```bash
-jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json && launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app && echo "QwenPaw reloaded"
+jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json && sudo launchctl kickstart -k system/com.qwenpaw.app && echo "QwenPaw reloaded"
 ```
 
 **Step 3: Verify**
@@ -571,11 +434,11 @@ curl -s -H "Authorization: Bearer your-new-key" http://localhost:8000/v1/models
 
 A JSON model list means both sides agree.
 
-> **Install `jq` if missing:** `brew install jq`
+> **Install** `jq` **if missing:** `brew install jq`
 
 #### If You Used the Settings File
 
-**Install `jq` if you don't already have it:**
+**Install** `jq` **if you don't already have it:**
 
 ```bash
 brew install jq
@@ -597,7 +460,7 @@ jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.
 
 ```bash
 brew services restart omlx
-launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app
+sudo launchctl kickstart -k system/com.qwenpaw.app
 sleep 3
 ```
 
@@ -623,14 +486,14 @@ brew services start omlx && brew services list | grep omlx
 
 **Expected output:**
 
-```
+```plaintext
 ==> Successfully started `omlx` (label: sh.brew.omlx)
 omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 ```
 
 The `Status` should be `started`. Homebrew writes the launchd plist to `~/Library/LaunchAgents/sh.brew.omlx.plist` automatically — no manual plist creation needed.
 
-**Useful `brew services` commands:**
+**Useful** `brew services` **commands:**
 
 ```bash
 brew services stop omlx      # stop the service
@@ -642,7 +505,7 @@ brew services info omlx      # show detailed status
 
 oMLX binds to `http://localhost:8000` by default. Open the admin dashboard in your browser:
 
-```
+```plaintext
 http://localhost:8000/admin
 ```
 
@@ -664,11 +527,16 @@ If you do get a `401`, the key wasn't saved. Re-run the `jq` command from §4.3b
 
 ### 4.7 Download & Deploy a Model
 
-1. In the admin dashboard (`http://localhost:8000/admin`), go to the **Models** section
-2. Search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
-3. Click **Download** — watch the progress bar
-4. Configure per-model settings (sampling parameters, context length, etc.)
-5. Click **Load** to start serving
+1.  In the admin dashboard (`http://localhost:8000/admin`), go to the **Models** section
+    
+2.  Search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
+    
+3.  Click **Download** — watch the progress bar
+    
+4.  Configure per-model settings (sampling parameters, context length, etc.)
+    
+5.  Click **Load** to start serving
+    
 
 Verify the model is live:
 
@@ -684,7 +552,7 @@ curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/
 
 > **Note:** oMLX provides both OpenAI-compatible (`/v1/chat/completions`) and Anthropic-compatible (`/v1/messages`) endpoints. It also supports `/v1/embeddings`, `/v1/rerank`, and `/v1/responses` for broader compatibility.
 
-![oMLX admin dashboard with a model loaded and serving](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2cf4e346-d538-46b3-9247-bcad2487131a.png)
+![oMLX admin dashboard with a model loaded and serving](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2cf4e346-d538-46b3-9247-bcad2487131a.png align="center")
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
@@ -700,7 +568,7 @@ curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash && source ~/.zshrc &&
 
 **Expected output:**
 
-```
+```plaintext
 [qwenpaw] QwenPaw installed successfully
 [qwenpaw] Wrapper created at /Users/<you>/.qwenpaw/bin/qwenpaw
 [qwenpaw] Updated /Users/<you>/.zshrc
@@ -708,9 +576,9 @@ curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash && source ~/.zshrc &&
 ✅ Default model backend configured
 ```
 
-> **If you already ran the installer and got `command not found: qwenpaw`:** the install itself succeeded — you just need to reload your shell. Run `source ~/.zshrc && qwenpaw init --defaults` and continue.
+> **If you already ran the installer and got** `command not found: qwenpaw`**:** the install itself succeeded — you just need to reload your shell. Run `source ~/.zshrc && qwenpaw init --defaults` and continue.
 
-This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`-managed Python environment. It automatically installs `uv`, creates a virtual environment, and downloads dependencies without requiring manual Python setup.
+This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`\-managed Python environment. It automatically installs `uv`, creates a virtual environment, and downloads dependencies without requiring manual Python setup.
 
 ### 5.2 Configure QwenPaw to Use oMLX
 
@@ -729,7 +597,7 @@ cat > ~/.qwenpaw/config.json << 'EOF'
 EOF
 ```
 
-> **If `~/.qwenpaw/config.json` already exists** — for example, if QwenPaw has written preferences or other settings — do **not** overwrite it with this heredoc. Use the `jq` approach from §4.3b instead to update just the `api_key` field. The heredoc here is only safe for a fresh install.
+> **If** `~/.qwenpaw/config.json` **already exists** — for example, if QwenPaw has written preferences or other settings — do **not** overwrite it with this heredoc. Use the `jq` approach from §4.3b instead to update just the `api_key` field. The heredoc here is only safe for a fresh install.
 
 > **Using a different key?** If you chose a different value in §4.3, replace `omlx-night-thoughts` in the `api_key` field above with that same value. The two **must match** — this is the single most common source of `401 Unauthorized` errors.
 
@@ -743,33 +611,38 @@ source ~/.zshrc && qwenpaw app
 
 **Expected output:**
 
-```
+```plaintext
 QwenPaw Console running at http://127.0.0.1:8088/
 ```
 
 Open `http://localhost:8088` to access the QwenPaw web console.
 
-### 5.4 Make QwenPaw Persistent (launchd)
+### 5.4 Make QwenPaw Persistent (LaunchDaemon)
 
-Create a launchd plist so QwenPaw starts automatically on login. This plist does three important things:
+Because QwenPaw is the service you'll rely on most for remote access, we install it as a **LaunchDaemon**. This means it starts at boot, before you log in, and doesn't depend on the desktop GUI starting successfully.
 
-1. Starts QwenPaw on login and keeps it running (`RunAtLoad` + `KeepAlive`)
-2. Routes launchd's stdout/stderr to `/dev/null` so no unrotated files grow forever
-3. Pins QwenPaw's internal log rotation to **2 MiB × 2 backups** via `EnvironmentVariables` so the log directory can never exceed ~6 MiB
+We also pin QwenPaw's internal log rotation to **2 MiB × 2 backups** via `EnvironmentVariables` so the log directory can never exceed ~6 MiB.
 
-The heredoc below is **unquoted** (`<< EOF`, not `<< 'EOF'`), so the shell expands `$HOME` to your actual home directory when the file is written. Copy and paste the whole block in one shot:
+Copy and paste the entire block. It dynamically pulls your current username and home directory to avoid placeholder errors:
 
 ```bash
-mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << EOF
+USER_NAME=$(whoami)
+HOME_DIR=$HOME
+
+sudo tee /Library/LaunchDaemons/com.qwenpaw.app.plist > /dev/null << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
   <string>com.qwenpaw.app</string>
+  <key>UserName</key>
+  <string>${USER_NAME}</string>
+  <key>GroupName</key>
+  <string>staff</string>
   <key>ProgramArguments</key>
   <array>
-    <string>$HOME/.qwenpaw/bin/qwenpaw</string>
+    <string>${HOME_DIR}/.qwenpaw/bin/qwenpaw</string>
     <string>app</string>
   </array>
   <key>RunAtLoad</key>
@@ -777,43 +650,36 @@ mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist <
   <key>KeepAlive</key>
   <true/>
   <key>WorkingDirectory</key>
-  <string>$HOME</string>
+  <string>${HOME_DIR}</string>
   <key>EnvironmentVariables</key>
   <dict>
+    <key>HOME</key>
+    <string>${HOME_DIR}</string>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:${HOME_DIR}/.local/bin</string>
     <key>QWENPAW_LOG_MAX_SIZE</key>
     <string>2MiB</string>
     <key>QWENPAW_LOG_MAX_BACKUPS</key>
     <string>2</string>
   </dict>
   <key>StandardOutPath</key>
-  <string>/dev/null</string>
+  <string>/tmp/qwenpaw.out.log</string>
   <key>StandardErrorPath</key>
-  <string>/dev/null</string>
+  <string>/tmp/qwenpaw.err.log</string>
 </dict>
 </plist>
 EOF
-```
 
-> **Why these values?** `launchd` writes to `StandardOutPath`/`StandardErrorPath` once and never rotates them, so we route them to `/dev/null`. QwenPaw's own `RotatingFileHandler` writes structured logs to `~/.qwenpaw/qwenpaw.log`, and the two env vars cap it at **2 MiB per file × 2 backups** (≈ 6 MiB total). Worst-case log disk usage is bounded and known.
-
-**Load the launcher** using `launchctl bootstrap` (the modern replacement for the legacy `launchctl load`, which fails with a generic `Input/output error` on Ventura and later):
-
-```bash
-launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null; launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist
-```
-
-**Expected output:** No output on success.
-
-Confirm it's running:
-
-```bash
-launchctl list | grep qwenpaw
+sudo launchctl bootout system/com.qwenpaw.app 2>/dev/null
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.qwenpaw.app.plist
+sleep 5
+sudo launchctl list | grep qwenpaw
 ```
 
 **Expected output:**
 
-```
-30406	0	com.qwenpaw.app
+```plaintext
+12345	0	com.qwenpaw.app
 ```
 
 The first column is the PID (a number means it's running), the second is the last exit status (`0` = clean), and the third is the label.
@@ -821,17 +687,15 @@ The first column is the PID (a number means it's running), the second is the las
 **Useful launcher management commands:**
 
 ```bash
-launchctl list | grep qwenpaw                                             # check status
-launchctl bootout gui/$(id -u)/com.qwenpaw.app                            # stop and unregister
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist   # start and register
-launchctl kickstart -k gui/$(id -u)/com.qwenpaw.app                       # restart in place
+sudo launchctl list | grep qwenpaw                                           # check status
+sudo launchctl bootout system/com.qwenpaw.app                                # stop and unregister
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.qwenpaw.app.plist # start and register
+sudo launchctl kickstart -k system/com.qwenpaw.app                           # restart in place
 ```
 
 > **After editing the plist**, you must `bootout` then `bootstrap` for changes to take effect — launchd caches the plist at load time.
 
-> **For a truly headless server**, see §1.4 for converting this LaunchAgent to a LaunchDaemon that runs before login.
-
-![QwenPaw web console with an agent conversation open](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f3ac7a7b-3fd4-48fd-8e72-b138b735fc34.png)
+![QwenPaw web console with an agent conversation open](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f3ac7a7b-3fd4-48fd-8e72-b138b735fc34.png align="center")
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -850,71 +714,34 @@ ssh your-username@your-mac-ip
 Check all services in one command:
 
 ```bash
-brew services list | grep omlx && launchctl list | grep -E "qwenpaw|caffeinate" && curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
-```
-
-If you converted to LaunchDaemons in §1.4, use this instead:
-
-```bash
-brew services list | grep omlx && sudo launchctl list | grep -E "cloudflared|qwenpaw" && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
+brew services list | grep omlx && sudo launchctl list | grep qwenpaw && curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 ```
 
 **Expected output:**
 
-```
+```plaintext
 omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
-30406	0	com.qwenpaw.app
--	0	com.caffeinate.server
+12345	0	com.qwenpaw.app
 {"object":"list","data":[...]}
 QwenPaw HTTP 200
 ```
 
 All services should return healthy responses without any manual intervention.
 
-> **If services are missing after reboot:** the GUI session likely didn't start. See §1.4 for diagnosis and the LaunchDaemon conversion.
-
 ## Part 7: Remote Access from Anywhere
 
-This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailscale** provides encrypted SSH and private tailnet access; **Cloudflare Tunnel** provides public HTTPS via your own domain. **Caddy** runs locally as a reverse proxy in front of both services, and serves two routing modes at once:
-
-- **Subdomain routing** for Cloudflare (public): `omlx.nightthoughts.dev`, `qwenpaw.nightthoughts.dev`
-- **Path routing** for Tailscale (private): `night-thoughts.<your-tailnet>.ts.net/omlx/*`, `/console/*`
-
-The architecture:
-
-```
-                                        ┌──────────────────────────────┐
-Internet ─── Cloudflare edge (TLS) ────►│  Cloudflare Tunnel (encrypted)│
-                                        └───────────────┬──────────────┘
-                                                        │ plain HTTP
-Tailnet ─── Tailscale Serve (TLS) ──────────────────────┤
-                                                        ▼
-                                          Caddy (localhost:9080)
-                                           ├── Host: omlx.nightthoughts.dev      → oMLX :8000
-                                           ├── Host: qwenpaw.nightthoughts.dev   → QwenPaw :8088
-                                           ├── Path: /omlx/*                     → oMLX :8000
-                                           └── Path: /console/*                  → QwenPaw :8088
-```
-
-**Why subdomains for Cloudflare?** Two reasons:
-
-1. **QwenPaw's SPA expects to live at the root of its hostname.** It hardcodes `/console` as its router basename, which forces path-based routing and a stack of workarounds. Serving it on `qwenpaw.nightthoughts.dev` gives it a clean root — no basename hacks, no `/assets` rewrites, no `Referer` matching.
-2. **Subdomains decouple public access from Tailscale.** Tailscale's MagicDNS resolver conflicts with Cloudflare's public DNS on some setups. Subdomains resolve entirely through Cloudflare, so the two systems stop interfering.
-
-> **Finding your tailnet name:** Every Tailscale tailnet has a unique DNS suffix of the form `<something>.ts.net`. Yours is shown in the [admin console](https://console.tailscale.com/admin/dns) under **Tailnet name**, or by running `tailscale status --json | grep DNSName`. Throughout this guide, `<your-tailnet>` is a placeholder for that suffix.
+This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailscale** provides encrypted SSH and private tailnet access; **Cloudflare Tunnel** provides public HTTPS via your own domain. **Caddy** runs locally as a reverse proxy in front of both services.
 
 ### 7.0 Create a Tailscale Account
 
 If you don't already have a Tailscale account, sign up first. It's free for personal use and takes about a minute.
 
-1. Go to [tailscale.com](https://tailscale.com/) and click **Get Started** (or go directly to [login.tailscale.com/start](https://login.tailscale.com/start)).
-2. Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address all work. You do not create a Tailscale-specific password; Tailscale authenticates you through your chosen provider.
-3. After signing in, you'll be asked to choose **Business use** or **Personal use**. Pick Personal for a home server setup.
-4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin).
+1.  Go to [tailscale.com](https://tailscale.com/) and click **Get Started**.
+2.  Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address.
+3.  After signing in, choose **Personal use**.
+4.  You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin).
 
-> **Note:** If you sign up with a public email domain (e.g., `@gmail.com`) or GitHub, you're placed on a **shared-domain tailnet** on the Personal plan — 6 free users, 100 devices, and 50 tagged devices. That's more than enough for this guide.
-
-> **Tip:** The same account must be used on every device you want on your tailnet. If you sign in with Google on your Mac server, sign in with Google on your laptop too — otherwise they won't see each other.
+> **Tip:** The same account must be used on every device you want on your tailnet.
 
 ### 7.1 Install Tailscale on Your Mac Server
 
@@ -924,9 +751,7 @@ brew install --cask tailscale
 
 **Expected output:** `tailscale-app was successfully installed!`
 
-Open the Tailscale app from your Applications folder or menu bar, and sign in with the same account you just created.
-
-Once authenticated, the Tailscale icon appears in your menu bar and shows a green "Connected" status.
+Open the Tailscale app from your Applications folder or menu bar, and sign in with the same account you just created. Once authenticated, the Tailscale icon appears in your menu bar and shows a green "Connected" status.
 
 > **Note:** The `--cask` version installs the GUI app but does **not** add the `tailscale` CLI to your `$PATH`. See §7.1b below to enable it.
 
@@ -940,20 +765,14 @@ echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >>
 
 **Expected output:**
 
-```
+```plaintext
 100.x.x.x    my-mac-mini     user@example.com  macOS    -
 100.x.x.x    my-laptop       user@example.com  macOS    -
 ```
 
-If you see your machine list, the CLI is working and you can proceed.
-
-> **Tip:** Your machine name may be long and awkward to type. You can rename it to something memorable like `night-thoughts` in the [admin console](https://console.tailscale.com/admin/machines). The MagicDNS entry updates automatically.
-
 ### 7.2 SSH Config for Tailnet Access (No MagicDNS Required)
 
-MagicDNS is convenient but it isn't always compatible with other DNS setups on your Mac — particularly when Cloudflare is managing a public domain. If `tailscale set --accept-dns=false` has been applied (which the Cloudflare section below recommends), the short name `night-thoughts` and the FQDN `night-thoughts.<your-tailnet>.ts.net` will both fail to resolve.
-
-The fix is a **per-client SSH config file**. This replaces DNS resolution with a static hostname-to-IP mapping, so `ssh nt` works regardless of the DNS state.
+MagicDNS is convenient but it isn't always compatible with other DNS setups on your Mac — particularly when Cloudflare is managing a public domain. The fix is a **per-client SSH config file**.
 
 **Get the Tailscale IP first** (from the server or any tailnet device):
 
@@ -961,7 +780,7 @@ The fix is a **per-client SSH config file**. This replaces DNS resolution with a
 tailscale status | grep night-thoughts | awk '{print $1}'
 ```
 
-**Expected output:** Something like `100.64.x.x` — the Tailscale IP of your Mac server. Tailscale assigns addresses in the `100.64.0.0/10` range.
+**Expected output:** Something like `100.64.x.x` — the Tailscale IP of your Mac server.
 
 **Then, on every client device you SSH from** (not the server itself), append the alias to `~/.ssh/config`:
 
@@ -985,35 +804,14 @@ Replace:
 ssh nt
 ```
 
-You should land on the Mac server without any hostname lookup. If you get `Permission denied`, the username is wrong — check `whoami` on the server. If you get `Connection timed out`, the Tailscale IP is wrong or Tailscale isn't running on one of the two devices.
-
-> **This must be done on every client device separately.** `~/.ssh/config` is per-user, per-machine. There's no central place to configure it. If you SSH from three laptops and a phone, you configure it four times.
-
-> **Why not `/etc/hosts`?** It requires `sudo`, breaks on OS updates that re-generate the file, and is global to the machine. `~/.ssh/config` is scoped to SSH, requires no elevated privileges, and survives system updates. For a single-use hostname alias, it's the right tool.
-
-> **Tip:** You can add multiple aliases pointing at the same host. Some people prefer `ssh nt` for brevity, others prefer `ssh night-thoughts` for clarity. Both can coexist:
->
-> ```bash
-> cat >> ~/.ssh/config << 'EOF'
->
-> Host nt
->     HostName 100.64.x.x
->     User your-macos-username
->
-> Host night-thoughts
->     HostName 100.64.x.x
->     User your-macos-username
-> EOF
-> ```
+> **Why not `/etc/hosts`?** It requires `sudo`, breaks on OS updates that re-generate the file, and is global to the machine. `~/.ssh/config` is scoped to SSH, requires no elevated privileges, and survives system updates.
 
 ### 7.3 Enable HTTPS Certificates
 
 Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can terminate TLS on port 443.
 
-1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
-2. Under the **HTTPS Certificates** section, click **Enable HTTPS**.
-
-> **Note:** This is separate from custom domains. Enabling HTTPS certificates for your `<machine>.<your-tailnet>.ts.net` hostname works on **all** plans, including shared-domain tailnets.
+1.  Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
+2.  Under the **HTTPS Certificates** section, click **Enable HTTPS**.
 
 ### 7.4 Install Caddy
 
@@ -1037,10 +835,8 @@ caddy version
 
 Caddy handles two routing modes at once:
 
-1. **Subdomain routing** for Cloudflare — `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` each map to their service at the root.
-2. **Path routing** for Tailscale Serve — a single hostname (`night-thoughts.<your-tailnet>.ts.net`) with `/omlx/*` and `/console/*` prefixes.
-
-Because Cloudflare and Tailscale both send **plain HTTP** to Caddy (each terminates TLS at its own edge), the subdomain blocks use the `http://` prefix to disable Caddy's automatic HTTPS.
+1.  **Subdomain routing** for Cloudflare — `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` each map to their service at the root.
+2.  **Path routing** for Tailscale Serve — a single hostname (`night-thoughts.<your-tailnet>.ts.net`) with `/omlx/*` and `/console/*` prefixes.
 
 ```bash
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
@@ -1053,7 +849,6 @@ http://omlx.nightthoughts.dev:9080 {
     }
 
     # Root and any unmatched path → redirect to the dashboard
-    # The `*` matcher is explicit: this applies to all unmatched requests
     handle {
         redir * /admin 302
     }
@@ -1080,7 +875,6 @@ http://qwenpaw.nightthoughts.dev:9080 {
     }
 
     # QwenPaw: full console + backend
-    # QwenPaw's SPA uses /console as its router basename
     @qwenpaw path /console/* /api/* /assets/* /login /logout /voice/* /favicon.ico
     handle @qwenpaw {
         reverse_proxy localhost:8088
@@ -1100,15 +894,11 @@ http://qwenpaw.nightthoughts.dev:9080 {
 EOF
 ```
 
-> **Why both blocks?** The subdomain blocks (`http://omlx.nightthoughts.dev:9080`) only match requests where the `Host` header is that subdomain — which is what Cloudflare sends. The `:9080` block catches everything else, which is what Tailscale Serve sends (a request to `/omlx/*` or `/console/*` with the `.ts.net` host header).
+> **Why both blocks?** The subdomain blocks (`http://omlx.nightthoughts.dev:9080`) only match requests where the `Host` header is that subdomain — which is what Cloudflare sends. The `:9080` block catches everything else, which is what Tailscale Serve sends.
 
-> **Why `http://` on the subdomains?** Without it, Caddy would try to provision its own TLS certificate for `omlx.nightthoughts.dev`, which fails because Cloudflare already holds one for that hostname and Caddy can't complete the ACME challenge. The `http://` prefix tells Caddy to serve that hostname over plain HTTP only — the tunnel handles encryption at Cloudflare's edge.
+> **Why `http://` on the subdomains?** Without it, Caddy would try to provision its own TLS certificate for `omlx.nightthoughts.dev`, which fails because Cloudflare already holds one for that hostname and Caddy can't complete the ACME challenge. The `http://` prefix tells Caddy to serve that hostname over plain HTTP only.
 
-> **Root and unmatched paths redirect to `/admin`.** oMLX's dashboard lives at `/admin`, not `/`. Rather than show users a 404 when they hit `https://omlx.nightthoughts.dev/`, the catch-all `handle` block sends a 302 redirect to `/admin`. The `@known` matcher lists every path oMLX actually serves, so API calls (`/v1/*`), static assets (`/static/*`), and health checks pass through untouched. Only requests that don't match any real oMLX route get redirected.
-
-> **The `*` matcher in `redir * /admin 302` is essential.** Caddy's `redir` directive is ambiguous when the destination starts with `/`: without an explicit matcher, Caddy can interpret `/admin` as a **path matcher** rather than the destination. That makes the redirect apply only to requests for `/admin` — everything else falls through and eventually reaches oMLX's SPA, which renders a blank page for unknown routes. The `*` matcher removes the ambiguity: it explicitly says "redirect every unmatched request."
-
-> **Why `/console/` for Tailscale?** QwenPaw's frontend hardcodes its React Router basename to `/console`. Under Cloudflare's subdomain, QwenPaw runs at the root (`https://qwenpaw.nightthoughts.dev/`) and the SPA's routing works naturally. Under Tailscale's single-hostname model, path-based routing is the only option, so the `/console` basename is exactly what QwenPaw expects. See [issue #8177](https://github.com/agentscope-ai/QwenPaw/issues/8177) for the feature request to make this configurable.
+> **The `*` matcher in `redir * /admin 302` is essential.** Caddy's `redir` directive is ambiguous when the destination starts with `/`: without an explicit matcher, Caddy can interpret `/admin` as a **path matcher** rather than the destination.
 
 Verify the syntax:
 
@@ -1120,9 +910,7 @@ caddy validate --config /opt/homebrew/etc/Caddyfile
 
 ### 7.6 Start Caddy as an Always-On Service
 
-Caddy must run as a launchd service so it survives reboots and restarts automatically. `brew services` handles all of this for you — it writes a launchd plist to `~/Library/LaunchAgents/` and keeps the process supervised.
-
-Start the service:
+Caddy runs as a LaunchAgent managed by `brew services`. It starts on login and restarts on crash.
 
 ```bash
 brew services start caddy
@@ -1139,26 +927,14 @@ lsof -i :9080 | grep caddy
 
 **Expected output:**
 
-```
+```plaintext
 caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 caddy   39606    yourname    9u  IPv6  ...  TCP *:9080 (LISTEN)
 ```
 
-**Useful Caddy service commands:**
-
-```bash
-brew services stop caddy      # stop the service
-brew services restart caddy   # restart after editing the Caddyfile
-brew services info caddy      # show detailed status
-```
-
-> **After editing the Caddyfile**, you must reload Caddy: `brew services restart caddy`.
-
 ### 7.7 Point Tailscale Serve at Caddy
 
-Tailscale Serve exposes your services to devices on your tailnet — encrypted, private, and without requiring a public domain. This is a supplementary access method; the Cloudflare subdomain setup in §7.9 provides public access.
-
-Set it up:
+Tailscale Serve exposes your services to devices on your tailnet — encrypted, private, and without requiring a public domain.
 
 ```bash
 tailscale serve reset
@@ -1173,49 +949,43 @@ tailscale serve status
 
 **Expected output:**
 
-```
+```plaintext
 https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
-> **Note:** Tailscale Serve configurations persist across reboots automatically.
-
 > **Important — Tailscale DNS hijack:** If `dig` resolves your Cloudflare subdomains but `curl` from the server returns `Could not resolve host`, Tailscale's MagicDNS resolver is capturing all system DNS queries. Fix it with:
->
 > ```bash
 > tailscale set --accept-dns=false
 > sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 > ```
->
-> This disables MagicDNS short names on the server. That's why §7.2 above uses an SSH config file instead — it replaces what MagicDNS would have provided, without interfering with Cloudflare's public DNS.
 
 ### 7.8 Enable QwenPaw Authentication
 
-Tailscale controls network-level access, but **anyone on your tailnet — and anyone on the internet once §7.9 is set up — can reach QwenPaw**. Enabling QwenPaw's built-in web authentication adds a login prompt at the application layer.
-
-QwenPaw uses three environment variables to enable auth. When all three are set, QwenPaw automatically creates the admin account on first startup — no manual registration step is needed.
-
-| Variable | Default | Notes |
-|----------|---------|-------|
-| `QWENPAW_AUTH_ENABLED` | `false` | Set to `true` to require login |
-| `QWENPAW_AUTH_USERNAME` | `admin` | Console login username |
-| `QWENPAW_AUTH_PASSWORD` | *(empty)* | **Required** when auth is enabled |
+Tailscale controls network-level access, but **anyone on your tailnet — and anyone on the internet once §7.9 is set up — can reach QwenPaw**. Enabling QwenPaw's built-in web authentication adds a login prompt.
 
 Rewrite the plist with the auth variables added, then reload the service. Replace `your-secure-password` with a strong password of your choice:
 
 ```bash
-launchctl bootout gui/$(id -u)/com.qwenpaw.app 2>/dev/null
+USER_NAME=$(whoami)
+HOME_DIR=$HOME
 
-mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist << EOF
+sudo launchctl bootout system/com.qwenpaw.app 2>/dev/null
+
+sudo tee /Library/LaunchDaemons/com.qwenpaw.app.plist > /dev/null << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
   <string>com.qwenpaw.app</string>
+  <key>UserName</key>
+  <string>${USER_NAME}</string>
+  <key>GroupName</key>
+  <string>staff</string>
   <key>ProgramArguments</key>
   <array>
-    <string>$HOME/.qwenpaw/bin/qwenpaw</string>
+    <string>${HOME_DIR}/.qwenpaw/bin/qwenpaw</string>
     <string>app</string>
   </array>
   <key>RunAtLoad</key>
@@ -1223,9 +993,13 @@ mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist <
   <key>KeepAlive</key>
   <true/>
   <key>WorkingDirectory</key>
-  <string>$HOME</string>
+  <string>${HOME_DIR}</string>
   <key>EnvironmentVariables</key>
   <dict>
+    <key>HOME</key>
+    <string>${HOME_DIR}</string>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:${HOME_DIR}/.local/bin</string>
     <key>QWENPAW_LOG_MAX_SIZE</key>
     <string>2MiB</string>
     <key>QWENPAW_LOG_MAX_BACKUPS</key>
@@ -1238,27 +1012,22 @@ mkdir -p ~/.qwenpaw/logs && cat > ~/Library/LaunchAgents/com.qwenpaw.app.plist <
     <string>your-secure-password</string>
   </dict>
   <key>StandardOutPath</key>
-  <string>/dev/null</string>
+  <string>/tmp/qwenpaw.out.log</string>
   <key>StandardErrorPath</key>
-  <string>/dev/null</string>
+  <string>/tmp/qwenpaw.err.log</string>
 </dict>
 </plist>
 EOF
-```
 
-> **Important:** Replace `your-secure-password` with your own strong password before running. The `<string>` value is written literally into the plist file.
-
-Reload the service:
-
-```bash
-launchctl enable gui/$(id -u)/com.qwenpaw.app
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist && launchctl list | grep qwenpaw
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.qwenpaw.app.plist
+sleep 3
+sudo launchctl list | grep qwenpaw
 ```
 
 **Expected output:**
 
-```
--   0   com.qwenpaw.app
+```plaintext
+12345	0	com.qwenpaw.app
 ```
 
 Verify auth is active by checking that the console redirects to a login page:
@@ -1269,15 +1038,13 @@ curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 
 **Expected output:**
 
-```
+```plaintext
 QwenPaw HTTP 200
 ```
 
-> **Note:** The console still returns HTTP 200 at the root — the login redirect happens client-side. Open `https://qwenpaw.nightthoughts.dev/` in a browser once §7.9 is complete to confirm you're prompted for credentials.
-
 > **Forgot the password?** Reset it with:
 > ```bash
-> source ~/.zshrc && qwenpaw auth reset-password
+> QWENPAW_AUTH_ENABLED=true qwenpaw auth reset-password
 > ```
 
 ### 7.9 Public Access with Subdomains
@@ -1287,54 +1054,33 @@ This section extends your setup from tailnet-only access to the public internet.
 The result:
 
 | Service | Public URL |
-|---------|-----------|
+| --- | --- |
 | **oMLX admin dashboard** | `https://omlx.nightthoughts.dev/admin` |
 | **oMLX API** | `https://omlx.nightthoughts.dev/v1/models` |
 | **QwenPaw web console** | `https://qwenpaw.nightthoughts.dev/` |
 
-> **Security warning:** These URLs are reachable by **anyone on the internet**. You **must** have authentication enabled on both services before exposing them publicly. See §7.8 for QwenPaw auth and §4.3 for the oMLX API key. Consider enabling Cloudflare Access (free for up to 50 users) for an additional SSO layer.
+> **Security warning:** These URLs are reachable by **anyone on the internet**. You **must** have authentication enabled on both services before exposing them publicly.
 
 **Step 1: Add your domain to Cloudflare**
 
-1. Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
-2. Click **Add a site** and enter `nightthoughts.dev`.
-3. Choose the **Free** plan.
-4. Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account. They will look like `<name>.ns.cloudflare.com`. **Copy both** — you'll need them in Step 2.
+1.  Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
+2.  Click **Add a site** and enter `nightthoughts.dev`.
+3.  Choose the **Free** plan.
+4.  Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account.
 
 **Step 2: Point the domain to Cloudflare at your registrar**
 
-Cloudflare needs to be the authoritative DNS provider for your domain. This means replacing your registrar's default nameservers with the two Cloudflare nameservers shown in Step 1. The registrar is wherever you bought the domain (GoDaddy, Namecheap, Google Domains, Porkbun, etc.).
+Cloudflare needs to be the authoritative DNS provider for your domain. This means replacing your registrar's default nameservers with the two Cloudflare nameservers shown in Step 1.
 
 The process is the same for every registrar:
 
-1. Log in to your registrar account and find the DNS or nameserver settings for `nightthoughts.dev`.
-2. Locate the current nameservers (they'll be the registrar's defaults, e.g., `ns1.godaddy.com`).
-3. **Delete** them.
-4. **Paste** the two Cloudflare nameservers from Step 1. For this guide, they are:
-   ```
-   april.ns.cloudflare.com
-   damien.ns.cloudflare.com
-   ```
-5. **Save** your changes.
+1.  Log in to your registrar account and find the DNS or nameserver settings for `nightthoughts.dev`.
+2.  Locate the current nameservers.
+3.  **Delete** them.
+4.  **Paste** the two Cloudflare nameservers.
+5.  **Save** your changes.
 
-> **Important:** If DNSSEC is enabled at your registrar, disable it before changing nameservers. DNSSEC conflicts with the new authoritative DNS provider and can cause `SERVFAIL` errors until it's turned off.
-
-> **Propagation time:** Nameserver changes typically propagate within a few minutes but can take up to **24–48 hours** globally. Cloudflare will email you once your domain becomes **Active** in their dashboard.
-
-**GoDaddy example**
-
-If your registrar is GoDaddy:
-
-1. Log in to [GoDaddy](https://godaddy.com) and go to **My Products**.
-2. Find `nightthoughts.dev` and click **DNS** (or **Manage DNS**).
-3. Scroll to the **Nameservers** section and click **Change**.
-4. Select **I'll use my own nameservers** (or **Custom**).
-5. Delete the existing GoDaddy nameservers and paste:
-   ```
-   april.ns.cloudflare.com
-   damien.ns.cloudflare.com
-   ```
-6. Click **Save**, then **Continue** to confirm.
+> **Important:** If DNSSEC is enabled at your registrar, disable it before changing nameservers. DNSSEC conflicts with the new authoritative DNS provider.
 
 **Verify propagation**
 
@@ -1346,12 +1092,10 @@ dig +short NS nightthoughts.dev @1.1.1.1
 
 **Expected output:**
 
-```
+```plaintext
 april.ns.cloudflare.com.
 damien.ns.cloudflare.com.
 ```
-
-If you see your registrar's nameservers instead, wait and retry — propagation can take up to 48 hours, though it's often much faster.
 
 **Step 3: Install cloudflared**
 
@@ -1367,15 +1111,11 @@ cloudflared tunnel login
 
 This opens a browser — select `nightthoughts.dev` and authorize.
 
-> **Note:** If you see `You have an existing certificate at ~/.cloudflared/cert.pem which login would overwrite`, that means you're already authenticated. Skip this step — the existing cert is valid and being used by your running tunnel.
-
 **Step 5: Create the tunnel**
 
 ```bash
 cloudflared tunnel list | grep -q night-thoughts || cloudflared tunnel create night-thoughts
 ```
-
-This generates a tunnel ID and credentials file in `~/.cloudflared/`. The `grep -q` guard skips creation if the tunnel already exists, so it's safe to re-run.
 
 **Step 6: Route DNS for both subdomains**
 
@@ -1384,20 +1124,9 @@ cloudflared tunnel route dns night-thoughts omlx.nightthoughts.dev
 cloudflared tunnel route dns night-thoughts qwenpaw.nightthoughts.dev
 ```
 
-Each command creates a **proxied CNAME** at Cloudflare pointing the subdomain to your tunnel. Two commands, two records.
-
-**Expected output per command:**
-
-```
-INF Added CNAME omlx.nightthoughts.dev which will route to this tunnel tunnelID=<uuid>
-INF Added CNAME qwenpaw.nightthoughts.dev which will route to this tunnel tunnelID=<uuid>
-```
-
-> **Why subdomains instead of paths?** QwenPaw's frontend is hardcoded to expect its router basename at `/console`. Serving it under a path like `/qwenpaw/*` breaks its internal navigation. Serving it at the root of `qwenpaw.nightthoughts.dev` matches what the SPA expects — no workarounds needed.
+Each command creates a **proxied CNAME** at Cloudflare pointing the subdomain to your tunnel.
 
 **Step 7: Configure the tunnel**
-
-The following command generates the config file with both the tunnel ID and your home directory resolved automatically — no manual editing required:
 
 ```bash
 TUNNEL_ID=$(cloudflared tunnel list | awk '/night-thoughts/ {print $1}') && \
@@ -1414,54 +1143,30 @@ ingress:
 EOF
 ```
 
-> **Why `$HOME` and not `~`?** The `cloudflared` daemon runs as a launch agent under your user context. The `~` symbol is not expanded by YAML parsing — it would be written literally and the agent couldn't find the credentials file. Using `$HOME` at config-generation time bakes in the absolute path.
+**Step 8: Install the tunnel as a LaunchDaemon**
 
-Verify the generated config:
+> **Do not use `sudo cloudflared service install` on macOS.** It writes a broken launchd plist that omits the `tunnel run` subcommand, so the daemon exits immediately with `use cloudflared tunnel run to start tunnel <UUID>` in a loop.
 
-```bash
-cat ~/.cloudflared/config.yml
-```
-
-**Expected output:**
-
-```
-tunnel: <uuid>
-credentials-file: /Users/<you>/.cloudflared/<uuid>.json
-
-ingress:
-  - hostname: omlx.nightthoughts.dev
-    service: http://localhost:9080
-  - hostname: qwenpaw.nightthoughts.dev
-    service: http://localhost:9080
-  - service: http_status:404
-```
-
-Both values should be resolved to actual strings — no `$TUNNEL_ID` or `$HOME` left in the file.
-
-**Step 8: Install the tunnel as a launch agent**
-
-> **Do not use `sudo cloudflared service install` on macOS.** It writes a broken launchd plist that omits the `tunnel run` subcommand, so the daemon exits immediately with `use cloudflared tunnel run to start tunnel <UUID>` in a loop. This is a long-standing bug ([cloudflared#327](https://github.com/cloudflare/cloudflared/issues/327)) that Cloudflare has acknowledged but not fixed. Instead, write the launch agent yourself.
-
-First, clean up any broken installation from an earlier attempt:
+Just like QwenPaw, cloudflared should be a LaunchDaemon so it starts at boot, before login. This block dynamically injects your username and home path:
 
 ```bash
-sudo launchctl unload /Library/LaunchDaemons/com.cloudflare.cloudflared.plist 2>/dev/null
-sudo rm -f /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
-```
+USER_NAME=$(whoami)
+HOME_DIR=$HOME
 
-Then write a correct user-level launch agent. It runs as your user, so the credentials in `~/.cloudflared/` are directly accessible — no `sudo`, no path juggling:
-
-```bash
-mkdir -p ~/Library/LaunchAgents && cat > ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist << EOF
+sudo tee /Library/LaunchDaemons/com.cloudflare.cloudflared.plist > /dev/null << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
   <string>com.cloudflare.cloudflared</string>
+  <key>UserName</key>
+  <string>${USER_NAME}</string>
+  <key>GroupName</key>
+  <string>staff</string>
   <key>ProgramArguments</key>
   <array>
-    <string>$(which cloudflared)</string>
+    <string>/opt/homebrew/bin/cloudflared</string>
     <string>tunnel</string>
     <string>run</string>
   </array>
@@ -1469,67 +1174,43 @@ mkdir -p ~/Library/LaunchAgents && cat > ~/Library/LaunchAgents/com.cloudflare.c
   <true/>
   <key>KeepAlive</key>
   <true/>
+  <key>WorkingDirectory</key>
+  <string>${HOME_DIR}</string>
   <key>StandardOutPath</key>
-  <string>$HOME/.cloudflared/cloudflared.out.log</string>
+  <string>/tmp/cloudflared.out.log</string>
   <key>StandardErrorPath</key>
-  <string>$HOME/.cloudflared/cloudflared.err.log</string>
+  <string>/tmp/cloudflared.err.log</string>
 </dict>
 </plist>
 EOF
-```
 
-The `$(which cloudflared)` is resolved at write time to the absolute path of the binary (typically `/opt/homebrew/bin/cloudflared`). `$HOME` is expanded to your actual home directory. Both substitutions happen when the file is written, so the plist contains literal paths.
-
-Load the agent:
-
-```bash
-launchctl bootout gui/$(id -u)/com.cloudflare.cloudflared 2>/dev/null; launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
-```
-
-> **For a truly headless server**, convert this to a LaunchDaemon per §1.4 so the tunnel comes up before login.
-
-**Step 9: Verify**
-
-```bash
-launchctl list | grep cloudflared
+sudo launchctl bootout system/com.cloudflare.cloudflared 2>/dev/null
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
+sleep 5
+sudo launchctl list | grep cloudflared
 ```
 
 **Expected output:**
 
+```plaintext
+12345	0	com.cloudflare.cloudflared
 ```
-46761	0	com.cloudflare.cloudflared
-```
+
+**Step 9: Verify**
 
 Now check the log to confirm the tunnel is actually connected:
 
 ```bash
-tail -20 ~/.cloudflared/cloudflared.err.log
+tail -20 /tmp/cloudflared.err.log
 ```
 
 **Expected output:** A health precheck summary followed by connection logs:
 
-```
+```plaintext
 INF |  SUMMARY: Environment is healthy. cloudflared will use 'quic' as primary protocol.  |
 INF precheck complete hard_fail=false run_id=... suggested_protocol=quic
 INF Registered tunnel connection connIndex=0 connection=... location=hkg
 INF Registered tunnel connection connIndex=1 connection=... location=hkg
-```
-
-Confirm from Cloudflare's side:
-
-```bash
-cloudflared tunnel info night-thoughts
-```
-
-**Expected output:**
-
-```
-NAME:     night-thoughts
-ID:       <uuid>
-CREATED:  ...
-
-CONNECTOR ID                         CREATED              ARCHITECTURE VERSION   ORIGIN IP       EDGE
-<uuid>                               2026-...             darwin_arm64 2026.10.0 <your-ip>       1xhkg01, 2xhkg08, 1xhkg09
 ```
 
 Then test publicly. The first test checks that unmatched paths redirect properly:
@@ -1544,7 +1225,7 @@ curl -s -o /dev/null -w "QwenPaw / → %{http_code}\n" https://qwenpaw.nightthou
 
 **Expected output:**
 
-```
+```plaintext
 /typo → 200 https://omlx.nightthoughts.dev/admin
 / → 302
 /admin → 200
@@ -1552,71 +1233,22 @@ curl -s -o /dev/null -w "QwenPaw / → %{http_code}\n" https://qwenpaw.nightthou
 QwenPaw / → 200
 ```
 
-The `/typo → 200 .../admin` line confirms the redirect works: an unknown path returns a 302 that lands on the dashboard. If you see `200` without a redirect (blank page), the Caddyfile is missing the `*` matcher on the `redir` directive. If you see `404` for `/typo`, the request is reaching oMLX instead of being intercepted by Caddy.
-
-**Access control (recommended):**
-
-Cloudflare Tunnel exposes your services publicly by default. To restrict access:
-
-- **Cloudflare Access** (free for up to 50 users) — adds SSO authentication at the Cloudflare edge, before traffic ever reaches your Mac. Enable it in the Cloudflare dashboard under **Zero Trust → Access → Applications**. You can require a specific email address, Google login, or one-time PIN.
-- **Application-level auth** — QwenPaw password (§7.8) and the oMLX API key (§4.3).
-
 **Useful commands:**
 
 ```bash
 # Check tunnel status
-launchctl list | grep cloudflared
-
-# List tunnels (to find the exact name or ID if route dns fails)
-cloudflared tunnel list
+sudo launchctl list | grep cloudflared
 
 # View cloudflared logs
-tail -20 ~/.cloudflared/cloudflared.err.log
+tail -20 /tmp/cloudflared.err.log
 
 # Restart the tunnel after config changes
-launchctl bootout gui/$(id -u)/com.cloudflare.cloudflared 2>/dev/null; launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
-
-# Or restart in place
-launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
+sudo launchctl kickstart -k system/com.cloudflare.cloudflared
 
 # Remove the tunnel entirely
-launchctl bootout gui/$(id -u)/com.cloudflare.cloudflared
-rm ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
+sudo launchctl bootout system/com.cloudflare.cloudflared
+sudo rm /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
 cloudflared tunnel delete night-thoughts
-```
-
-#### 7.9.1 Serving Additional Domains
-
-You can add as many hostnames to the same tunnel as you want. The pattern is the same for each one:
-
-1. **Add the domain as a new zone in Cloudflare** — click **Add a site**, choose Free.
-2. **Update nameservers at your registrar** to the two new Cloudflare nameservers assigned to that zone.
-3. **Route the hostname to your tunnel** once the zone is active:
-   ```bash
-   cloudflared tunnel route dns night-thoughts <subdomain>.<yourdomain>
-   ```
-4. **Add the hostname to `~/.cloudflared/config.yml`** — same pattern as Step 7, one ingress rule per hostname.
-5. **Restart the tunnel:**
-   ```bash
-   launchctl kickstart -k gui/$(id -u)/com.cloudflare.cloudflared
-   ```
-
-The Caddyfile already handles subdomains generically, so no changes are needed there unless the new hostname maps to a service Caddy doesn't know about.
-
-> **Note about DNS propagation:** Nameserver changes for a new zone follow the same timeline as the first — a few minutes to a couple of hours. Until Cloudflare confirms the zone is active, `cloudflared tunnel route dns` will fail with a "zone not found" error. Wait for the confirmation email, then retry.
-
-**How it fits together:**
-
-```
-Public internet → Cloudflare edge (TLS for both subdomains)
-                       ↓
-                   Cloudflare Tunnel (encrypted)
-                       ↓
-                   cloudflared (localhost, managed by launchd user agent)
-                       ↓
-                   Caddy (localhost:9080)
-                    ├── Host: omlx.nightthoughts.dev    → oMLX
-                    └── Host: qwenpaw.nightthoughts.dev → QwenPaw
 ```
 
 ### 7.10 Verify Everything Survives Reboot
@@ -1636,31 +1268,29 @@ ssh nt
 Check all services in one command:
 
 ```bash
-brew services list | grep -E "omlx|caddy" && launchctl list | grep -E "qwenpaw|cloudflared|caffeinate" && tailscale serve status
+brew services list | grep -E "omlx|caddy" && sudo launchctl list | grep -E "qwenpaw|cloudflared" && tailscale serve status
 ```
 
 **Expected output:**
 
-```
+```plaintext
 omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
--   0   com.qwenpaw.app
-46761	0	com.cloudflare.cloudflared
--   0   com.caffeinate.server
+12345	0	com.qwenpaw.app
+12345	0	com.cloudflare.cloudflared
 https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
 All components should be running without any manual intervention:
 
-| Component | Managed by | Auto-starts on login? | Auto-restarts on crash? |
-|-----------|------------|-----------------------|--------------------------|
-| **oMLX** | `brew services` | ✅ | ✅ |
-| **Caddy** | `brew services` | ✅ | ✅ |
-| **QwenPaw** | `launchd` (`KeepAlive`) | ✅ | ✅ |
-| **cloudflared** | `launchd` (`KeepAlive`) | ✅ | ✅ |
-| **caffeinate** | `launchd` (`KeepAlive`) | ✅ | ✅ |
-| **Tailscale Serve** | Tailscale daemon | ✅ | ✅ |
+| Component | Managed by | Domain | Auto-starts on login? | Auto-starts at boot? |
+| --- | --- | --- | --- | --- |
+| **oMLX** | `brew services` | GUI | ✅ | ❌ |
+| **Caddy** | `brew services` | GUI | ✅ | ❌ |
+| **QwenPaw** | `launchd` | **System** | ✅ | **✅** |
+| **cloudflared** | `launchd` | **System** | ✅ | **✅** |
+| **Tailscale Serve** | Tailscale daemon | System | ✅ | ✅ |
 
 Then verify public access works end-to-end:
 
@@ -1669,55 +1299,33 @@ curl -s -o /dev/null -w "Public oMLX:    HTTP %{http_code}\n" https://omlx.night
 curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
 ```
 
-> **If any of these are missing after a reboot**, the GUI session probably didn't start. See §1.4 for the LaunchDaemon conversion, which makes cloudflared and QwenPaw independent of the desktop session.
-
 ## Troubleshooting Quick Reference
 
 | Symptom | Fix |
-|---------|-----|
+| --- | --- |
 | `systemsetup: Turning Remote Login on or off requires Full Disk Access privileges` | Grant Terminal Full Disk Access in System Settings → Privacy & Security → Full Disk Access, then **quit and reopen Terminal** |
 | `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
-| Services respond slowly or hang under load | App Nap is throttling them. Verify `caffeinate` is running: `launchctl list \| grep caffeinate`. If missing, load the agent per §1.1b |
-| `pmset -g assertions` shows no caffeinate entries | Cosmetic on some macOS versions. Confirm the process is running with `launchctl list \| grep caffeinate` — the assertions are held at the kernel level regardless |
-| **Services don't start after reboot** | The GUI session didn't load. Diagnose per §1.4, or convert to LaunchDaemons so they run before login |
-| `launchctl print gui/$(id -u)` says "Domain does not support specified action" | You're SSH'd into a Mac with no GUI session — LaunchAgents cannot load. Convert to LaunchDaemons per §1.4 |
-| `loginwindow` and `WindowServer` not running after reboot | Desktop never started. Check FileVault is OFF, auto-login is enabled, and consider an HDMI dummy plug |
-| `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` as shown in §4.1 |
+| Services respond slowly or hang under load | App Nap is throttling them. Verify `caffeinate` is running: `launchctl list | grep caffeinate` |
+| **Services don't start after reboot** | The GUI session didn't load. QwenPaw and cloudflared will still start because they are LaunchDaemons, but oMLX and Caddy won't. Check `loginwindow` and `WindowServer` per §1.4 |
+| **`Could not find service "com.qwenpaw.app" in domain for user gui: 501`** | QwenPaw is a LaunchDaemon. Use `sudo launchctl kickstart -k system/com.qwenpaw.app` instead of the `gui/` domain. See §1.4 |
+| `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
-| oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon (M1/M2/M3/M4/M5) and macOS 15.0 (Sequoia) or later |
+| oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon and macOS 15.0 (Sequoia) or later |
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` |
-| oMLX isn't running after reboot | Run `brew services list` — status should be `started` |
-| Caddy isn't running after reboot | Run `brew services list \| grep caddy` — status should be `started`. If not, `brew services restart caddy` |
-| Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. The Caddyfile in §7.5 already redirects `/` to `/admin` on the public subdomain, but the local oMLX port doesn't redirect |
-| **`omlx.nightthoughts.dev/typo` returns a blank page instead of redirecting to `/admin`** | The `redir` directive is missing its `*` matcher. Caddy interprets `/admin` as a path matcher instead of a redirect destination. Change `redir /admin 302` to `redir * /admin 302` in the oMLX subdomain block (see §7.5) |
-| QwenPaw shows MIME type error for JS | Under Tailscale paths, verify `/assets/*` is routed to QwenPaw. Under Cloudflare subdomains, this shouldn't happen — if it does, `caddy validate --config /opt/homebrew/etc/Caddyfile` and check for a typo in the subdomain block |
-| QwenPaw images (SVG, PNG) return 404 | Under Tailscale paths, the `@qwenpaw_public` block must be present. Under Cloudflare subdomains, this shouldn't happen — the SPA runs at the root |
-| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in oMLX's env var or `~/.omlx/settings.json`. Both must be **exactly** the same string |
+| Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. |
+| **`omlx.nightthoughts.dev/typo` returns a blank page instead of redirecting to `/admin`** | The `redir` directive is missing its `*` matcher. Change `redir /admin 302` to `redir * /admin 302` in the oMLX subdomain block |
+| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in oMLX's env var or `~/.omlx/settings.json` |
 | **Need to change the oMLX API key without losing other settings** | Use `jq` per §4.3b — never overwrite `settings.json` or `config.json` with a heredoc once they contain other fields |
 | `jq: command not found` | Install with `brew install jq` |
-| `{"detail":"API key required"}` from curl | You forgot the `Authorization: Bearer <key>` header |
-| `{"object":"list","data":[]}` from `/v1/models` | This is correct — no model is loaded yet. Download and load one via the admin dashboard |
-| Forgot the oMLX API key | Read it back with `jq -r '.auth.api_key' ~/.omlx/settings.json` or `/usr/libexec/PlistBuddy -c "Print :EnvironmentVariables:OMLX_API_KEY" ~/Library/LaunchAgents/sh.brew.omlx.plist` |
-| Forgot the QwenPaw password | Run `source ~/.zshrc && qwenpaw auth reset-password` |
-| `command not found: qwenpaw` after install | Run `source ~/.zshrc` (or open a new terminal) to reload your PATH, then retry |
-| `launchctl load` fails with `Load failed: 5: Input/output error` | Run `launchctl enable gui/$(id -u)/com.qwenpaw.app` first, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.qwenpaw.app.plist` |
-| `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID. If empty, run `cloudflared tunnel create night-thoughts` first |
-| `cloudflared tunnel route dns` fails with "zone not found" | The domain hasn't finished activating in Cloudflare yet. Wait for the confirmation email, verify with `dig +short NS <domain> @1.1.1.1`, then retry |
-| `cloudflared tunnel login` says "existing certificate ... would overwrite" | You're already authenticated. Skip the login step — the cert at `~/.cloudflared/cert.pem` is valid |
-| cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist on macOS. Remove it and write a user launch agent per §7.9 Step 8 |
-| Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar (it conflicts with Cloudflare). Check status with `dig +short NS <domain> @1.1.1.1` — should return `*.ns.cloudflare.com` servers |
-| `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`. See §7.7 for the SSH config workaround |
-| `dscacheutil -q host -a name <domain>` returns nothing but `dig` works | `mDNSResponder` is in a zombie state. Fix: `sudo killall -9 mDNSResponder mDNSResponderHelper && sudo dscacheutil -flushcache && sudo ifconfig en0 down && sleep 2 && sudo ifconfig en0 up`. If that fails, reboot |
-| `ssh nt` returns `Could not resolve hostname` | Your `~/.ssh/config` entry is missing or malformed. See §7.2 |
+| Forgot the QwenPaw password | Run `QWENPAW_AUTH_ENABLED=true qwenpaw auth reset-password`, or delete `~/.qwenpaw.secret/auth.json` and restart the daemon |
+| **QwenPaw login fails with "Invalid credentials"** | The username in `auth.json` doesn't match the plist. Check `cat ~/.qwenpaw.secret/auth.json` — if it says `night-thoughts` but you're typing `admin`, either log in as `night-thoughts` or delete the file and restart to regenerate it from the plist |
+| **QwenPaw daemon exits with code 78 (`EX_CONFIG`)** | A placeholder value was left in the plist. Check with `sudo plutil -p /Library/LaunchDaemons/com.qwenpaw.app.plist` and fix `UserName` and `WorkingDirectory` |
+| **Telegram: `Conflict: terminated by other getUpdates request`** | Two QwenPaw instances are polling the same bot token. Kill the duplicate with `sudo pkill -9 -f qwenpaw`, remove `~/.qwenpaw/desktop_backend.pid`, and revoke the token via `@BotFather` |
+| **Telegram: `invalid bot token — not retrying`** | The token was revoked. Get a fresh one from `@BotFather` and paste it into the QwenPaw console at Channels → Telegram |
+| `cloudflared tunnel route dns` says "neither the ID nor the name of any of your tunnels" | Run `cloudflared tunnel list` to see actual tunnel names, then retry with the exact name or ID |
+| cloudflared log spams `use cloudflared tunnel run to start tunnel <UUID>` | `sudo cloudflared service install` wrote a broken plist. Use the LaunchDaemon block in §7.9 Step 8 instead |
+| Nameserver change at your registrar isn't propagating | Confirm DNSSEC is disabled at your registrar. Check status with `dig +short NS <domain> @1.1.1.1` |
+| `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
+| `ssh nt` returns `Could not resolve hostname` | Your `~/.ssh/config` entry is missing or malformed |
 | `ssh nt` returns `Permission denied` | Wrong username in `~/.ssh/config`. Verify with `whoami` on the server |
-| `ssh nt` returns `Connection timed out` | Wrong Tailscale IP, or Tailscale isn't running on one of the two devices. Check with `tailscale status` on both |
-| `tailscale: command not found` after cask install | Add the alias: `echo 'alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"' >> ~/.zshrc && source ~/.zshrc` |
-| `Fatal error: The current bundleIdentifier is unknown to the registry` | You symlinked the Tailscale app binary. Remove the symlink and use the shell alias instead |
-| `omlx` not found | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` and retry |
-| QwenPaw can't reach oMLX | Confirm oMLX is running: `curl -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models`. Also ensure `base_url` in QwenPaw config includes `/v1` |
-| Out of memory errors | Use smaller quantized models (4-bit); reduce context window per-model in oMLX admin settings |
-| Port conflicts | Change oMLX port via `OMLX_PORT` env var or `omlx serve --port <port>` |
-| Tailscale Serve not working | Run `tailscale serve status` to check active configurations |
-| Public subdomain not resolving | Verify the CNAME record at Cloudflare points to your tunnel. Check Cloudflare dashboard → DNS for both `omlx.` and `qwenpaw.` records |
-| Cloudflare Tunnel not running | Run `launchctl list \| grep cloudflared`. If missing, write the launch agent per §7.9 Step 8 |
