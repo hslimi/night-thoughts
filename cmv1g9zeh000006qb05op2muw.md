@@ -212,10 +212,10 @@ launchd user agents only start after a user logs in. Without auto-login, your se
 
 As you build this server, you'll encounter two types of background services. It's important to know the difference:
 
-- **LaunchAgents** (`~/Library/LaunchAgents/`) run **only after you log in** to the Mac. The graphical user interface (`WindowServer` and `loginwindow`) must be running. If the Mac boots headless and fails to start the GUI, LaunchAgents never start. Examples in this guide: **Caddy**, and **caffeinate**.
-- **LaunchDaemons** (`/Library/LaunchDaemons/`) run **at system boot**, long before any user logs in. They run in the background and do not need a GUI. Examples in this guide: **oMLX**, **QwenPaw**, and **cloudflared**.
+- **LaunchAgents** (`~/Library/LaunchAgents/`) run **only after you log in** to the Mac. The graphical user interface (`WindowServer` and `loginwindow`) must be running. If the Mac boots headless and fails to start the GUI, LaunchAgents never start. Examples in this guide: **caffeinate**.
+- **LaunchDaemons** (`/Library/LaunchDaemons/`) run **at system boot**, long before any user logs in. They run in the background and do not need a GUI. Examples in this guide: **Caddy**, **oMLX**, **QwenPaw**, and **cloudflared**.
 
-**Why does this matter?** If your Mac mini reboots but the desktop session gets stuck (which happens on headless Macs), your LaunchAgents won't load. By installing the core external-access services (oMLX, QwenPaw, and cloudflared) as LaunchDaemons, we guarantee you can reach the server from the internet even if the GUI hangs.
+**Why does this matter?** If your Mac mini reboots but the desktop session gets stuck (which happens on headless Macs), your LaunchAgents won't load. By installing the core external-access services (oMLX, Caddy, QwenPaw, and cloudflared) as LaunchDaemons, we guarantee you can reach the server from the internet even if the GUI hangs.
 
 If the GUI *does* fail to start, SSH in and run this diagnostic to see what's happening:
 
@@ -226,7 +226,7 @@ echo "=== WindowServer running? ===" && pgrep -l WindowServer
 
 If both return nothing, the GUI never started. Check that FileVault is OFF, auto-login is enabled, and consider adding an HDMI dummy plug (a cheap hardware trick that forces the Mac to output a video signal so `WindowServer` starts).
 
-> **Managing LaunchDaemons:** Because they run in the system domain, you must use `sudo` and the `system/` path to manage them. For example: `sudo launchctl kickstart -k system/com.omlx.server`. Attempting to use `gui/$(id -u)` will fail with `Could not find service`.
+> **Managing LaunchDaemons:** Because they run in the system domain, you must use `sudo` and the `system/` path to manage them. For example: `sudo launchctl kickstart -k system/com.caddy.server`. Attempting to use `gui/$(id -u)` will fail with `Could not find service`.
 
 ### 1.5 Optional: Menu Bar Server Mode Toggle
 
@@ -868,27 +868,84 @@ caddy validate --config /opt/homebrew/etc/Caddyfile
 
 ### 7.6 Start Caddy as an Always-On Service
 
-Caddy runs as a LaunchAgent managed by `brew services`. It starts on login and restarts on crash.
+To ensure Caddy starts at boot—even if the desktop session fails to load—we will run it as a LaunchDaemon. Just like we did for oMLX, we stop the Homebrew service and create our own system-level daemon.
+
+First, stop the default Homebrew service to avoid port conflicts:
 
 ```bash
-brew services start caddy
+brew services stop caddy
 ```
 
-**Expected output:** `==> Successfully started 'caddy' (label: homebrew.mxcl.caddy)`
-
-Confirm it's running and registered to auto-start:
+Now create the LaunchDaemon:
 
 ```bash
-brew services list | grep caddy
+USER_NAME=$(whoami)
+HOME_DIR=$HOME
+
+sudo tee /Library/LaunchDaemons/com.caddy.server.plist > /dev/null << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.caddy.server</string>
+  <key>UserName</key>
+  <string>${USER_NAME}</string>
+  <key>GroupName</key>
+  <string>staff</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/caddy</string>
+    <string>run</string>
+    <string>--config</string>
+    <string>/opt/homebrew/etc/Caddyfile</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>WorkingDirectory</key>
+  <string>${HOME_DIR}</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>${HOME_DIR}</string>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:${HOME_DIR}/.local/bin</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/tmp/caddy.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/caddy.err.log</string>
+</dict>
+</plist>
+EOF
+
+sudo launchctl bootout system/com.caddy.server 2>/dev/null
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.caddy.server.plist
+sleep 3
+sudo launchctl list | grep caddy
+```
+
+**Expected output:**
+
+```plaintext
+12345	0	com.caddy.server
+```
+
+Confirm it's listening on port 9080:
+
+```bash
 lsof -i :9080 | grep caddy
 ```
 
 **Expected output:**
 
 ```plaintext
-caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
-caddy   39606    yourname    9u  IPv6  ...  TCP *:9080 (LISTEN)
+caddy   12345    yourname    9u  IPv6  ...  TCP *:9080 (LISTEN)
 ```
+
+> **After editing the Caddyfile**, you must reload Caddy with `sudo launchctl kickstart -k system/com.caddy.server`.
 
 ### 7.7 Point Tailscale Serve at Caddy
 
@@ -1226,13 +1283,13 @@ ssh nt
 Check all services in one command:
 
 ```bash
-brew services list | grep caddy && sudo launchctl list | grep -E "omlx|qwenpaw|cloudflared" && tailscale serve status
+sudo launchctl list | grep -E "caddy|omlx|qwenpaw|cloudflared" && tailscale serve status
 ```
 
 **Expected output:**
 
 ```plaintext
-caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
+12345	0	com.caddy.server
 12345	0	com.omlx.server
 12345	0	com.qwenpaw.app
 12345	0	com.cloudflare.cloudflared
@@ -1245,7 +1302,7 @@ All components should be running without any manual intervention:
 | Component | Managed by | Domain | Auto-starts on login? | Auto-starts at boot? |
 | --- | --- | --- | --- | --- |
 | **oMLX** | `launchd` | **System** | ✅ | **✅** |
-| **Caddy** | `brew services` | GUI | ✅ | ❌ |
+| **Caddy** | `launchd` | **System** | ✅ | **✅** |
 | **QwenPaw** | `launchd` | **System** | ✅ | **✅** |
 | **cloudflared** | `launchd` | **System** | ✅ | **✅** |
 | **Tailscale Serve** | Tailscale daemon | System | ✅ | ✅ |
@@ -1265,8 +1322,9 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | Services respond slowly or hang under load | App Nap is throttling them. Verify `caffeinate` is running: `launchctl list | grep caffeinate` |
-| **Services don't start after reboot** | The GUI session didn't load. oMLX, QwenPaw, and cloudflared will still start because they are LaunchDaemons, but Caddy won't. Check `loginwindow` and `WindowServer` per §1.4 |
+| **Services don't start after reboot** | The GUI session didn't load. All services (oMLX, Caddy, QwenPaw, cloudflared) will still start because they are LaunchDaemons. See §1.4 for diagnosis |
 | **`Could not find service "com.qwenpaw.app" in domain for user gui: 501`** | QwenPaw is a LaunchDaemon. Use `sudo launchctl kickstart -k system/com.qwenpaw.app` instead of the `gui/` domain. See §1.4 |
+| **`Could not find service "com.caddy.server" in domain for user gui: 501`** | Caddy is a LaunchDaemon. Use `sudo launchctl kickstart -k system/com.caddy.server` instead of the `gui/` domain. |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
 | oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon and macOS 15.0 (Sequoia) or later |
