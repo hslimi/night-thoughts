@@ -214,10 +214,10 @@ launchd user agents only start after a user logs in. Without auto-login, your se
 
 As you build this server, you'll encounter two types of background services. It's important to know the difference:
 
-- **LaunchAgents** (`~/Library/LaunchAgents/`) run **only after you log in** to the Mac. The graphical user interface (`WindowServer` and `loginwindow`) must be running. If the Mac boots headless and fails to start the GUI, LaunchAgents never start. Examples in this guide: **oMLX**, **Caddy**, and **caffeinate**.
-- **LaunchDaemons** (`/Library/LaunchDaemons/`) run **at system boot**, long before any user logs in. They run in the background and do not need a GUI. Examples in this guide: **QwenPaw** and **cloudflared**.
+- **LaunchAgents** (`~/Library/LaunchAgents/`) run **only after you log in** to the Mac. The graphical user interface (`WindowServer` and `loginwindow`) must be running. If the Mac boots headless and fails to start the GUI, LaunchAgents never start. Examples in this guide: **Caddy**, and **caffeinate**.
+- **LaunchDaemons** (`/Library/LaunchDaemons/`) run **at system boot**, long before any user logs in. They run in the background and do not need a GUI. Examples in this guide: **oMLX**, **QwenPaw**, and **cloudflared**.
 
-**Why does this matter?** If your Mac mini reboots but the desktop session gets stuck (which happens on headless Macs), your LaunchAgents won't load. By installing the core external-access services (QwenPaw and cloudflared) as LaunchDaemons, we guarantee you can reach the server from the internet even if the GUI hangs.
+**Why does this matter?** If your Mac mini reboots but the desktop session gets stuck (which happens on headless Macs), your LaunchAgents won't load. By installing the core external-access services (oMLX, QwenPaw, and cloudflared) as LaunchDaemons, we guarantee you can reach the server from the internet even if the GUI hangs.
 
 If the GUI *does* fail to start, SSH in and run this diagnostic to see what's happening:
 
@@ -228,7 +228,7 @@ echo "=== WindowServer running? ===" && pgrep -l WindowServer
 
 If both return nothing, the GUI never started. Check that FileVault is OFF, auto-login is enabled, and consider adding an HDMI dummy plug (a cheap hardware trick that forces the Mac to output a video signal so `WindowServer` starts).
 
-> **Managing LaunchDaemons:** Because they run in the system domain, you must use `sudo` and the `system/` path to manage them. For example: `sudo launchctl kickstart -k system/com.qwenpaw.app`. Attempting to use `gui/$(id -u)` will fail with `Could not find service`.
+> **Managing LaunchDaemons:** Because they run in the system domain, you must use `sudo` and the `system/` path to manage them. For example: `sudo launchctl kickstart -k system/com.omlx.server`. Attempting to use `gui/$(id -u)` will fail with `Could not find service`.
 
 ### 1.5 Optional: Menu Bar Server Mode Toggle
 
@@ -338,167 +338,123 @@ Tapped 1 formula.
 
 > **Why** `brew trust` **is needed:** Recent versions of Homebrew refuse to load formulas from third-party taps unless you explicitly trust them — a security feature to prevent arbitrary code execution from untrusted sources. If you skip this, you'll see `Error: Refusing to load formula jundot/omlx/omlx from untrusted tap jundot/omlx.`
 
-### 4.3 Set the API Key
+### 4.3 Set the API Keys (The Right Way)
 
-oMLX requires an API key for all requests to the `/v1/*` endpoints. **You choose this key yourself** — it's not generated. For this guide, we'll use:
+oMLX uses **two distinct keys**, and confusing them is the most common setup error:
 
-```plaintext
-omlx-night-thoughts
-```
+| Key | Purpose | Where It's Used |
+| :--- | :--- | :--- |
+| **`api_key`** | Authenticates inference requests. | The `/v1/*` endpoints (clients send this as a Bearer token). |
+| **`secret_key`** | Signs the session cookies for the Admin Dashboard. | The web UI at `/admin`. Prevents you from being logged out on restart. |
 
-> **Important:** `omlx-night-thoughts` is just an example. You can replace it with any string you want — as long as you use the **same value** in QwenPaw's config later in §5.2. If you change it here, change it there too.
+**The correct home for these keys is `~/.omlx/settings.json`.** 
+While oMLX can read an environment variable (`OMLX_API_KEY`), putting it in a Homebrew-managed plist is fragile. The next time you run `brew upgrade omlx`, Homebrew will rewrite the plist and wipe your key, locking you out.
 
-There are two ways to set this key. **The environment variable is the recommended approach** — it keeps the secret out of the JSON file, survives upgrades cleanly, and lets you rotate the key with a single command.
-
-#### Option A: Environment Variable (Recommended)
-
-oMLX reads the `OMLX_API_KEY` environment variable, which takes precedence over `settings.json`. Since oMLX is managed by `brew services`, the variable goes into its launchd plist.
-
-The command below writes the key into the plist and reloads the service in one shot. Replace `omlx-night-thoughts` with your chosen key, then paste the entire line:
+Run this block to generate strong cryptographic keys and inject them directly into oMLX's configuration file:
 
 ```bash
-PLIST=~/Library/LaunchAgents/sh.brew.omlx.plist; KEY=omlx-night-thoughts; /usr/libexec/PlistBuddy -c "Print :EnvironmentVariables" "$PLIST" >/dev/null 2>&1 || /usr/libexec/PlistBuddy -c "Add :EnvironmentVariables dict" "$PLIST"; /usr/libexec/PlistBuddy -c "Set :EnvironmentVariables:OMLX_API_KEY $KEY" "$PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :EnvironmentVariables:OMLX_API_KEY string $KEY" "$PLIST"; launchctl bootout gui/$(id -u)/sh.brew.omlx 2>/dev/null; launchctl bootstrap gui/$(id -u) "$PLIST" && echo "Key set and service reloaded"
+# 1. Generate keys (api_key gets a suffix, secret_key is base hex)
+BASE_KEY=$(openssl rand -hex 32)
+API_KEY="${BASE_KEY}@81"
+
+# 2. Ensure the directory exists
+mkdir -p ~/.omlx
+
+# 3. Inject into settings.json (creating it if missing)
+if [ -f ~/.omlx/settings.json ]; then
+    jq --arg ak "$API_KEY" --arg sk "$BASE_KEY" \
+       '.auth = {api_key: $ak, secret_key: $sk}' \
+       ~/.omlx/settings.json > ~/.omlx/settings.json.tmp && mv ~/.omlx/settings.json.tmp ~/.omlx/settings.json
+else
+    jq -n --arg ak "$API_KEY" --arg sk "$BASE_KEY" \
+       '{auth: {api_key: $ak, secret_key: $sk}}' > ~/.omlx/settings.json
+fi
+
+# 4. Lock down file permissions
+chmod 600 ~/.omlx/settings.json
+
+# 5. Print the keys so you can save them for QwenPaw
+echo "API Key:    $(jq -r '.auth.api_key' ~/.omlx/settings.json)"
+echo "Secret Key: $(jq -r '.auth.secret_key' ~/.omlx/settings.json)"
 ```
 
-**Expected output:** `Key set and service reloaded`
-
-The command is idempotent — safe to run on a fresh plist, safe to run again after the key is already set, safe to run for rotation.
-
-> **If you still have** `auth.api_key` **in** `~/.omlx/settings.json`, remove it to avoid confusion. The env var wins, but leaving a stale key in the file makes rotation error-prone:
-> 
-> ```bash
-> jq 'del(.auth.api_key)' ~/.omlx/settings.json > ~/.omlx/settings.json.tmp && mv ~/.omlx/settings.json.tmp ~/.omlx/settings.json
-> ```
-> 
-> If `jq` isn't installed: `brew install jq`.
-
-#### Option B: Settings File
-
-If you prefer to keep the key in the config file, write it directly:
-
-```bash
-mkdir -p ~/.omlx && cat > ~/.omlx/settings.json << 'EOF'
-{
-  "auth": {
-    "api_key": "omlx-night-thoughts"
-  }
-}
-EOF
-```
-
-Then restart the service:
-
-```bash
-brew services restart omlx
-```
-
-> **Note:** If `~/.omlx/settings.json` already exists (for example, if you've configured other settings), **do not overwrite it with this heredoc**. Use the `jq` approach from §4.3b instead to update just the `api_key` field. The heredoc is only safe for a fresh install.
-
-#### Verify the Key Works
-
-Before moving on, confirm the key is accepted:
-
-```bash
-curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models
-```
-
-**Expected output:** `{"object":"list","data":[]}` — an empty list is correct at this stage because no model is loaded yet. The important thing is that you don't see `{"detail":"API key required"}` or a `401`.
-
-If you do get a `401`, the key wasn't saved. Re-run the single command from Option A, or the `jq` command from §4.3b, then restart the service.
+**Expected output:** Two long random strings. Save the `API Key` (the one ending in `@81`) — you will need it for QwenPaw in §5.2.
 
 ### 4.3b Rotating the API Key Later
 
-Once oMLX and QwenPaw are running, `~/.qwenpaw/config.json` contains **more than just the API key** — model preferences, backend options, timeouts, and whatever else QwenPaw has written. Overwriting it with a heredoc destroys all of that.
+If you ever need to change the keys, do not edit `settings.json` manually or use the admin UI (which might desync your QwenPaw config). Re-run the generation block from §4.3. 
 
-#### If You Used the Environment Variable
-
-Rotation is two commands.
-
-**Step 1: Update the plist and reload oMLX** — replace `your-new-key` with the new value and paste:
+Because we are using a custom LaunchDaemon (see §4.4) that does not hardcode the keys in the plist, you simply need to restart oMLX and update QwenPaw:
 
 ```bash
-PLIST=~/Library/LaunchAgents/sh.brew.omlx.plist; KEY=your-new-key; /usr/libexec/PlistBuddy -c "Set :EnvironmentVariables:OMLX_API_KEY $KEY" "$PLIST"; launchctl bootout gui/$(id -u)/sh.brew.omlx 2>/dev/null; launchctl bootstrap gui/$(id -u) "$PLIST" && echo "Key rotated"
+sudo launchctl kickstart -k system/com.omlx.server
+jq -r '.auth.api_key' ~/.omlx/settings.json # Copy this into QwenPaw's config
 ```
-
-**Step 2: Update QwenPaw's config to match** — QwenPaw doesn't read env vars for the oMLX key, so this one still uses `jq`:
-
-```bash
-jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json && sudo launchctl kickstart -k system/com.qwenpaw.app && echo "QwenPaw reloaded"
-```
-
-**Step 3: Verify**
-
-```bash
-curl -s -H "Authorization: Bearer your-new-key" http://localhost:8000/v1/models
-```
-
-A JSON model list means both sides agree.
-
-> **Install** `jq` **if missing:** `brew install jq`
-
-#### If You Used the Settings File
-
-**Install** `jq` **if you don't already have it:**
-
-```bash
-brew install jq
-```
-
-**Update oMLX's key:**
-
-```bash
-jq '.auth.api_key = "your-new-key"' ~/.omlx/settings.json > ~/.omlx/settings.json.tmp && mv ~/.omlx/settings.json.tmp ~/.omlx/settings.json
-```
-
-**Update QwenPaw's key to match:**
-
-```bash
-jq '.model.api_key = "your-new-key"' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json
-```
-
-**Restart both services:**
-
-```bash
-brew services restart omlx
-sudo launchctl kickstart -k system/com.qwenpaw.app
-sleep 3
-```
-
-**Verify both sides agree:**
-
-```bash
-jq -r '.auth.api_key' ~/.omlx/settings.json
-jq -r '.model.api_key' ~/.qwenpaw/config.json
-curl -s -H "Authorization: Bearer your-new-key" http://localhost:8000/v1/models
-```
-
-All three commands should print the new key or return a valid JSON model list. If the curl returns `{"detail":"API key required"}`, the two files are out of sync — re-run the `jq` command for whichever one doesn't match.
-
-The `jq` approach is deliberately surgical — it changes one key and leaves the rest of the file byte-for-byte identical.
 
 ### 4.4 Start oMLX as an Always-On Background Service
 
-Register oMLX with `brew services`, which installs a launchd agent that auto-starts on login and restarts on crash:
+Because we want oMLX to start at boot (even if the GUI fails), we will run it as a LaunchDaemon. But instead of relying on Homebrew's `brew services` (which wipes custom env vars on upgrade), we create our own daemon that simply points to the Homebrew binary. oMLX will read the keys directly from `settings.json`.
+
+First, stop the default Homebrew service to avoid port conflicts:
 
 ```bash
-brew services start omlx && brew services list | grep omlx
+brew services stop omlx 2>/dev/null
+launchctl bootout gui/$(id -u)/sh.brew.omlx 2>/dev/null
+```
+
+Now create the LaunchDaemon:
+
+```bash
+USER_NAME=$(whoami)
+HOME_DIR=$HOME
+
+sudo tee /Library/LaunchDaemons/com.omlx.server.plist > /dev/null << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.omlx.server</string>
+  <key>UserName</key>
+  <string>${USER_NAME}</string>
+  <key>GroupName</key>
+  <string>staff</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/omlx</string>
+    <string>serve</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>WorkingDirectory</key>
+  <string>${HOME_DIR}</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>${HOME_DIR}</string>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:${HOME_DIR}/.local/bin</string>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/tmp/omlx.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/omlx.err.log</string>
+</dict>
+</plist>
+EOF
+
+sudo launchctl bootout system/com.omlx.server 2>/dev/null
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.omlx.server.plist
+sleep 3
+sudo launchctl list | grep omlx
 ```
 
 **Expected output:**
 
 ```plaintext
-==> Successfully started `omlx` (label: sh.brew.omlx)
-omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
-```
-
-The `Status` should be `started`. Homebrew writes the launchd plist to `~/Library/LaunchAgents/sh.brew.omlx.plist` automatically — no manual plist creation needed.
-
-**Useful** `brew services` **commands:**
-
-```bash
-brew services stop omlx      # stop the service
-brew services restart omlx   # restart the service
-brew services info omlx      # show detailed status
+12345	0	com.omlx.server
 ```
 
 ### 4.5 Open the Admin Dashboard
@@ -509,21 +465,18 @@ oMLX binds to `http://localhost:8000` by default. Open the admin dashboard in yo
 http://localhost:8000/admin
 ```
 
-From another device on your network, use your Mac's IP: `http://your-mac-ip:8000/admin`.
-
-> **Note:** The dashboard lives at `/admin`, not `/`. Hitting the root URL returns a 404 by design.
+> **Note:** The dashboard lives at `/admin`, not `/`. Hitting the root URL returns a 404 by design. Log in using the `secret_key` you generated in §4.3.
 
 ### 4.6 Verify the API Key Works
 
 Before moving on, confirm the key is accepted:
 
 ```bash
-curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models
+API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
+curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models
 ```
 
 **Expected output:** `{"object":"list","data":[]}` — an empty list is correct at this stage because no model is loaded yet. The important thing is that you don't see `{"detail":"API key required"}` or a `401`.
-
-If you do get a `401`, the key wasn't saved. Re-run the `jq` command from §4.3b, or the initial write from §4.3 if the file was empty, and then `brew services restart omlx`.
 
 ### 4.7 Download & Deploy a Model
 
@@ -541,7 +494,8 @@ If you do get a `401`, the key wasn't saved. Re-run the `jq` command from §4.3b
 Verify the model is live:
 
 ```bash
-curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models
+API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
+curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models
 ```
 
 **Expected output:**
@@ -582,24 +536,28 @@ This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`\-manag
 
 ### 5.2 Configure QwenPaw to Use oMLX
 
-Write the QwenPaw config in one command. Note that the `api_key` here **must match** the value you chose in §4.3 (`omlx-night-thoughts` in this guide):
+Write the QwenPaw config in one command. Note that the `api_key` here **must match** the `api_key` in `~/.omlx/settings.json`:
 
 ```bash
-cat > ~/.qwenpaw/config.json << 'EOF'
+API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
+
+cat > ~/.qwenpaw/config.json << EOF
 {
   "model": {
     "backend": "openai",
     "base_url": "http://localhost:8000/v1",
-    "api_key": "omlx-night-thoughts",
+    "api_key": "${API_KEY}",
     "model_name": "mlx-community/Qwen3.5-4B-8bit"
   }
 }
 EOF
 ```
 
-> **If** `~/.qwenpaw/config.json` **already exists** — for example, if QwenPaw has written preferences or other settings — do **not** overwrite it with this heredoc. Use the `jq` approach from §4.3b instead to update just the `api_key` field. The heredoc here is only safe for a fresh install.
-
-> **Using a different key?** If you chose a different value in §4.3, replace `omlx-night-thoughts` in the `api_key` field above with that same value. The two **must match** — this is the single most common source of `401 Unauthorized` errors.
+> **If** `~/.qwenpaw/config.json` **already exists** — for example, if QwenPaw has written preferences or other settings — do **not** overwrite it with this heredoc. Use `jq` to update just the `api_key` field:
+> ```bash
+> API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
+> jq --arg key "$API_KEY" '.model.api_key = $key' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json
+> ```
 
 > **Path note:** `base_url` must include the `/v1` suffix. QwenPaw's OpenAI client appends `/models`, `/chat/completions`, etc. after `base_url`, so a missing `/v1` sends requests to the wrong paths.
 
@@ -714,13 +672,15 @@ ssh your-username@your-mac-ip
 Check all services in one command:
 
 ```bash
-brew services list | grep omlx && sudo launchctl list | grep qwenpaw && curl -s -H "Authorization: Bearer omlx-night-thoughts" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
+API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
+brew services list | grep caddy && sudo launchctl list | grep -E "omlx|qwenpaw" && curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 ```
 
 **Expected output:**
 
 ```plaintext
-omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
+caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
+12345	0	com.omlx.server
 12345	0	com.qwenpaw.app
 {"object":"list","data":[...]}
 QwenPaw HTTP 200
@@ -1268,14 +1228,14 @@ ssh nt
 Check all services in one command:
 
 ```bash
-brew services list | grep -E "omlx|caddy" && sudo launchctl list | grep -E "qwenpaw|cloudflared" && tailscale serve status
+brew services list | grep caddy && sudo launchctl list | grep -E "omlx|qwenpaw|cloudflared" && tailscale serve status
 ```
 
 **Expected output:**
 
 ```plaintext
-omlx    started    yourname    ~/Library/LaunchAgents/sh.brew.omlx.plist
 caddy   started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
+12345	0	com.omlx.server
 12345	0	com.qwenpaw.app
 12345	0	com.cloudflare.cloudflared
 https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
@@ -1286,7 +1246,7 @@ All components should be running without any manual intervention:
 
 | Component | Managed by | Domain | Auto-starts on login? | Auto-starts at boot? |
 | --- | --- | --- | --- | --- |
-| **oMLX** | `brew services` | GUI | ✅ | ❌ |
+| **oMLX** | `launchd` | **System** | ✅ | **✅** |
 | **Caddy** | `brew services` | GUI | ✅ | ❌ |
 | **QwenPaw** | `launchd` | **System** | ✅ | **✅** |
 | **cloudflared** | `launchd` | **System** | ✅ | **✅** |
@@ -1307,7 +1267,7 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | `pmset -g` shows `SleepDisabled 1` instead of `disablesleep 1` | Normal on macOS Ventura+. Same setting, different label |
 | `sleep 0 (sleep prevented by powerd, bluetoothd)` | Informational, not an error. Sleep is disabled as intended |
 | Services respond slowly or hang under load | App Nap is throttling them. Verify `caffeinate` is running: `launchctl list | grep caffeinate` |
-| **Services don't start after reboot** | The GUI session didn't load. QwenPaw and cloudflared will still start because they are LaunchDaemons, but oMLX and Caddy won't. Check `loginwindow` and `WindowServer` per §1.4 |
+| **Services don't start after reboot** | The GUI session didn't load. oMLX, QwenPaw, and cloudflared will still start because they are LaunchDaemons, but Caddy won't. Check `loginwindow` and `WindowServer` per §1.4 |
 | **`Could not find service "com.qwenpaw.app" in domain for user gui: 501`** | QwenPaw is a LaunchDaemon. Use `sudo launchctl kickstart -k system/com.qwenpaw.app` instead of the `gui/` domain. See §1.4 |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
@@ -1315,8 +1275,8 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` |
 | Admin dashboard shows 404 at `localhost:8000` | The correct path is `/admin`, not `/`. |
 | **`omlx.nightthoughts.dev/typo` returns a blank page instead of redirecting to `/admin`** | The `redir` directive is missing its `*` matcher. Change `redir /admin 302` to `redir * /admin 302` in the oMLX subdomain block |
-| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in oMLX's env var or `~/.omlx/settings.json` |
-| **Need to change the oMLX API key without losing other settings** | Use `jq` per §4.3b — never overwrite `settings.json` or `config.json` with a heredoc once they contain other fields |
+| `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
+| **Need to change the oMLX API key** | Re-run the generation block in §4.3, then restart the daemon (`sudo launchctl kickstart -k system/com.omlx.server`) and update QwenPaw |
 | `jq: command not found` | Install with `brew install jq` |
 | Forgot the QwenPaw password | Run `QWENPAW_AUTH_ENABLED=true qwenpaw auth reset-password`, or delete `~/.qwenpaw.secret/auth.json` and restart the daemon |
 | **QwenPaw login fails with "Invalid credentials"** | The username in `auth.json` doesn't match the plist. Check `cat ~/.qwenpaw.secret/auth.json` — if it says `night-thoughts` but you're typing `admin`, either log in as `night-thoughts` or delete the file and restart to regenerate it from the plist |
