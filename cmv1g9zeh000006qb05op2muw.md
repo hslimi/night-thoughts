@@ -393,11 +393,12 @@ jq -r '.auth.api_key' ~/.omlx/settings.json # Copy this into QwenPaw's config
 
 Because we want oMLX to start at boot (even if the GUI fails), we will run it as a LaunchDaemon. But instead of relying on Homebrew's `brew services` (which wipes custom env vars on upgrade), we create our own daemon that simply points to the Homebrew binary. oMLX will read the keys directly from `settings.json`.
 
-First, stop the default Homebrew service to avoid port conflicts:
+First, completely remove the old Homebrew LaunchAgent to prevent port conflicts:
 
 ```bash
 brew services stop omlx 2>/dev/null
 launchctl bootout gui/$(id -u)/sh.brew.omlx 2>/dev/null
+rm -f ~/Library/LaunchAgents/sh.brew.omlx.plist
 ```
 
 Now create the LaunchDaemon:
@@ -671,13 +672,13 @@ Check all services in one command:
 
 ```bash
 API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
-brew services list | grep caddy && sudo launchctl list | grep -E "omlx|qwenpaw" && curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
+sudo launchctl list | grep -E "caddy|omlx|qwenpaw" && curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models && curl -s -o /dev/null -w "QwenPaw HTTP %{http_code}\n" http://localhost:8088/
 ```
 
 **Expected output:**
 
 ```plaintext
-caddy    started    yourname    ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
+12345	0	com.caddy.server
 12345	0	com.omlx.server
 12345	0	com.qwenpaw.app
 {"object":"list","data":[...]}
@@ -868,12 +869,14 @@ caddy validate --config /opt/homebrew/etc/Caddyfile
 
 ### 7.6 Start Caddy as an Always-On Service
 
-To ensure Caddy starts at boot—even if the desktop session fails to load—we will run it as a LaunchDaemon. Just like we did for oMLX, we stop the Homebrew service and create our own system-level daemon.
+To ensure Caddy starts at boot—even if the desktop session fails to load—we will run it as a LaunchDaemon. Just like we did for oMLX, we stop the Homebrew service, remove its plist, and create our own system-level daemon.
 
-First, stop the default Homebrew service to avoid port conflicts:
+First, completely remove the old Homebrew LaunchAgent to prevent port conflicts:
 
 ```bash
-brew services stop caddy
+brew services stop caddy 2>/dev/null
+launchctl bootout gui/$(id -u)/homebrew.mxcl.caddy 2>/dev/null
+rm -f ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist
 ```
 
 Now create the LaunchDaemon:
