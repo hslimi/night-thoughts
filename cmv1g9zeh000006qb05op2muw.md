@@ -8,8 +8,6 @@ tags: ai, mlx, macmini, qwenpaw
 
 ---
 
-# Complete Guide: Always-On Mac Server with MLX, oMLX & QwenPaw
-
 ## Tested Environment
 
 Everything in this guide was verified on the following setup. If your versions are close, the commands should work unchanged.
@@ -1289,3 +1287,9 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
 | `ssh nt` returns `Could not resolve hostname` | Your `~/.ssh/config` entry is missing or malformed |
 | `ssh nt` returns `Permission denied` | Wrong username in `~/.ssh/config`. Verify with `whoami` on the server |
+
+---
+
+If you build this stack, tag me — I want to see what agents and local workflows you are running on your Mac. And if you are working on local LLM inference, Apple Silicon optimization, or self-hosted AI, let us talk in the comments or connect directly.
+
+— Haithem Slimi, [nightthoughts.dev](https://nightthoughts.dev)
