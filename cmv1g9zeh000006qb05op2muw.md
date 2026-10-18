@@ -27,6 +27,8 @@ Everything in this guide was verified on the following setup. If your versions a
 | **Caddy** | 2.x | Reverse proxy + authentication layer |
 | **Tailscale** | latest via `--cask` | Mesh VPN, SSH, TLS termination |
 | **cloudflared** | latest via Homebrew | Public access via custom domain |
+| **jq** | latest via Homebrew | JSON processor (used throughout) |
+| **yq** | latest via Homebrew | YAML processor (used later) |
 
 > **Note:** Version numbers above reflect the state of the ecosystem when this guide was written. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
 
@@ -315,6 +317,32 @@ If you don't already have Homebrew, install it and set up your PATH in one comma
 
 > **Note:** If Homebrew is already installed, the installer will detect it and skip installation. You can safely run this command again.
 
+### 4.1b Install `jq` and `yq`
+
+This guide uses **`jq`** heavily for JSON manipulation (oMLX keys, QwenPaw config) and **`yq`** for YAML (useful for Cloudflare tunnel config and future service edits). Install both now so later steps don't fail with `jq: command not found` or `yq: command not found`.
+
+```bash
+brew install jq yq
+```
+
+**Expected output:** Homebrew installs both formulae, ending with `jq` and `yq` version numbers.
+
+Verify:
+
+```bash
+jq --version
+yq --version
+```
+
+**Expected output:**
+
+```plaintext
+jq-1.7.x
+yq (https://github.com/mikefarah/yq/) version v4.x.x
+```
+
+> **Why here?** `jq` is first used in §4.3 to inject the oMLX API keys into `~/.omlx/settings.json`. Installing it before that step avoids the most common “command not found” error in this guide. `yq` is not strictly required by the commands below, but it's the right YAML companion for editing `~/.cloudflared/config.yml` and other configs later.
+
 ### 4.2 Tap, Trust, and Install oMLX
 
 Run all three steps in one command:
@@ -347,6 +375,8 @@ oMLX uses **two distinct keys**, and confusing them is the most common setup err
 
 **The correct home for these keys is `~/.omlx/settings.json`.** 
 While oMLX can read an environment variable (`OMLX_API_KEY`), putting it in a Homebrew-managed plist is fragile. The next time you run `brew upgrade omlx`, Homebrew will rewrite the plist and wipe your key, locking you out.
+
+> **Prerequisite:** This step requires `jq`, which you installed in §4.1b.
 
 Run this block to generate strong cryptographic keys and inject them directly into oMLX's configuration file:
 
@@ -455,6 +485,56 @@ sudo launchctl list | grep omlx
 ```plaintext
 12345	0	com.omlx.server
 ```
+
+### 4.4b Upgrading oMLX Later (Homebrew + LaunchDaemon Notice)
+
+oMLX is installed via Homebrew but runs under **our custom LaunchDaemon** (`com.omlx.server`), not under `brew services`. This has an important consequence you must remember every time you upgrade it.
+
+`brew upgrade omlx` does **three** things:
+
+1. It downloads and installs the new oMLX release into `/opt/homebrew/Cellar/omlx/<new-version>/`.
+2. It atomically repoints the stable symlink `/opt/homebrew/bin/omlx` to the new version.
+3. It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.omlx.server.plist`.
+
+So immediately after `brew upgrade omlx` finishes, the following is true:
+
+- `sudo launchctl list | grep omlx` still shows `com.omlx.server` running.
+- Your oMLX API still responds on `http://localhost:8000`.
+- But the running process is still executing the **old** binary image from memory.
+- The new version on disk is **not in use** until launchd restarts the process.
+
+Because our plist points to the symlink `/opt/homebrew/bin/omlx` (not a versioned Cellar path), the upgrade itself is safe — it will not break the daemon on next start. But you must **manually restart the daemon** for the new version to actually run.
+
+**After every `brew upgrade omlx`, run:**
+
+```bash
+sudo launchctl kickstart -k system/com.omlx.server
+```
+
+Then verify that the daemon came back up and the new version is live:
+
+```bash
+sudo launchctl list | grep omlx
+tail -20 /tmp/omlx.err.log
+API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
+curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models
+```
+
+The expected output:
+
+- `launchctl list` shows `com.omlx.server` with a PID and exit code `0`.
+- The error log shows a clean startup with the new version string.
+- The `curl` call returns a `200` JSON body like `{"object":"list","data":[...]}`, **not** `{"detail":"API key required"}` or a `401`.
+
+**Do not use `brew services restart omlx`.** You removed the Homebrew-managed service in §4.4 on purpose. Using `brew services` at this point would recreate its own plist, reintroduce port conflicts, and potentially wipe configuration.
+
+If you prefer to combine upgrade and restart in one command:
+
+```bash
+brew upgrade omlx && sudo launchctl kickstart -k system/com.omlx.server
+```
+
+A full reboot also loads the new version (because launchd re-reads the plist and resolves the symlink at boot), but a `kickstart` is faster and lets you inspect logs immediately.
 
 ### 4.5 Open the Admin Dashboard
 
@@ -950,6 +1030,65 @@ caddy   12345    yourname    9u  IPv6  ...  TCP *:9080 (LISTEN)
 
 > **After editing the Caddyfile**, you must reload Caddy with `sudo launchctl kickstart -k system/com.caddy.server`.
 
+### 7.6b Upgrading Caddy Later (Homebrew + LaunchDaemon Notice)
+
+Caddy is installed via Homebrew but runs under **our custom LaunchDaemon** (`com.caddy.server`), not under `brew services`. This has an important consequence you must remember every time you upgrade it.
+
+`brew upgrade caddy` does **three** things:
+
+1. It downloads and installs the new Caddy release into `/opt/homebrew/Cellar/caddy/<new-version>/`.
+2. It atomically repoints the stable symlink `/opt/homebrew/bin/caddy` to the new version.
+3. It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.caddy.server.plist`.
+
+So immediately after `brew upgrade caddy` finishes, the following is true:
+
+- `sudo launchctl list | grep caddy` still shows `com.caddy.server` running.
+- Your sites (`omlx.nightthoughts.dev`, `qwenpaw.nightthoughts.dev`, Tailscale Serve) continue to serve traffic without interruption.
+- But the running process is still executing the **old** binary image from memory.
+- The new version on disk is **not in use** until launchd restarts the process.
+
+Because our plist points to the symlink `/opt/homebrew/bin/caddy` (not a versioned Cellar path), the upgrade itself is safe — it will not break the daemon on next start. But you must **manually restart the daemon** for the new version to actually run.
+
+Unlike oMLX, Caddy has one extra risk: a new major/minor release may reject Caddyfile syntax that the previous version accepted. Always validate the config before restarting the daemon.
+
+**After every `brew upgrade caddy`, run:**
+
+```bash
+caddy validate --config /opt/homebrew/etc/Caddyfile
+sudo launchctl kickstart -k system/com.caddy.server
+```
+
+Then verify that the daemon came back up, is listening on port 9080, and is serving traffic:
+
+```bash
+sudo launchctl list | grep caddy
+lsof -i :9080 | grep caddy
+tail -20 /tmp/caddy.err.log
+curl -s -o /dev/null -w "Local → HTTP %{http_code}\n" http://localhost:9080/
+```
+
+The expected output:
+
+- `launchctl list` shows `com.caddy.server` with a PID and exit code `0`.
+- `lsof` shows Caddy listening on `*:9080`.
+- The error log contains no `loading Caddyfile` errors.
+- The local `curl` returns a non-`502` status (typically `302` for the oMLX redirect, or `200` for a proxied request).
+
+**Do not use `brew services restart caddy`.** You removed the Homebrew-managed service in §7.6 on purpose. Using `brew services` would recreate its own plist, reintroduce port conflicts on 9080, and potentially overwrite your Caddyfile configuration path.
+
+If you prefer to combine validation, upgrade, and restart in one chain:
+
+```bash
+caddy validate --config /opt/homebrew/etc/Caddyfile \
+  && brew upgrade caddy \
+  && caddy validate --config /opt/homebrew/etc/Caddyfile \
+  && sudo launchctl kickstart -k system/com.caddy.server
+```
+
+The first `validate` runs against the currently installed version, so if the existing config is already broken you catch that before you touch the package. The second `validate` runs against the newly installed version.
+
+A full reboot also loads the new version (because launchd re-reads the plist and resolves the symlink at boot), but a `kickstart` is faster and lets you inspect logs immediately.
+
 ### 7.7 Point Tailscale Serve at Caddy
 
 Tailscale Serve exposes your services to devices on your tailnet — encrypted, private, and without requiring a public domain.
@@ -1214,6 +1353,55 @@ sudo launchctl list | grep cloudflared
 12345	0	com.cloudflare.cloudflared
 ```
 
+**Step 8b: Upgrading cloudflared Later (Homebrew + LaunchDaemon Notice)**
+
+cloudflared is installed via Homebrew but runs under **our custom LaunchDaemon** (`com.cloudflare.cloudflared`), not under `brew services` (which is not used for it in this guide at all). This has an important consequence you must remember every time you upgrade it.
+
+`brew upgrade cloudflared` does **three** things:
+
+1. It downloads and installs the new cloudflared release into `/opt/homebrew/Cellar/cloudflared/<new-version>/`.
+2. It atomically repoints the stable symlink `/opt/homebrew/bin/cloudflared` to the new version.
+3. It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.cloudflare.cloudflared.plist`.
+
+So immediately after `brew upgrade cloudflared` finishes, the following is true:
+
+- `sudo launchctl list | grep cloudflared` still shows `com.cloudflare.cloudflared` running.
+- Your public tunnels for `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` continue to work.
+- But the running process is still executing the **old** binary image from memory.
+- The new version on disk is **not in use** until launchd restarts the process.
+
+Because our plist points to the symlink `/opt/homebrew/bin/cloudflared` (not a versioned Cellar path), the upgrade itself is safe — it will not break the tunnel on next start. But you must **manually restart the daemon** for the new version to actually run.
+
+**After every `brew upgrade cloudflared`, run:**
+
+```bash
+sudo launchctl kickstart -k system/com.cloudflare.cloudflared
+```
+
+Then verify that the daemon came back up and that both tunnel connections re-registered:
+
+```bash
+sudo launchctl list | grep cloudflared
+sleep 10
+tail -30 /tmp/cloudflared.err.log
+```
+
+The expected output:
+
+- `launchctl list` shows `com.cloudflare.cloudflared` with a PID and exit code `0`.
+- The log shows a fresh health precheck and at least two `Registered tunnel connection connIndex=...` lines (typically `connIndex=0` and `connIndex=1`).
+- No repeating `use cloudflared tunnel run to start tunnel <UUID>` loop, and no `failed to connect` errors.
+
+**Do not use `sudo cloudflared service install`.** As noted in Step 8, it writes a broken macOS plist that omits the `tunnel run` subcommand. Sticking with your custom LaunchDaemon is the correct upgrade path.
+
+If you prefer to combine upgrade and restart in one command:
+
+```bash
+brew upgrade cloudflared && sudo launchctl kickstart -k system/com.cloudflare.cloudflared
+```
+
+A full reboot also loads the new version (because launchd re-reads the plist and resolves the symlink at boot), but a `kickstart` is faster and lets you inspect tunnel logs immediately.
+
 **Step 9: Verify**
 
 Now check the log to confirm the tunnel is actually connected:
@@ -1329,6 +1517,7 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | **`Could not find service "com.qwenpaw.app" in domain for user gui: 501`** | QwenPaw is a LaunchDaemon. Use `sudo launchctl kickstart -k system/com.qwenpaw.app` instead of the `gui/` domain. See §1.4 |
 | **`Could not find service "com.caddy.server" in domain for user gui: 501`** | Caddy is a LaunchDaemon. Use `sudo launchctl kickstart -k system/com.caddy.server` instead of the `gui/` domain. |
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or add it to `~/.zprofile` |
+| **`jq: command not found` or `yq: command not found`** | Run `brew install jq yq` (see §4.1b). Both are installed early because later steps depend on them. |
 | `Error: Refusing to load formula ... from untrusted tap` | Run `brew trust jundot/omlx`, then retry `brew install jundot/omlx/omlx` |
 | oMLX install rejected on Intel Mac or macOS 14 | oMLX requires Apple Silicon and macOS 15.0 (Sequoia) or later |
 | `AttributeError: module 'mlx' has no attribute '__version__'` | Expected — version lives on `mlx.core`. Use `python -c "import mlx.core as mx; print(mx.__version__)"` |
@@ -1336,7 +1525,10 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | **`omlx.nightthoughts.dev/typo` returns a blank page instead of redirecting to `/admin`** | The `redir` directive is missing its `*` matcher. Change `redir /admin 302` to `redir * /admin 302` in the oMLX subdomain block |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
 | **Need to change the oMLX API key** | Re-run the generation block in §4.3, then restart the daemon (`sudo launchctl kickstart -k system/com.omlx.server`) and update QwenPaw |
-| `jq: command not found` | Install with `brew install jq` |
+| **Upgraded Caddy via `brew upgrade caddy` but `caddy version` still shows the old version** | `brew upgrade` does not restart custom LaunchDaemons. Run `sudo launchctl kickstart -k system/com.caddy.server`. See §7.6b |
+| **Upgraded oMLX via `brew upgrade omlx` but the running process is still the old version** | `brew upgrade` does not restart custom LaunchDaemons. Run `sudo launchctl kickstart -k system/com.omlx.server`. See §4.4b |
+| **Upgraded cloudflared via `brew upgrade cloudflared` but the tunnel is still the old version** | `brew upgrade` does not restart custom LaunchDaemons. Run `sudo launchctl kickstart -k system/com.cloudflare.cloudflared`. See §7.9 Step 8b |
+| **`brew services restart caddy` / `brew services restart omlx` breaks the service or creates a duplicate plist** | Do not use `brew services` for Caddy or oMLX. They are managed by custom LaunchDaemons. Use `sudo launchctl kickstart -k system/com.<service>` instead |
 | Forgot the QwenPaw password | Run `QWENPAW_AUTH_ENABLED=true qwenpaw auth reset-password`, or delete `~/.qwenpaw.secret/auth.json` and restart the daemon |
 | **QwenPaw login fails with "Invalid credentials"** | The username in `auth.json` doesn't match the plist. Check `cat ~/.qwenpaw.secret/auth.json` — if it says `night-thoughts` but you're typing `admin`, either log in as `night-thoughts` or delete the file and restart to regenerate it from the plist |
 | **QwenPaw daemon exits with code 78 (`EX_CONFIG`)** | A placeholder value was left in the plist. Check with `sudo plutil -p /Library/LaunchDaemons/com.qwenpaw.app.plist` and fix `UserName` and `WorkingDirectory` |
