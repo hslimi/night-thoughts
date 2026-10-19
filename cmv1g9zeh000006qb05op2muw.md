@@ -4,7 +4,13 @@ datePublished: 2026-10-09T21:01:08.387Z
 cuid: cmv1g9zeh000006qb05op2muw
 slug: complete-guide-always-on-mac-server-with-mlx-omlx-qwenpaw
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/e8731940-c0fb-4aa5-b7be-8ba95a19041e.png
-tags: ai, mlx, macmini, qwenpaw
+tags: cloudflare, ai, tailscale, mlx, macmini, qwenpaw, omlx
+
+---
+
+**The foundation guide for local AI on Apple Silicon.**
+
+This guide builds a headless, always-on Mac mini that survives reboot without any GUI intervention, serves local models through oMLX with persistent API keys, runs the QwenPaw agent framework as a system service, and exposes everything through Caddy + Cloudflare Tunnel with Tailscale for SSH (and optionally HTTPS) access. The whole stack runs at zero marginal inference cost and never sends data off the machine.
 
 ---
 
@@ -21,7 +27,7 @@ Everything in this guide was verified on the following setup. If your versions a
 | **Python (MLX venv)** | 3.11.x | Managed by uv at `~/.mlx-venv` |
 | **Python (QwenPaw)** | 3.12.x | Bundled by QwenPaw's installer |
 | **MLX** | 0.32.x | Apple's ML framework |
-| **mlx-lm** | 0.28.x | LLM extensions for MLX |
+| **mlx-lm** | 0.31.x | LLM extensions for MLX |
 | **oMLX** | latest via `jundot/omlx` | Inference server + admin dashboard |
 | **QwenPaw** | latest via `agentscope.io` | Agent framework + web console |
 | **Caddy** | 2.x | Reverse proxy + authentication layer |
@@ -30,7 +36,9 @@ Everything in this guide was verified on the following setup. If your versions a
 | **jq** | latest via Homebrew | JSON processor (used throughout) |
 | **yq** | latest via Homebrew | YAML processor (used later) |
 
-> **Note:** Version numbers above reflect the state of the ecosystem when this guide was written. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
+> **Note:** Version numbers above reflect the state of the ecosystem as of **2026-09**, the date this guide was last verified end-to-end. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
+
+---
 
 ## Part 1: Prepare macOS for Headless Server Mode
 
@@ -75,7 +83,7 @@ Currently in use:
 ```
 
 > **Note:** On macOS Ventura (13) and later, `pmset` reports the disablesleep setting as `SleepDisabled 1` instead of `disablesleep 1`. This is expected — it means the same thing.
-> 
+>
 > The annotation `(sleep prevented by powerd, bluetoothd)` next to `sleep 0` is **informational, not an error**. It simply means that in addition to your `pmset` settings, system daemons are also actively preventing sleep. Your server will stay awake.
 
 ### 1.1b Prevent App Nap with caffeinate
@@ -240,6 +248,8 @@ git clone https://github.com/thairc-dev/mac-server-mode.git && cd mac-server-mod
 
 A ⚡ icon appears in your menu bar. Press `Ctrl + Option + Cmd + S` to toggle server mode (screen off, system awake).
 
+---
+
 ## Part 2: Install uv & Python 3.11
 
 ### 2.1 Install uv
@@ -279,6 +289,8 @@ arm
 
 > **Critical:** If you see `i386` instead of `arm`, you have a Rosetta (x86) Python. Reinstall Python 3.11 through uv and start over.
 
+---
+
 ## Part 3: Install MLX Framework
 
 MLX is Apple's native machine learning framework for Apple Silicon.
@@ -292,10 +304,12 @@ source ~/.mlx-venv/bin/activate && uv pip install mlx mlx-lm && python -c "impor
 **Expected output:** `Successfully installed mlx-x.x.x mlx-lm-x.x.x ...` followed by `0.32.x`.
 
 > **Note:** The top-level `mlx` module does **not** export `__version__`. If you try `python -c "import mlx; print(mlx.__version__)"`, you'll get `AttributeError: module 'mlx' has no attribute '__version__'`. The version attribute lives on `mlx.core`. Alternatively, you can read the version from package metadata:
-> 
+>
 > ```bash
 > python -c "import importlib.metadata as md; print(md.version('mlx'))"
 > ```
+
+---
 
 ## Part 4: Install oMLX (Web Dashboard + Background Service)
 
@@ -585,7 +599,9 @@ curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models
 
 > **Note:** oMLX provides both OpenAI-compatible (`/v1/chat/completions`) and Anthropic-compatible (`/v1/messages`) endpoints. It also supports `/v1/embeddings`, `/v1/rerank`, and `/v1/responses` for broader compatibility.
 
-![oMLX admin dashboard with a model loaded and serving](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2cf4e346-d538-46b3-9247-bcad2487131a.png align="center")
+![oMLX admin dashboard with a model loaded and serving](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2cf4e346-d538-46b3-9247-bcad2487131a.png)
+
+---
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
@@ -611,7 +627,7 @@ curl -fsSL https://qwenpaw.agentscope.io/install.sh | bash && source ~/.zshrc &&
 
 > **If you already ran the installer and got** `command not found: qwenpaw`**:** the install itself succeeded — you just need to reload your shell. Run `source ~/.zshrc && qwenpaw init --defaults` and continue.
 
-This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`\-managed Python environment. It automatically installs `uv`, creates a virtual environment, and downloads dependencies without requiring manual Python setup.
+This script installs QwenPaw into `~/.qwenpaw` with a self-contained `uv`-managed Python environment. It automatically installs `uv`, creates a virtual environment, and downloads dependencies without requiring manual Python setup.
 
 ### 5.2 Configure QwenPaw to Use oMLX
 
@@ -732,7 +748,9 @@ sudo launchctl kickstart -k system/com.qwenpaw.app                           # r
 
 > **After editing the plist**, you must `bootout` then `bootstrap` for changes to take effect — launchd caches the plist at load time.
 
-![QwenPaw web console with an agent conversation open](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f3ac7a7b-3fd4-48fd-8e72-b138b735fc34.png align="center")
+![QwenPaw web console with an agent conversation open](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f3ac7a7b-3fd4-48fd-8e72-b138b735fc34.png)
+
+---
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -767,9 +785,11 @@ QwenPaw HTTP 200
 
 All services should return healthy responses without any manual intervention.
 
+---
+
 ## Part 7: Remote Access from Anywhere
 
-This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailscale** provides encrypted SSH and private tailnet access; **Cloudflare Tunnel** provides public HTTPS via your own domain. **Caddy** runs locally as a reverse proxy in front of both services.
+This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailscale** provides encrypted SSH access to your Mac; **Cloudflare Tunnel** provides public HTTPS via your own domain. **Caddy** runs locally as a reverse proxy in front of both services.
 
 ### 7.0 Create a Tailscale Account
 
@@ -845,12 +865,16 @@ ssh nt
 
 > **Why not `/etc/hosts`?** It requires `sudo`, breaks on OS updates that re-generate the file, and is global to the machine. `~/.ssh/config` is scoped to SSH, requires no elevated privileges, and survives system updates.
 
-### 7.3 Enable HTTPS Certificates
+### 7.3 Optional: Enable HTTPS Certificates
+
+> **When you need this.** Only if you plan to enable §7.7 (`tailscale serve --https=443`), which gives HTTPS access to your services over the tailnet. **If you plan to use SSH-only access** — authenticating as your Mac user and running `curl` on the Mac's loopback — **skip this section.** The commands here are for readers who want HTTPS-over-Tailscale as a convenience.
 
 Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can terminate TLS on port 443.
 
 1.  Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
 2.  Under the **HTTPS Certificates** section, click **Enable HTTPS**.
+
+> **If you enable this and later disable `tailscale serve`,** the certificates become inert. You can leave them enabled (harmless) or disable them on the same DNS page. They only matter if a `serve --https` or `funnel` rule exists.
 
 ### 7.4 Install Caddy
 
@@ -875,7 +899,7 @@ caddy version
 Caddy handles two routing modes at once:
 
 1.  **Subdomain routing** for Cloudflare — `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` each map to their service at the root.
-2.  **Path routing** for Tailscale Serve — a single hostname (`night-thoughts.<your-tailnet>.ts.net`) with `/omlx/*` and `/console/*` prefixes.
+2.  **Path routing** for Tailscale Serve (only if you enable §7.7) — a single hostname (`night-thoughts.<your-tailnet>.ts.net`) with `/omlx/*` and `/console/*` prefixes.
 
 ```bash
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
@@ -898,6 +922,9 @@ http://qwenpaw.nightthoughts.dev:9080 {
 }
 
 # ── Tailscale Serve target (path-based, single hostname) ──────
+# NOTE: This block is only used if you enable §7.7 (Tailscale Serve).
+# If you're using SSH-only access, this block is dead code — you can
+# safely remove it.
 :9080 {
     # oMLX entry point
     @omlx_bare path /omlx
@@ -934,6 +961,8 @@ EOF
 ```
 
 > **Why both blocks?** The subdomain blocks (`http://omlx.nightthoughts.dev:9080`) only match requests where the `Host` header is that subdomain — which is what Cloudflare sends. The `:9080` block catches everything else, which is what Tailscale Serve sends.
+
+> **The `:9080` block is conditional.** Its only purpose is to serve `tailscale serve` in §7.7. If you skip §7.7 (SSH-only), this block receives no traffic — the two subdomain blocks alone handle Cloudflare. Keeping it is harmless; removing it is cleaner if you know you're going SSH-only.
 
 > **Why `http://` on the subdomains?** Without it, Caddy would try to provision its own TLS certificate for `omlx.nightthoughts.dev`, which fails because Cloudflare already holds one for that hostname and Caddy can't complete the ACME challenge. The `http://` prefix tells Caddy to serve that hostname over plain HTTP only.
 
@@ -1089,7 +1118,17 @@ The first `validate` runs against the currently installed version, so if the exi
 
 A full reboot also loads the new version (because launchd re-reads the plist and resolves the symlink at boot), but a `kickstart` is faster and lets you inspect logs immediately.
 
-### 7.7 Point Tailscale Serve at Caddy
+### 7.7 Optional: Point Tailscale Serve at Caddy (Convenience — Bypasses Auth)
+
+> **Security note.** This step gives you HTTPS access to your services over your tailnet by **bypassing Caddy entirely**. Anyone on your tailnet — verified at the WireGuard layer, not by any password — can reach `https://<hostname>.<tailnet>.ts.net/` without going through Caddy's `basicauth` or the upstream service's own auth. This is fine if your tailnet contains only devices you personally own. If your tailnet contains shared devices, family machines, or other users, **skip this section** and use `ssh nt 'curl http://127.0.0.1:...'` to reach services instead.
+>
+> **DNS note.** Some users have seen MagicDNS conflict with Cloudflare-managed DNS on the local machine — `dig` resolves fine but `curl` returns `Could not resolve host`. If that happens, run `tailscale set --accept-dns=false` and flush the resolver:
+> ```bash
+> tailscale set --accept-dns=false
+> sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+> ```
+>
+> If you enable this step now and decide to go SSH-only later, disable it with `tailscale serve reset` and remove the `:9080` block from the Caddyfile (§7.5).
 
 Tailscale Serve exposes your services to devices on your tailnet — encrypted, private, and without requiring a public domain.
 
@@ -1488,6 +1527,11 @@ https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
 |-- / proxy http://localhost:9080
 ```
 
+> **If you skipped §7.7 (SSH-only),** `tailscale serve status` will print nothing. That's expected. Verify SSH-only access instead:
+> ```bash
+> ssh nt 'curl -s -o /dev/null -w "oMLX: %{http_code}\n" http://127.0.0.1:8000/v1/models'
+> ```
+
 All components should be running without any manual intervention:
 
 | Component | Managed by | Domain | Auto-starts on login? | Auto-starts at boot? |
@@ -1496,7 +1540,7 @@ All components should be running without any manual intervention:
 | **Caddy** | `launchd` | **System** | ✅ | **✅** |
 | **QwenPaw** | `launchd` | **System** | ✅ | **✅** |
 | **cloudflared** | `launchd` | **System** | ✅ | **✅** |
-| **Tailscale Serve** | Tailscale daemon | System | ✅ | ✅ |
+| **Tailscale Serve** *(§7.7 only)* | Tailscale daemon | System | ✅ | ✅ |
 
 Then verify public access works end-to-end:
 
@@ -1504,6 +1548,8 @@ Then verify public access works end-to-end:
 curl -s -o /dev/null -w "Public oMLX:    HTTP %{http_code}\n" https://omlx.nightthoughts.dev/admin
 curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
 ```
+
+---
 
 ## Troubleshooting Quick Reference
 
@@ -1540,9 +1586,11 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
 | `ssh nt` returns `Could not resolve hostname` | Your `~/.ssh/config` entry is missing or malformed |
 | `ssh nt` returns `Permission denied` | Wrong username in `~/.ssh/config`. Verify with `whoami` on the server |
+| **`tailscale serve status` still shows a rule after `tailscale serve reset`** | Same-user identity mismatch, or a second `tailscale serve` process added a new rule. Re-run `tailscale serve reset`, then `tailscale debug prefs \| grep -i serve` to check low-level state |
+| **Decided to go SSH-only and want to remove the Caddy `:9080` block** | The block is only used by `tailscale serve` (§7.7). After `tailscale serve reset`, remove the block from `/opt/homebrew/etc/Caddyfile`, validate with `caddy validate --config /opt/homebrew/etc/Caddyfile`, then `sudo launchctl kickstart -k system/com.caddy.server` |
 
 ---
 
 If you build this stack, tag me — I want to see what agents and local workflows you are running on your Mac. And if you are working on local LLM inference, Apple Silicon optimization, or self-hosted AI, let us talk in the comments or connect directly.
 
-— Haithem Slimi, [nightthoughts.dev](https://nightthoughts.dev)
+— Haithem Slimi, nightthoughts.me (blog) · nightthoughts.dev (work)
