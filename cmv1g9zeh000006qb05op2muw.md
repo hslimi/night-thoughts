@@ -1343,7 +1343,7 @@ EOF
 
 > **Do not use `sudo cloudflared service install` on macOS.** It writes a broken launchd plist that omits the `tunnel run` subcommand, so the daemon exits immediately with `use cloudflared tunnel run to start tunnel <UUID>` in a loop.
 
-Just like QwenPaw, cloudflared should be a LaunchDaemon so it starts at boot, before login. This block dynamically injects your username and home path:
+Just like QwenPaw, cloudflared should be a LaunchDaemon so it starts at boot, before login. This block dynamically injects your username and home path. It also sets `WorkingDirectory` and `EnvironmentVariables` to match the other three LaunchDaemons in this guide — `HOME` makes the `~/.cloudflared/config.yml` resolution deterministic (Go's `os.UserHomeDir()` falls back to `getpwuid` when `$HOME` is unset, but making it explicit removes the ambiguity), and `PATH` is included for consistency with the `omlx` / `qwenpaw` / `caddy` plists even though cloudflared doesn't spawn subprocesses:
 
 ```bash
 USER_NAME=$(whoami)
@@ -1372,6 +1372,13 @@ sudo tee /Library/LaunchDaemons/com.cloudflare.cloudflared.plist > /dev/null << 
   <true/>
   <key>WorkingDirectory</key>
   <string>${HOME_DIR}</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>${HOME_DIR}</string>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:${HOME_DIR}/.local/bin</string>
+  </dict>
   <key>StandardOutPath</key>
   <string>/tmp/cloudflared.out.log</string>
   <key>StandardErrorPath</key>
@@ -1391,6 +1398,8 @@ sudo launchctl list | grep cloudflared
 ```plaintext
 12345	0	com.cloudflare.cloudflared
 ```
+
+> **Already running an older cloudflared plist?** If you ran Part 0 before this version, your existing plist lacks `WorkingDirectory` and `EnvironmentVariables`. The `bootout` + `bootstrap` above replaces it wholesale — the `tee` overwrites the file, then launchd re-reads it. Confirm with `sudo plutil -p /Library/LaunchDaemons/com.cloudflare.cloudflared.plist | grep -A2 WorkingDirectory` — you should see `"/Users/<you>"`. If it's missing, the `tee` failed (usually a permissions issue; re-run with the `sudo` at the start).
 
 **Step 8b: Upgrading cloudflared Later (Homebrew + LaunchDaemon Notice)**
 
