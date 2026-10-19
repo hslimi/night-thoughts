@@ -22,12 +22,12 @@ Everything in this guide was verified on the following setup. If your versions a
 | --- | --- | --- |
 | **macOS** | 15.x (Sequoia) or later | Required for oMLX |
 | **Chip** | Apple Silicon (M1/M2/M3/M4/M5) | Required for MLX and oMLX |
-| **Homebrew** | 4.x | Package manager for oMLX, Caddy, and Tailscale |
+| **Homebrew** | 4.x or later | Package manager for oMLX, Caddy, and Tailscale |
 | **uv** | 0.8.x or later | Python version + package manager |
 | **Python (MLX venv)** | 3.11.x | Managed by uv at `~/.mlx-venv` |
 | **Python (QwenPaw)** | 3.12.x | Bundled by QwenPaw's installer |
 | **MLX** | 0.32.x | Apple's ML framework |
-| **mlx-lm** | 0.31.x | LLM extensions for MLX |
+| **mlx-lm** | 0.32.x | LLM extensions for MLX |
 | **oMLX** | latest via `jundot/omlx` | Inference server + admin dashboard |
 | **QwenPaw** | latest via `agentscope.io` | Agent framework + web console |
 | **Caddy** | 2.x | Reverse proxy + authentication layer |
@@ -36,7 +36,7 @@ Everything in this guide was verified on the following setup. If your versions a
 | **jq** | latest via Homebrew | JSON processor (used throughout) |
 | **yq** | latest via Homebrew | YAML processor (used later) |
 
-> **Note:** Version numbers above reflect the state of the ecosystem as of **2026-09**, the date this guide was last verified end-to-end. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
+> **Note:** Version numbers above reflect the state of the ecosystem as of **2026-10**, the date this guide was last verified end-to-end. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
 
 ---
 
@@ -489,6 +489,12 @@ sudo tee /Library/LaunchDaemons/com.omlx.server.plist > /dev/null << EOF
 EOF
 
 sudo launchctl bootout system/com.omlx.server 2>/dev/null
+# Wait for the previous instance to fully unload before reloading
+# (prevents `Bootstrap failed: 5: Input/output error` from a SIGTERM race)
+for _ in 1 2 3 4 5; do
+  sudo launchctl list 2>/dev/null | grep -q "com.omlx.server" || break
+  sleep 1
+done
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.omlx.server.plist
 sleep 3
 sudo launchctl list | grep omlx
@@ -499,6 +505,31 @@ sudo launchctl list | grep omlx
 ```plaintext
 12345	0	com.omlx.server
 ```
+
+Verify the migration actually landed — no leftover Homebrew state, no legacy plist:
+
+```bash
+# The three checks below should all print ✅
+brew services list | grep -i omlx && echo "⚠️  brew still tracks omlx" || echo "✅ brew no longer tracks omlx"
+[ -f ~/Library/LaunchAgents/sh.brew.omlx.plist ] && echo "⚠️  legacy plist still exists" || echo "✅ legacy plist removed"
+sudo launchctl list | grep -q "com.omlx.server" && echo "✅ com.omlx.server loaded" || echo "❌ com.omlx.server NOT loaded"
+```
+
+Confirm the process is listening on port 8000:
+
+```bash
+lsof -nP -iTCP:8000 -sTCP:LISTEN | tail -1
+```
+
+**Expected output:**
+
+```plaintext
+Python  12345  night-thoughts  ...  TCP 127.0.0.1:8000 (LISTEN)
+```
+
+> **A note on process names.** You'll see `Python` instead of `omlx` in the `lsof` output. That's because `/opt/homebrew/bin/omlx` is a Python shebang script — `lsof` reports the kernel's process name (the interpreter for shebang scripts), not the `argv[0]` basename. If you want the actual command name, run `ps -p 12345 -o comm,args` and you'll see `omlx-server` with the full path. Same process, different tools, different names. Don't be alarmed.
+>
+> **If `bootstrap` fails with `5: Input/output error`:** the previous instance hadn't fully exited when the new plist was loaded. The bounded polling loop above prevents this in normal use. If you hit it anyway, `sudo launchctl list | grep omlx` will show whether the label is still registered — wait 3 seconds and re-run the `bootstrap` line.
 
 ### 4.4b Upgrading oMLX Later (Homebrew + LaunchDaemon Notice)
 
@@ -724,6 +755,11 @@ sudo tee /Library/LaunchDaemons/com.qwenpaw.app.plist > /dev/null << EOF
 EOF
 
 sudo launchctl bootout system/com.qwenpaw.app 2>/dev/null
+# Wait for the previous instance to fully unload before reloading
+for _ in 1 2 3 4 5; do
+  sudo launchctl list 2>/dev/null | grep -q "com.qwenpaw.app" || break
+  sleep 1
+done
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.qwenpaw.app.plist
 sleep 5
 sudo launchctl list | grep qwenpaw
@@ -746,7 +782,7 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/com.qwenpaw.app.plist # s
 sudo launchctl kickstart -k system/com.qwenpaw.app                           # restart in place
 ```
 
-> **After editing the plist**, you must `bootout` then `bootstrap` for changes to take effect — launchd caches the plist at load time.
+> **After editing the plist**, you must `bootout` then `bootstrap` for changes to take effect — launchd caches the plist at load time. Add the polling loop above between the two commands to avoid the `Bootstrap failed: 5` race on heavy daemons.
 
 ![QwenPaw web console with an agent conversation open](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f3ac7a7b-3fd4-48fd-8e72-b138b735fc34.png)
 
@@ -1034,6 +1070,11 @@ sudo tee /Library/LaunchDaemons/com.caddy.server.plist > /dev/null << EOF
 EOF
 
 sudo launchctl bootout system/com.caddy.server 2>/dev/null
+# Wait for the previous instance to fully unload before reloading
+for _ in 1 2 3 4 5; do
+  sudo launchctl list 2>/dev/null | grep -q "com.caddy.server" || break
+  sleep 1
+done
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.caddy.server.plist
 sleep 3
 sudo launchctl list | grep caddy
@@ -1045,19 +1086,29 @@ sudo launchctl list | grep caddy
 12345	0	com.caddy.server
 ```
 
+Verify the migration actually landed:
+
+```bash
+brew services list | grep -i caddy && echo "⚠️  brew still tracks caddy" || echo "✅ brew no longer tracks caddy"
+[ -f ~/Library/LaunchAgents/homebrew.mxcl.caddy.plist ] && echo "⚠️  legacy plist still exists" || echo "✅ legacy plist removed"
+sudo launchctl list | grep -q "com.caddy.server" && echo "✅ com.caddy.server loaded" || echo "❌ com.caddy.server NOT loaded"
+```
+
 Confirm it's listening on port 9080:
 
 ```bash
-lsof -i :9080 | grep caddy
+lsof -nP -iTCP:9080 -sTCP:LISTEN | tail -1
 ```
 
 **Expected output:**
 
 ```plaintext
-caddy   12345    yourname    9u  IPv6  ...  TCP *:9080 (LISTEN)
+caddy   12345    yourname    ...  TCP *:9080 (LISTEN)
 ```
 
-> **After editing the Caddyfile**, you must reload Caddy with `sudo launchctl kickstart -k system/com.caddy.server`.
+> **After editing the Caddyfile**, you must reload Caddy with `sudo launchctl kickstart -k system/com.caddy.server`. The `kickstart -k` restarts the process with the new config file — you do **not** need `bootout` + `bootstrap` here because only an external file (the Caddyfile) changed, not the plist.
+>
+> **If `bootstrap` fails with `5: Input/output error`:** same race as §4.4 — wait 3 seconds and re-run the `bootstrap` line, or re-run the whole block (the polling loop will handle it).
 
 ### 7.6b Upgrading Caddy Later (Homebrew + LaunchDaemon Notice)
 
@@ -1167,6 +1218,11 @@ USER_NAME=$(whoami)
 HOME_DIR=$HOME
 
 sudo launchctl bootout system/com.qwenpaw.app 2>/dev/null
+# Wait for the previous instance to fully unload before reloading
+for _ in 1 2 3 4 5; do
+  sudo launchctl list 2>/dev/null | grep -q "com.qwenpaw.app" || break
+  sleep 1
+done
 
 sudo tee /Library/LaunchDaemons/com.qwenpaw.app.plist > /dev/null << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1388,6 +1444,11 @@ sudo tee /Library/LaunchDaemons/com.cloudflare.cloudflared.plist > /dev/null << 
 EOF
 
 sudo launchctl bootout system/com.cloudflare.cloudflared 2>/dev/null
+# Wait for the previous instance to fully unload before reloading
+for _ in 1 2 3 4 5; do
+  sudo launchctl list 2>/dev/null | grep -q "com.cloudflare.cloudflared" || break
+  sleep 1
+done
 sudo launchctl bootstrap system /Library/LaunchDaemons/com.cloudflare.cloudflared.plist
 sleep 5
 sudo launchctl list | grep cloudflared
@@ -1580,6 +1641,8 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | **`omlx.nightthoughts.dev/typo` returns a blank page instead of redirecting to `/admin`** | The `redir` directive is missing its `*` matcher. Change `redir /admin 302` to `redir * /admin 302` in the oMLX subdomain block |
 | `401 Unauthorized` from oMLX | The `api_key` in QwenPaw's config doesn't match the key in `~/.omlx/settings.json`. Both must be **exactly** the same string |
 | **Need to change the oMLX API key** | Re-run the generation block in §4.3, then restart the daemon (`sudo launchctl kickstart -k system/com.omlx.server`) and update QwenPaw |
+| **`Bootstrap failed: 5: Input/output error` after `bootout`** | The previous instance hasn't fully exited yet. The polling loop in §4.4/§5.4/§7.6/§7.8/§7.9 prevents this — if you hit it anyway, wait 3 seconds and re-run the `bootstrap` line |
+| **`lsof -i :8000` shows `Python` instead of `omlx`** | Normal — `/opt/homebrew/bin/omlx` is a Python shebang script, and `lsof` reports the kernel's process name. `ps -p <PID> -o comm` shows `omlx-server`. Same process, different tools, different names |
 | **Upgraded Caddy via `brew upgrade caddy` but `caddy version` still shows the old version** | `brew upgrade` does not restart custom LaunchDaemons. Run `sudo launchctl kickstart -k system/com.caddy.server`. See §7.6b |
 | **Upgraded oMLX via `brew upgrade omlx` but the running process is still the old version** | `brew upgrade` does not restart custom LaunchDaemons. Run `sudo launchctl kickstart -k system/com.omlx.server`. See §4.4b |
 | **Upgraded cloudflared via `brew upgrade cloudflared` but the tunnel is still the old version** | `brew upgrade` does not restart custom LaunchDaemons. Run `sudo launchctl kickstart -k system/com.cloudflare.cloudflared`. See §7.9 Step 8b |
