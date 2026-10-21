@@ -28,11 +28,14 @@ Onyx is not a general-purpose chatbot. It is a search and research tool that wor
 
 ### Why Self-Hosting Matters
 
-Onyx can be deployed on a company’s own servers and connects to more than 40 internal data sources including Salesforce, GitHub, Google Drive, and Confluence. 
+Onyx can be deployed on a company’s own servers and connects to more than 40 internal data sources including Salesforce, GitHub, Google Drive, and Confluence.
 
-- **Data control and custody.** For healthcare, finance, and defense organizations, keeping sensitive data on-premises is often a hard requirement. With self-hosting, the company retains full control and legal custody of its data. Onyx is currently deployed at **Thales Group**, a defense company, and at **Netflix** for all 14,000+ employees.
-- **Cost and model control.** Companies choose their own AI model—commercial options like OpenAI or Anthropic, or local models via Ollama—and pay for the server they run it on, not per seat.
-- **No vendor lock-in.** If a company stops using Onyx, the code and data remain on its own infrastructure.
+*   **Data control and custody.** For healthcare, finance, and defense organizations, keeping sensitive data on-premises is often a hard requirement. With self-hosting, the company retains full control and legal custody of its data. Onyx is currently deployed at **Thales Group**, a defense company, and at **Netflix** for all 14,000+ employees.
+    
+*   **Cost and model control.** Companies choose their own AI model—commercial options like OpenAI or Anthropic, or local models via Ollama—and pay for the server they run it on, not per seat.
+    
+*   **No vendor lock-in.** If a company stops using Onyx, the code and data remain on its own infrastructure.
+    
 
 *Note on deployment:* While a basic evaluation instance can be spun up in about 30 minutes using Docker, a production deployment at enterprise scale requires proper infrastructure, ongoing maintenance, and security patching.
 
@@ -46,17 +49,21 @@ The business model is open-core: the free community edition drives adoption. Org
 
 While self-hosting solves the problem of data leaving your servers, it is not a magic wand. Running Onyx in a real company comes with responsibilities:
 
-- **Privacy is a setup task, not a guarantee.** Onyx connects to your apps and respects their permissions, but *you* must configure those permissions correctly. If the system that syncs user access breaks, Onyx might show data to the wrong people. You still need to monitor who has access to what.
-- **AI makes mistakes.** Onyx uses large language models (LLMs), which can confidently give wrong answers. If an employee asks about a legal policy or a financial figure, Onyx might misread a document. Human oversight and a feedback loop (letting users report bad answers) are necessary, especially for high-stakes topics.
-- **You are the IT department.** When you self-host, the company is responsible for keeping the servers running, applying security patches, and scaling the hardware as more employees use it. This requires a technical team or a managed service provider.
-- **Regulatory compliance is still your job.** Installing Onyx on your own servers does not automatically make you GDPR or HIPAA compliant. You still need legal reviews, audit logs, and data retention policies to ensure the AI does not accidentally store or process sensitive information in ways the law prohibits.
+*   **Privacy is a setup task, not a guarantee.** Onyx connects to your apps and respects their permissions, but *you* must configure those permissions correctly. If the system that syncs user access breaks, Onyx might show data to the wrong people. You still need to monitor who has access to what.
+    
+*   **AI makes mistakes.** Onyx uses large language models (LLMs), which can confidently give wrong answers. If an employee asks about a legal policy or a financial figure, Onyx might misread a document. Human oversight and a feedback loop (letting users report bad answers) are necessary, especially for high-stakes topics.
+    
+*   **You are the IT department.** When you self-host, the company is responsible for keeping the servers running, applying security patches, and scaling the hardware as more employees use it. This requires a technical team or a managed service provider.
+    
+*   **Regulatory compliance is still your job.** Installing Onyx on your own servers does not automatically make you GDPR or HIPAA compliant. You still need legal reviews, audit logs, and data retention policies to ensure the AI does not accidentally store or process sensitive information in ways the law prohibits.
+    
 
 ### The Bottom Line
 
 Onyx is a practical tool for a specific problem: company knowledge is scattered, and employees need a private, permission-aware way to search it. It does not promise to replace every AI product. It promises to keep data on your servers, work with the tools you already use, and let you choose your own model. That straightforward approach—paired with careful setup and human oversight—is why thousands of developers and real companies are using it today.
 
-**GitHub:** https://github.com/onyx-dot-app/onyx
-**Website:** https://onyx.app
+**GitHub:** https://github.com/onyx-dot-app/onyx **Website:** https://onyx.app
 
----
+* * *
+
 *If you care about open-source infrastructure, data privacy, or practical AI for the workplace, consider following or sponsoring the project.*
