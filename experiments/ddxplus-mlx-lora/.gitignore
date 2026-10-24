@@ -1,0 +1,16 @@
+.venv/
+raw/
+data/
+adapters/
+fused/
+__pycache__/
+*.safetensors
+.DS_Store
+
+evaluation/test_cases.jsonl
+evaluation/metadata.json
+evaluation/omlx-request.json
+
+results/*
+!results/public/
+article-assets/
