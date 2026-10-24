@@ -1,30 +1,36 @@
+![Night Thoughts](assets/brand/night-thoughts-for-dark-background.png)
+
 # Night Thoughts
 
-> A personal blog about technology, ideas, and the things I can't stop thinking about.
+Technical essays and reproducible experiments on local AI, Apple Silicon, agents, and practical software systems.
 
-This repository is the companion to my blog, [**Night Thoughts**](https://nightthoughts.me) — a place where I write about whatever holds my attention long enough to become a post.
+The main reading experience is at **[nightthoughts.me](https://nightthoughts.me)**.
 
----
+This repository contains articles and their companion experiments; it is not itself a research-application monorepo.
 
-## Read the blog
+## Start Here
 
-👉 **[nightthoughts.me](https://nightthoughts.me)**
+[Complete Guide: Always-On Mac Server with MLX, oMLX & QwenPaw](https://nightthoughts.me/complete-guide-always-on-mac-server-with-mlx-omlx-qwenpaw)
 
----
+## What You Will Find
 
-## What you'll find here
+- Local AI: inference, fine-tuning, evaluation, and deployment on Apple Silicon
+- Agents: inspectable workflows, persistent services, and failure handling
+- Software systems: architecture, implementation notes, and operational trade-offs
+- Reproducible experiments: code and evidence supporting selected articles
 
-Night Thoughts isn't a single-topic blog. It's a collection of essays, notes, and reflections — some technical, some not.
+## Companion Experiments
 
-Topics I write about include:
+Companion experiments live under `experiments/`.
 
-- **Technology** — AI, local computing, tools, and the shifts happening under the surface
-- **Ideas** — concepts worth unpacking, explained without the noise
-- **Reflections** — thoughts on building, learning, and paying attention
-- **Whatever else** — if it keeps me up at night, it ends up here
+Each experiment should contain its own README, exact reproduction commands, evaluation notes, limitations, and attribution.
 
-Some posts are long. Some are short. All of them are written in plain language for people who are curious but don't have time for fluff.
+Do not move or rename Hashnode-generated article files when adding experiments.
 
----
+## Research Applications
 
-## Repository structure
+Standalone research applications are maintained in separate repositories and linked from articles when relevant.
+
+## Discussion
+
+Use the comments on nightthoughts.me or open a focused GitHub issue.
