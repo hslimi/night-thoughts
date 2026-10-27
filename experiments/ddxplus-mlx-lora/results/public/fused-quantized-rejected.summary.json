@@ -1,0 +1,13 @@
+{
+  "mode": "fused",
+  "cases": 490,
+  "top1_accuracy": 0.16938775510204082,
+  "top3_accuracy": 0.23877551020408164,
+  "structured_response_rate": 0.0,
+  "mean_reference_overlap_at_3": 0.3346938775510204,
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838",
+  "generation": {
+    "max_tokens": 220,
+    "temperature": 0.0
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "case_id": "test-0002",
+  "source_index": 17957,
+  "ground_truth_before_edit": "Stable angina",
+  "ground_truth_after_edit": null,
+  "edited_case_has_validated_ground_truth": false,
+  "initial_evidence": "E_53",
+  "removed_finding": "Do you have symptoms that are increased with physical exertion but alleviated with rest? Yes.",
+  "removed_section": "Symptoms",
+  "original_prompt": "Assess this synthetic patient case.\n\nAge: 64\n\nSex: Male\n\nSymptoms:\n- Do you have pain somewhere, related to your reason for consulting? Yes.\n- Characterize your pain: tedious\n- Characterize your pain: exhausting\n- Do you feel pain somewhere? lower chest\n- Do you feel pain somewhere? side of the chest(R)\n- Do you feel pain somewhere? upper chest\n- Do you feel pain somewhere? breast(L)\n- Do you feel pain somewhere? epigastric\n- How intense is the pain? 5\n- Does the pain radiate to another location? biceps(L)\n- Does the pain radiate to another location? thyroid cartilage\n- Does the pain radiate to another location? thoracic spine\n- Does the pain radiate to another location? shoulder(R)\n- Does the pain radiate to another location? shoulder(L)\n- How precisely is the pain located? 7\n- How fast did the pain appear? 6\n- Do you have symptoms that are increased with physical exertion but alleviated with rest? Yes.\n\nAntecedents:\n- Are you significantly overweight compared to people of the same height as you? Yes.\n- Do you have high cholesterol or do you take medications to treat high cholesterol? Yes.\n- Do you smoke cigarettes? Yes.\n- Have you ever had a heart attack or do you have angina (chest pain)? Yes.\n- Have you traveled out of the country in the last 4 weeks? No\n- Do you have close family members who had a cardiovascular disease problem before the age of 50? Yes.",
+  "changed_prompt": "Assess this synthetic patient case.\n\nAge: 64\n\nSex: Male\n\nSymptoms:\n- Do you have pain somewhere, related to your reason for consulting? Yes.\n- Characterize your pain: tedious\n- Characterize your pain: exhausting\n- Do you feel pain somewhere? lower chest\n- Do you feel pain somewhere? side of the chest(R)\n- Do you feel pain somewhere? upper chest\n- Do you feel pain somewhere? breast(L)\n- Do you feel pain somewhere? epigastric\n- How intense is the pain? 5\n- Does the pain radiate to another location? biceps(L)\n- Does the pain radiate to another location? thyroid cartilage\n- Does the pain radiate to another location? thoracic spine\n- Does the pain radiate to another location? shoulder(R)\n- Does the pain radiate to another location? shoulder(L)\n- How precisely is the pain located? 7\n- How fast did the pain appear? 6\n\nAntecedents:\n- Are you significantly overweight compared to people of the same height as you? Yes.\n- Do you have high cholesterol or do you take medications to treat high cholesterol? Yes.\n- Do you smoke cigarettes? Yes.\n- Have you ever had a heart attack or do you have angina (chest pain)? Yes.\n- Have you traveled out of the country in the last 4 weeks? No\n- Do you have close family members who had a cardiovascular disease problem before the age of 50? Yes.",
+  "responses": {
+    "original": "Most likely pathology\nUnstable angina\n\nDifferential diagnoses\n1. Unstable angina\n2. Possible NSTEMI / STEMI\n3. Stable angina\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis.",
+    "one_finding_removed": "Most likely pathology\nUnstable angina\n\nDifferential diagnoses\n1. Unstable angina\n2. Possible NSTEMI / STEMI\n3. Stable angina\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+  },
+  "original_matches_adapter_evaluation": true,
+  "generation": {
+    "max_tokens": 220,
+    "temperature": 0.0
+  },
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838"
+}

@@ -1,0 +1,49 @@
+{
+  "model_discovery": {
+    "endpoint": "/v1/models",
+    "model_id": "ddxplus-qwen",
+    "response_model_matches_discovery": true
+  },
+  "direct_omlx": {
+    "model": "ddxplus-qwen",
+    "case_id": "test-0001",
+    "source_index": 77325,
+    "ground_truth": "Anemia",
+    "temperature": 0.0,
+    "max_tokens": 220,
+    "response_model_matches_discovery": true,
+    "response": "Most likely pathology\nAnemia\n\nDifferential diagnoses\n1. Anemia\n2. Atrial fibrillation\n3. Anaphylaxis\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis.",
+    "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838"
+  },
+  "qwenpaw": {
+    "case_id": "test-0001",
+    "dataset_ground_truth_before_any_ablation": "Anemia",
+    "prompt_sha256": "c1ec3e6c4b0b4c498693a41b60a49c92bc4e08a9b0c3ec333de3d102dc611730",
+    "selected_experiment_model": "ddxplus-qwen",
+    "scope": "clean chat only",
+    "response": "Most likely pathology\nAcute dystonic reactions\n\nDifferential diagnoses\n1. Acute dystonic reactions\n2. PSVT\n3. Anemia\n\nUncertainty\nThis is a synthetic DDX case. The output is an educational prediction, not a clinical diagnosis.",
+    "parsed_top1": "Acute dystonic reactions",
+    "round_trip_succeeded": true,
+    "matches_dataset_label": false,
+    "matches_direct_omlx_response": false,
+    "evaluation_metric": false,
+    "identical_settings_benchmark": false,
+    "prompt_retries_for_attractive_output": 0,
+    "agent_context_and_existing_generation_settings_apply": true
+  },
+  "rollback": {
+    "original_global_and_agent_model_selections_restored": true,
+    "configuration_backups_restored_exactly": true,
+    "actual_system_daemon_restarted": true,
+    "experiment_chat_override_cleared": true,
+    "chat_history_preserved": true,
+    "new_generation_during_rollback": false,
+    "permanent_credential_repair_retained": true,
+    "stale_credential_restored": false,
+    "adapter_and_fused_artifacts_retained": true,
+    "deployed_omlx_model_retained": true,
+    "optional_model_removal_performed": false
+  },
+  "credential_values_included": false,
+  "raw_api_payloads_and_service_state_included": false
+}

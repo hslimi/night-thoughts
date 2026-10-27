@@ -13,6 +13,10 @@ Each experiment should provide:
 
 Planned experiments are not listed as completed work.
 
-## Planned Location
+## Available Experiments
 
-The DDXPlus MLX LoRA work is intended for `experiments/ddxplus-mlx-lora/`. Its implementation and evaluation results have not been added yet.
+### DDXPlus MLX LoRA
+
+[DDXPlus MLX LoRA experiment](ddxplus-mlx-lora/): an educational local-AI workflow using synthetic DDXPlus cases, MLX LM LoRA, identical 490-case held-out evaluations, independent fused-model verification, and oMLX/QwenPaw deployment and rollback.
+
+The experiment is not clinically validated and must not be used for patient care. See its README for the full metrics, reproduction stages, rejected fused artifact, licensing, and safety limitations. Datasets, weights, credentials, and private run artifacts are excluded.

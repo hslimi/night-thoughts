@@ -1,0 +1,31 @@
+{
+  "cases": 490,
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838",
+  "exact_response_matches": 486,
+  "exact_response_match_rate": 0.9918367346938776,
+  "most_likely_matches": 489,
+  "most_likely_match_rate": 0.9979591836734694,
+  "metrics": {
+    "top1_accuracy": {
+      "before": 0.926530612244898,
+      "after": 0.9285714285714286,
+      "change": 0.0020408163265306367
+    },
+    "top3_accuracy": {
+      "before": 0.9714285714285714,
+      "after": 0.9714285714285714,
+      "change": 0.0
+    },
+    "structured_response_rate": {
+      "before": 0.9979591836734694,
+      "after": 0.9979591836734694,
+      "change": 0.0
+    },
+    "mean_reference_overlap_at_3": {
+      "before": 2.0428571428571427,
+      "after": 2.048979591836735,
+      "change": 0.006122448979592132
+    }
+  },
+  "response_or_prediction_mismatches": 4
+}

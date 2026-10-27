@@ -1,0 +1,118 @@
+[
+  {
+    "case_id": "test-0069",
+    "source_index": 131860,
+    "ground_truth": "Unstable angina",
+    "adapter": {
+      "most_likely": "Unstable angina",
+      "differential": [
+        "Unstable angina",
+        "Possible NSTEMI / STEMI",
+        "Boerhaave"
+      ],
+      "top1": true,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nUnstable angina\n\nDifferential diagnoses\n1. Unstable angina\n2. Possible NSTEMI / STEMI\n3. Boerhaave\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    },
+    "fused": {
+      "most_likely": "Unstable angina",
+      "differential": [
+        "Unstable angina",
+        "Possible NSTEMI / STEMI",
+        "Stable angina"
+      ],
+      "top1": true,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nUnstable angina\n\nDifferential diagnoses\n1. Unstable angina\n2. Possible NSTEMI / STEMI\n3. Stable angina\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    }
+  },
+  {
+    "case_id": "test-0277",
+    "source_index": 33993,
+    "ground_truth": "Spontaneous pneumothorax",
+    "adapter": {
+      "most_likely": "Spontaneous pneumothorax",
+      "differential": [
+        "Spontaneous pneumothorax",
+        "Possible NSTEMI / STEMI",
+        "Pulmonary embolism"
+      ],
+      "top1": true,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nSpontaneous pneumothorax\n\nDifferential diagnoses\n1. Spontaneous pneumothorax\n2. Possible NSTEMI / STEMI\n3. Pulmonary embolism\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    },
+    "fused": {
+      "most_likely": "Spontaneous pneumothorax",
+      "differential": [
+        "Spontaneous pneumothorax",
+        "Unstable angina",
+        "Stable angina"
+      ],
+      "top1": true,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nSpontaneous pneumothorax\n\nDifferential diagnoses\n1. Spontaneous pneumothorax\n2. Unstable angina\n3. Stable angina\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    }
+  },
+  {
+    "case_id": "test-0297",
+    "source_index": 129297,
+    "ground_truth": "Stable angina",
+    "adapter": {
+      "most_likely": "Unstable angina",
+      "differential": [
+        "Unstable angina",
+        "Possible NSTEMI / STEMI",
+        "Stable angina"
+      ],
+      "top1": false,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nUnstable angina\n\nDifferential diagnoses\n1. Unstable angina\n2. Possible NSTEMI / STEMI\n3. Stable angina\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    },
+    "fused": {
+      "most_likely": "Stable angina",
+      "differential": [
+        "Stable angina",
+        "Unstable angina",
+        "Possible NSTEMI / STEMI"
+      ],
+      "top1": true,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nStable angina\n\nDifferential diagnoses\n1. Stable angina\n2. Unstable angina\n3. Possible NSTEMI / STEMI\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    }
+  },
+  {
+    "case_id": "test-0349",
+    "source_index": 132134,
+    "ground_truth": "Guillain-Barré syndrome",
+    "adapter": {
+      "most_likely": "Guillain-Barré syndrome",
+      "differential": [
+        "Guillain-Barré syndrome",
+        "Panic attack",
+        "Pulmonary embolism"
+      ],
+      "top1": true,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nGuillain-Barré syndrome\n\nDifferential diagnoses\n1. Guillain-Barré syndrome\n2. Panic attack\n3. Pulmonary embolism\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    },
+    "fused": {
+      "most_likely": "Guillain-Barré syndrome",
+      "differential": [
+        "Guillain-Barré syndrome",
+        "Panic attack",
+        "Myasthenia gravis"
+      ],
+      "top1": true,
+      "top3": true,
+      "structured": true,
+      "response": "Most likely pathology\nGuillain-Barré syndrome\n\nDifferential diagnoses\n1. Guillain-Barré syndrome\n2. Panic attack\n3. Myasthenia gravis\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis."
+    }
+  }
+]
