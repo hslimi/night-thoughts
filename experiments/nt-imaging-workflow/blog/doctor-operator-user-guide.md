@@ -116,11 +116,11 @@ The deployed account uses an application-level username/password, not Caddy Basi
 3. Password managers and paste are supported. **Show/Hide** changes visibility without changing the password.
 4. Choose **Sign in securely**.
 
-![Desktop login with research disclaimer and provisioned-account fields](images/doctor-pipeline-user-guide/01-login-desktop.png)
+![Desktop login with research disclaimer and provisioned-account fields](../docs/images/doctor-pipeline-user-guide/01-login-desktop.png)
 
-![Phone login with readable fields and research disclaimer](images/doctor-pipeline-user-guide/21-login-mobile.png)
+![Phone login with readable fields and research disclaimer](../docs/images/doctor-pipeline-user-guide/21-login-mobile.png)
 
-![Desktop worklist with queue health, filters, and run states](images/doctor-pipeline-user-guide/02-dashboard-desktop.png)
+![Desktop worklist with queue health, filters, and run states](../docs/images/doctor-pipeline-user-guide/02-dashboard-desktop.png)
 
 Incorrect credentials return the generic **Invalid username or password** message; no account existence detail is exposed. The current limiter blocks a username/IP key for 30 seconds after each group of five failed attempts and returns **Too many attempts; try again later**.
 
@@ -128,13 +128,13 @@ Sessions have an **8-hour absolute lifetime** and a **30-minute idle timeout**. 
 
 **Log out** deletes the server session. Password reset invalidates every session. There is no self-service password-change page after login; use the protected local reset command. If the original password is unknown, do not attempt hash recovery: reset it locally.
 
-![Public login after logout or session expiry](images/doctor-pipeline-user-guide/20-public-login.png)
+![Public login after logout or session expiry](../docs/images/doctor-pipeline-user-guide/20-public-login.png)
 
-![Session expiry returns the user to login; run state is preserved](images/doctor-pipeline-user-guide/19-session-expired.png)
+![Session expiry returns the user to login; run state is preserved](../docs/images/doctor-pipeline-user-guide/19-session-expired.png)
 
 On phones, **Menu** opens a focus-trapped navigation drawer with identity, worklist, and logout. Escape/Close returns focus to the menu button.
 
-![Accessible mobile navigation drawer](images/doctor-pipeline-user-guide/22-navigation-mobile.png)
+![Accessible mobile navigation drawer](../docs/images/doctor-pipeline-user-guide/22-navigation-mobile.png)
 
 ## 4. Supported inputs
 
@@ -164,7 +164,7 @@ PHI screening re-encodes raster working copies and runs local OCR. DICOM screeni
 4. Confirm **I confirm this is synthetic or authorized de-identified data.**
 5. Choose **Create run**.
 
-![New-run dialog with file, XR declaration, and authorization confirmation](images/doctor-pipeline-user-guide/03-new-run-upload.png)
+![New-run dialog with file, XR declaration, and authorization confirmation](../docs/images/doctor-pipeline-user-guide/03-new-run-upload.png)
 
 The application stores an opaque artifact ID, not the original filename in prompts, reports, or logs. The run ID and thread ID are identical random UUIDs; the artifact ID is independent.
 
@@ -172,9 +172,9 @@ The application stores an opaque artifact ID, not the original filename in promp
 
 Open the run. The monitor shows current status, attempt, revision, model calls, timestamps, and independent gates.
 
-![Run monitoring with REAL status and workflow progression](images/doctor-pipeline-user-guide/04-run-monitoring.png)
+![Run monitoring with REAL status and workflow progression](../docs/images/doctor-pipeline-user-guide/04-run-monitoring.png)
 
-![Workflow nodes and the human-approval boundary](images/doctor-pipeline-user-guide/05-gate-timeline.png)
+![Workflow nodes and the human-approval boundary](../docs/images/doctor-pipeline-user-guide/05-gate-timeline.png)
 
 The stages are:
 
@@ -191,13 +191,13 @@ The stages are:
 
 A new draft resets visual and quality statuses. A failed visual review never gets erased by a later quality pass. Retry exhaustion goes to human review, never export. `IMAGE_PREPARATION_FAILED` means no model call and no export.
 
-![All gates passed and the run awaiting doctor review](images/doctor-pipeline-user-guide/06-awaiting-doctor-review.png)
+![All gates passed and the run awaiting doctor review](../docs/images/doctor-pipeline-user-guide/06-awaiting-doctor-review.png)
 
 ### Review and decide
 
 Open **Doctor Review**. Compare the PHI-screened source and prepared model input, inspect readiness operations/dimensions/intensity/warnings/hashes, and open the preparation receipt. Then inspect findings, impression, limitations, independent review issues, decision history, model/prompt/policy/workflow versions, and revision number.
 
-![Desktop review workspace with derived image and structured draft](images/doctor-pipeline-user-guide/07-review-workspace-desktop.png)
+![Desktop review workspace with derived image and structured draft](../docs/images/doctor-pipeline-user-guide/07-review-workspace-desktop.png)
 
 Choose exactly one action:
 
@@ -205,11 +205,11 @@ Choose exactly one action:
 - **Reject draft:** requires a note and terminates without export.
 - **Request changes:** requires feedback and creates a bounded revision, resetting downstream statuses.
 
-![Approval confirmation explaining export consequences](images/doctor-pipeline-user-guide/08-approve-confirmation.png)
+![Approval confirmation explaining export consequences](../docs/images/doctor-pipeline-user-guide/08-approve-confirmation.png)
 
-![Rejection dialog with mandatory note](images/doctor-pipeline-user-guide/10-reject-dialog.png)
+![Rejection dialog with mandatory note](../docs/images/doctor-pipeline-user-guide/10-reject-dialog.png)
 
-![Request Changes confirmation with bounded revision behavior](images/doctor-pipeline-user-guide/11-request-changes.png)
+![Request Changes confirmation with bounded revision behavior](../docs/images/doctor-pipeline-user-guide/11-request-changes.png)
 
 Approval is not clinical sign-off. The export node independently rechecks PHI, modality, readiness, derived-image safety, all draft gates, attempts, schema, cancellation, and typed approval before writing anything.
 
@@ -217,7 +217,7 @@ Approval is not clinical sign-off. The export node independently rechecks PHI, m
 
 After Request Changes, wait for the next draft and all gates to pass again. Compare revision history and feedback before deciding.
 
-![Revised draft at revision 1 after doctor feedback](images/doctor-pipeline-user-guide/12-revised-draft.png)
+![Revised draft at revision 1 after doctor feedback](../docs/images/doctor-pipeline-user-guide/12-revised-draft.png)
 
 ### Export and provenance
 
@@ -227,17 +227,17 @@ Eligible approved runs provide:
 - `report_<run_id>.md`
 - `manifest_<run_id>.json`
 
-![Approved export with filenames, hashes, and research watermark](images/doctor-pipeline-user-guide/09-approved-export.png)
+![Approved export with filenames, hashes, and research watermark](../docs/images/doctor-pipeline-user-guide/09-approved-export.png)
 
 Downloads use the run-scoped authenticated endpoints. Verify the SHA-256 values in the manifest and inspect workflow/model/prompt/policy versions and source/derived hashes.
 
-![Chronological audit with reviewer decisions and provenance](images/doctor-pipeline-user-guide/18-audit-timeline.png)
+![Chronological audit with reviewer decisions and provenance](../docs/images/doctor-pipeline-user-guide/18-audit-timeline.png)
 
 Use **Local graph** to inspect current/completed/pending nodes, checkpoint thread, failed edge, timings, preparation metadata, and actual model-call receipts. No hosted tracing account is required.
 
-![Local graph inspector with completed nodes and model-call receipts](images/doctor-pipeline-user-guide/32-local-graph-inspector.png)
+![Local graph inspector with completed nodes and model-call receipts](../docs/images/doctor-pipeline-user-guide/32-local-graph-inspector.png)
 
-![Source/prepared comparison and Imaging Readiness Agent provenance](images/doctor-pipeline-user-guide/31-source-prepared-comparison.png)
+![Source/prepared comparison and Imaging Readiness Agent provenance](../docs/images/doctor-pipeline-user-guide/31-source-prepared-comparison.png)
 
 ## 6. Mobile doctor workflow
 
@@ -249,23 +249,23 @@ The phone UI uses mobile run cards, a compact navigation drawer, vertical workfl
 4. Open the run card and inspect status, attempt, revision, and timestamps.
 5. Use **Doctor Review** to switch between source and prepared images, then read the structured report and readiness details.
 
-![Mobile worklist cards with complete run state](images/doctor-pipeline-user-guide/23-dashboard-mobile.png)
+![Mobile worklist cards with complete run state](../docs/images/doctor-pipeline-user-guide/23-dashboard-mobile.png)
 
-![Vertical mobile workflow and independent gates](images/doctor-pipeline-user-guide/24-run-monitoring-mobile.png)
+![Vertical mobile workflow and independent gates](../docs/images/doctor-pipeline-user-guide/24-run-monitoring-mobile.png)
 
-![Derived image fitted to a phone viewport](images/doctor-pipeline-user-guide/25-image-review-mobile.png)
+![Derived image fitted to a phone viewport](../docs/images/doctor-pipeline-user-guide/25-image-review-mobile.png)
 
-![Readable structured draft on a phone](images/doctor-pipeline-user-guide/26-draft-review-mobile.png)
+![Readable structured draft on a phone](../docs/images/doctor-pipeline-user-guide/26-draft-review-mobile.png)
 
 Use **+ / −** for image zoom and drag to pan inside the bounded image viewport. **Reset** restores fit. Zoom/pan does not create page-level horizontal scrolling.
 
-![Approve confirmation reachable on a phone](images/doctor-pipeline-user-guide/27-approve-mobile.png)
+![Approve confirmation reachable on a phone](../docs/images/doctor-pipeline-user-guide/27-approve-mobile.png)
 
-![Phone rejection with keyboard-entered mandatory note](images/doctor-pipeline-user-guide/28-reject-mobile.png)
+![Phone rejection with keyboard-entered mandatory note](../docs/images/doctor-pipeline-user-guide/28-reject-mobile.png)
 
-![Request Changes confirmation on a phone](images/doctor-pipeline-user-guide/29-request-changes-mobile.png)
+![Request Changes confirmation on a phone](../docs/images/doctor-pipeline-user-guide/29-request-changes-mobile.png)
 
-![Approved export and download controls on a phone](images/doctor-pipeline-user-guide/30-export-mobile.png)
+![Approved export and download controls on a phone](../docs/images/doctor-pipeline-user-guide/30-export-mobile.png)
 
 Notes are entered with the native mobile keyboard. The focused field and buttons remain reachable. Consequential actions require confirmation and busy controls prevent double submission. Offline polling can show an error; after reconnecting, the same run/thread resumes. Session expiry returns to login without deleting the run.
 
@@ -338,19 +338,19 @@ Open MOCK at `http://127.0.0.1:8002` and the separate REAL showcase at `http://1
 | 35 | Uniform/invalid preparation input or `derived_phi_block` | `IMAGE_PREPARATION_FAILED`; no model call or approval override | Never |
 | 36 | `model_timeout` recovery | Retry only when the error is retryable; new run must pass every gate | Only after new approval |
 
-![MOCK PHI quarantine before inference with zero model calls](images/doctor-pipeline-user-guide/13-phi-quarantine.png)
+![MOCK PHI quarantine before inference with zero model calls](../docs/images/doctor-pipeline-user-guide/13-phi-quarantine.png)
 
-![MOCK unsupported modality stopped before drafting](images/doctor-pipeline-user-guide/14-unsupported-modality.png)
+![MOCK unsupported modality stopped before drafting](../docs/images/doctor-pipeline-user-guide/14-unsupported-modality.png)
 
-![MOCK visual-consistency failure followed by successful regeneration](images/doctor-pipeline-user-guide/15-grounding-retry.png)
+![MOCK visual-consistency failure followed by successful regeneration](../docs/images/doctor-pipeline-user-guide/15-grounding-retry.png)
 
-![MOCK retry exhaustion with no export](images/doctor-pipeline-user-guide/16-retry-exhausted-no-export.png)
+![MOCK retry exhaustion with no export](../docs/images/doctor-pipeline-user-guide/16-retry-exhausted-no-export.png)
 
-![Cancelled run cannot produce an export](images/doctor-pipeline-user-guide/17-cancelled-run.png)
+![Cancelled run cannot produce an export](../docs/images/doctor-pipeline-user-guide/17-cancelled-run.png)
 
-![MOCK preparation failure stops before inference and export](images/doctor-pipeline-user-guide/33-preparation-failure.png)
+![MOCK preparation failure stops before inference and export](../docs/images/doctor-pipeline-user-guide/33-preparation-failure.png)
 
-![Labelled model-timeout fault with optional technical retry](images/doctor-pipeline-user-guide/34-model-service-failure.png)
+![Labelled model-timeout fault with optional technical retry](../docs/images/doctor-pipeline-user-guide/34-model-service-failure.png)
 
 **MOCK images are workflow fault-injection evidence only, not model-quality or clinical evidence.**
 

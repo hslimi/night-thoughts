@@ -106,10 +106,13 @@ def hosted_copy(name: str, urls: dict[str, str]) -> tuple[Path, int]:
 
 
 def synchronize(name: str, state: dict[str, Any], urls: dict[str, str]) -> dict[str, Any]:
-    source = SOURCES[name].read_bytes()
+    source = SOURCES[name].read_text()
+    blog_text = source.replace(
+        "](images/doctor-pipeline-user-guide/", "](../docs/images/doctor-pipeline-user-guide/"
+    )
     BLOG_COPIES[name].parent.mkdir(parents=True, exist_ok=True)
-    BLOG_COPIES[name].write_bytes(source)
-    assert BLOG_COPIES[name].read_bytes() == SOURCES[name].read_bytes()
+    BLOG_COPIES[name].write_text(blog_text)
+    assert BLOG_COPIES[name].read_text() == blog_text
     content, image_count = hosted_copy(name, urls)
     entry = state["guides"].get(name, {})
     draft_id = DOCTOR_ID if name == "doctor" else entry.get("draft_id")

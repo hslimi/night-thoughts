@@ -28,7 +28,7 @@ The vision model drafts and reviews visual consistency; the text model reviews w
 
 Inference and application state remain on the Mac. If the public route is enabled, requests and responses transit Cloudflare. Do not describe that deployment as air-gapped.
 
-![Populated operational console from genuine REAL workflow runs](images/doctor-pipeline-user-guide/02-dashboard-desktop.png)
+![Populated operational console from genuine REAL workflow runs](../docs/images/doctor-pipeline-user-guide/02-dashboard-desktop.png)
 
 ## 2. Supported scope and limitations
 
@@ -144,7 +144,7 @@ The policy is already versioned in `policies/cxr_preparation_v2.json`; no separa
 
 Preparation performs Modality LUT/rescale before calibrated VOI/window mapping, correct signed and MONOCHROME1/2 semantics, preserves decoded orientation and aspect ratio, records lineage/metrics/library versions, verifies the derivative, and re-screens derived pixels. CLAHE, equalization, sharpening, denoising, elastic/random transforms, lesion cropping, lossy recompression, and generic per-image min-max scaling are prohibited.
 
-![PHI-screened source and prepared model input with the readiness receipt summary](images/doctor-pipeline-user-guide/31-source-prepared-comparison.png)
+![PHI-screened source and prepared model input with the readiness receipt summary](../docs/images/doctor-pipeline-user-guide/31-source-prepared-comparison.png)
 
 ## 10. Local graph inspector instead of hosted Studio
 
@@ -155,7 +155,7 @@ No LangSmith account, hosted Studio, Agent Server, `langgraph-cli[inmem]`, SDK, 
 - timestamps/durations, preparation receipt, human decisions;
 - model ID, call status, latency, and output hash.
 
-![Local graph inspector with completed nodes and genuine model-call receipts](images/doctor-pipeline-user-guide/32-local-graph-inspector.png)
+![Local graph inspector with completed nodes and genuine model-call receipts](../docs/images/doctor-pipeline-user-guide/32-local-graph-inspector.png)
 
 Optional self-hosted Arize Phoenix/OpenTelemetry is not enabled. A future integration must bind only to loopback/Tailscale, avoid public Caddy routes, exclude prompts/report text/DICOM metadata/pixels/credentials, and remain optional for execution and tests.
 

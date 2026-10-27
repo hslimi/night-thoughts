@@ -25,7 +25,10 @@ def main() -> None:
         "# Nightthoughts Medical Imaging Workflow — Doctor and Operator User Guide"
     )
     assert "Research demonstration only. Use synthetic or authorized de-identified images." in text
-    assert text == BLOG.read_text()
+    expected_blog = text.replace(
+        "](images/doctor-pipeline-user-guide/", "](../docs/images/doctor-pipeline-user-guide/"
+    )
+    assert expected_blog == BLOG.read_text()
     assert "admin/admin" not in text
     assert not re.search(
         r"Bearer\s+[A-Za-z0-9_-]{12,}|__Host-nt_(session|csrf)=|BEGIN [A-Z ]*PRIVATE KEY|/Users/",
