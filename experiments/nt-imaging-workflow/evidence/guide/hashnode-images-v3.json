@@ -1,0 +1,138 @@
+[
+  {
+    "file": "01-login-desktop.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/1b443521-6da1-46dd-aef0-e724c4fa0f17.png"
+  },
+  {
+    "file": "02-dashboard-desktop.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/737c9a34-b1de-4910-b194-8710d3497b20.png"
+  },
+  {
+    "file": "03-new-run-upload.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/ac4e2516-f9b6-4bc3-92bb-d29e10d2af72.png"
+  },
+  {
+    "file": "04-run-monitoring.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/24c540d8-07ef-4504-b5e2-86450d0abf9d.png"
+  },
+  {
+    "file": "05-gate-timeline.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/8c1f34f1-e4dc-42fd-9078-b7da6b2e4b12.png"
+  },
+  {
+    "file": "06-awaiting-doctor-review.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/cfb820b1-93ff-4690-bc47-bfd23964100f.png"
+  },
+  {
+    "file": "07-review-workspace-desktop.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/11cc8d38-8e3d-4e13-aa3f-e8d3daa0f507.png"
+  },
+  {
+    "file": "08-approve-confirmation.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/8a7f9330-591e-4a85-8b50-9b5731ab90c0.png"
+  },
+  {
+    "file": "09-approved-export.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/168b3622-d483-497d-b210-ed3b8bdd08de.png"
+  },
+  {
+    "file": "10-reject-dialog.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/9ee9c72c-6ab6-4a87-923b-a66290c76779.png"
+  },
+  {
+    "file": "11-request-changes.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b4554e92-3586-4b16-9ff5-6b04680fbab5.png"
+  },
+  {
+    "file": "12-revised-draft.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4eafa386-b0f3-475f-b4d3-61df66809fa3.png"
+  },
+  {
+    "file": "13-phi-quarantine.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/dcf72a47-a1fc-4f71-974c-65ec1ba3b4c8.png"
+  },
+  {
+    "file": "14-unsupported-modality.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/8793c6c9-0f9f-4ec7-bce6-2ce631da2d03.png"
+  },
+  {
+    "file": "15-grounding-retry.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/52873f61-f59b-41a5-a517-f1585ba83622.png"
+  },
+  {
+    "file": "16-retry-exhausted-no-export.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d9374935-ee52-48c1-9f7e-c2a78a28c9ce.png"
+  },
+  {
+    "file": "17-cancelled-run.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/de93cd71-a916-4988-a854-a0ab6ca365d7.png"
+  },
+  {
+    "file": "18-audit-timeline.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/84b396c6-62e0-4c4e-b7d2-def73273bcdf.png"
+  },
+  {
+    "file": "19-session-expired.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/44209f0d-e9e1-4445-9a1b-b8068e94d5e9.png"
+  },
+  {
+    "file": "20-public-login.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/6d2f20b3-e5fe-4ce0-9e80-a6475ed391f4.png"
+  },
+  {
+    "file": "21-login-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/cbbaa2c0-d742-4daa-a4a0-4b7c9dc49347.png"
+  },
+  {
+    "file": "22-navigation-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/215867c0-cbac-477c-80e7-e90fdb5a80b0.png"
+  },
+  {
+    "file": "23-dashboard-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/ca62ca01-59fe-406b-a079-4a1c8ebdf18f.png"
+  },
+  {
+    "file": "24-run-monitoring-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/1315b325-9916-4945-8fa0-c6956ec96d88.png"
+  },
+  {
+    "file": "25-image-review-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/cc6865ae-fc03-4547-a072-f0cdf22827a6.png"
+  },
+  {
+    "file": "26-draft-review-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e1bb366d-a402-4c03-9497-6613783c9fe0.png"
+  },
+  {
+    "file": "27-approve-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/af6d8941-a009-4da5-993f-712c44f9533c.png"
+  },
+  {
+    "file": "28-reject-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/45d9cc65-4c7c-4d02-9aa6-833d26782875.png"
+  },
+  {
+    "file": "29-request-changes-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/a47dc3ed-9671-4fe9-b097-d909fabb58f7.png"
+  },
+  {
+    "file": "30-export-mobile.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/dff27bd1-d394-4fd4-9d87-8a64be74d4f6.png"
+  },
+  {
+    "file": "31-source-prepared-comparison.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e6ac609e-bdb7-4291-b406-a5afe0a22472.png"
+  },
+  {
+    "file": "32-local-graph-inspector.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/fa208e16-a465-46c1-8901-120d8eb3aec1.png"
+  },
+  {
+    "file": "33-preparation-failure.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/ee92417e-705d-49a7-81a5-ca408d9757e9.png"
+  },
+  {
+    "file": "34-model-service-failure.png",
+    "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e50d1422-fd96-45da-8618-5e145c511628.png"
+  }
+]

@@ -1,0 +1,311 @@
+{
+  "screenshots": [
+    {
+      "file": "01-login-desktop.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "02-dashboard-desktop.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "03-new-run-upload.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "04-run-monitoring.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "05-gate-timeline.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "06-awaiting-doctor-review.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "07-review-workspace-desktop.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "31-source-prepared-comparison.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "11-request-changes.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "21-login-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "22-navigation-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "23-dashboard-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "24-run-monitoring-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "29-request-changes-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "12-revised-draft.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "32-local-graph-inspector.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "25-image-review-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "26-draft-review-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "27-approve-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "30-export-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "08-approve-confirmation.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "09-approved-export.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "18-audit-timeline.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "10-reject-dialog.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "28-reject-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "19-session-expired.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "REAL",
+      "full_page": false
+    },
+    {
+      "file": "13-phi-quarantine.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "MOCK / FAULT INJECTION",
+      "full_page": false
+    },
+    {
+      "file": "14-unsupported-modality.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "MOCK / FAULT INJECTION",
+      "full_page": false
+    },
+    {
+      "file": "15-grounding-retry.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "MOCK / FAULT INJECTION",
+      "full_page": false
+    },
+    {
+      "file": "16-retry-exhausted-no-export.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "MOCK / FAULT INJECTION",
+      "full_page": false
+    },
+    {
+      "file": "17-cancelled-run.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "MOCK / FAULT INJECTION",
+      "full_page": false
+    },
+    {
+      "file": "33-preparation-failure.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "MOCK / FAULT INJECTION",
+      "full_page": false
+    },
+    {
+      "file": "34-model-service-failure.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "MOCK / FAULT INJECTION",
+      "full_page": false
+    },
+    {
+      "file": "20-public-login.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "PUBLIC DEPLOYMENT",
+      "full_page": false
+    }
+  ],
+  "omissions": []
+}

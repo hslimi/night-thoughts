@@ -1,0 +1,1053 @@
+{
+  "label": "MOCK / FAULT INJECTION \u2014 not model-quality evidence",
+  "mode": "MOCK",
+  "base_url": "http://127.0.0.1:8002",
+  "fixture_provenance": "Project-generated deterministic artificial pixels; no patient data; see fixtures/README.md",
+  "run_count": 31,
+  "runs": [
+    {
+      "scenario": "approved_png",
+      "fixture_id": "chest_clean.png",
+      "run_id": "823e8e49-7887-4147-b000-714bd2ab522d",
+      "thread_id": "823e8e49-7887-4147-b000-714bd2ab522d",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:35.254566+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:35.257419+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:35.258785+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "approved_mono1",
+      "fixture_id": "chest_mono1.dcm",
+      "run_id": "bf3c46b0-3dd9-449a-bc01-9cd78d743e59",
+      "thread_id": "bf3c46b0-3dd9-449a-bc01-9cd78d743e59",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "ab34d08ee533278cf987112328e149a0bb6fb771a38092068571759f4a41a955",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "81e02d9f2b5d69728e9830e94c354cfa",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:36.372944+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:36.375272+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:36.376425+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "rejected",
+      "fixture_id": "chest_clean.png",
+      "run_id": "0d488f15-ff6f-4697-8b7a-fec5ecd1b319",
+      "thread_id": "0d488f15-ff6f-4697-8b7a-fec5ecd1b319",
+      "status": "HUMAN_REJECTED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:37.494294+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:37.497384+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:37.498749+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "phi_quarantine",
+      "fixture_id": "chest_unexpected_text.png",
+      "run_id": "96ffbf4d-37c8-4e41-a480-b0501ca26ab2",
+      "thread_id": "96ffbf4d-37c8-4e41-a480-b0501ca26ab2",
+      "status": "QUARANTINED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "7a0307fbe7ad6eda8319eed8e4b2cc71073970abc5a9435f6feec0e40f4dd14a",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "unsupported_modality",
+      "fixture_id": "unsupported_ct.dcm",
+      "run_id": "f857da4b-6871-4fe8-8709-3204af4914e4",
+      "thread_id": "f857da4b-6871-4fe8-8709-3204af4914e4",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "0bfb9f0ba9a208da0b19c811d75a18bf1e9fec03c4556c0fd48b61fa62632a9c",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "corrupt_upload",
+      "fixture_id": "mismatch.png",
+      "run_id": "38f7b183-2fea-4cd3-a728-379918435452",
+      "thread_id": "38f7b183-2fea-4cd3-a728-379918435452",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "preparation_failure",
+      "fixture_id": "uniform.png",
+      "run_id": "341f8f64-8ca2-4cb0-a7e1-00fe1e4b9e74",
+      "thread_id": "341f8f64-8ca2-4cb0-a7e1-00fe1e4b9e74",
+      "status": "IMAGE_PREPARATION_FAILED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "ad3d92a33d5e7480ffec17b96da3df67a2e986a4bd45e6f0cd77edf3c284cd79",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "pixel_limit",
+      "fixture_id": "too_many_pixels.png",
+      "run_id": "d8d8b193-8827-43f7-9262-45075ba530b5",
+      "thread_id": "d8d8b193-8827-43f7-9262-45075ba530b5",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "derived_safety_fault",
+      "fixture_id": "chest_clean.png",
+      "run_id": "80cfe192-ac44-4c1a-9a5e-3c05b55b27ba",
+      "thread_id": "80cfe192-ac44-4c1a-9a5e-3c05b55b27ba",
+      "status": "IMAGE_PREPARATION_FAILED",
+      "inference_mode": "MOCK",
+      "fault_profile": "derived_phi_block",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "malformed_repaired",
+      "fixture_id": "chest_clean.png",
+      "run_id": "e86874ea-268c-4d01-a602-16e6143bf661",
+      "thread_id": "e86874ea-268c-4d01-a602-16e6143bf661",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": "malformed_draft_once",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "fe24b95284456889a7e92f242999f08346f6f86b139b90ad3f193eaebf6abbb6",
+          "created_at": "2026-10-27T17:34:41.880636+00:00"
+        },
+        {
+          "stage": "DRAFT_SYNTAX_REPAIR",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:41.880861+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:41.883552+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:41.885721+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "malformed_persistent",
+      "fixture_id": "chest_clean.png",
+      "run_id": "f61769a2-3900-46ca-8eea-c435cc1dd790",
+      "thread_id": "f61769a2-3900-46ca-8eea-c435cc1dd790",
+      "status": "MODEL_OUTPUT_INVALID",
+      "inference_mode": "MOCK",
+      "fault_profile": "malformed_draft_always",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "fe24b95284456889a7e92f242999f08346f6f86b139b90ad3f193eaebf6abbb6",
+          "created_at": "2026-10-27T17:34:42.994484+00:00"
+        },
+        {
+          "stage": "DRAFT_SYNTAX_REPAIR",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "6139d179f13bf921b3eda31e8bcf79cbbede0071f902d526452c96ce1cac0f4f",
+          "created_at": "2026-10-27T17:34:42.994709+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "contract_retry_success",
+      "fixture_id": "chest_clean.png",
+      "run_id": "2da929e8-b0d9-47c6-b2c5-81a4ba749024",
+      "thread_id": "2da929e8-b0d9-47c6-b2c5-81a4ba749024",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": "contract_fail_once",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 2,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "b955ff317ac99cf67a4c9451313d5d615691b217f01f04c044026acdf5eddecb",
+          "created_at": "2026-10-27T17:34:43.596043+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:43.599326+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:43.603426+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:43.604842+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "grounding_retry_success",
+      "fixture_id": "chest_clean.png",
+      "run_id": "dfd1f828-a970-4373-a58a-8ac6159bdbe4",
+      "thread_id": "dfd1f828-a970-4373-a58a-8ac6159bdbe4",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": "grounding_fail_once",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 2,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:44.721039+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "02a62ef4e3c75117470455167cea62fc8a26798dfcb10fa5a4f928c3af795579",
+          "created_at": "2026-10-27T17:34:44.723468+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:44.725310+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:44.727737+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:44.729248+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "grounding_retry_exhausted",
+      "fixture_id": "chest_clean.png",
+      "run_id": "c11ec33e-2138-4568-aee0-6b8d2357aa41",
+      "thread_id": "c11ec33e-2138-4568-aee0-6b8d2357aa41",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "inference_mode": "MOCK",
+      "fault_profile": "grounding_fail_always",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 2,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:45.846317+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "02a62ef4e3c75117470455167cea62fc8a26798dfcb10fa5a4f928c3af795579",
+          "created_at": "2026-10-27T17:34:45.849788+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:45.851230+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "02a62ef4e3c75117470455167cea62fc8a26798dfcb10fa5a4f928c3af795579",
+          "created_at": "2026-10-27T17:34:45.854203+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "quality_retry_success",
+      "fixture_id": "chest_clean.png",
+      "run_id": "06897b70-9d4a-49ee-ba04-fc1d38088f49",
+      "thread_id": "06897b70-9d4a-49ee-ba04-fc1d38088f49",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": "quality_fail_once",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 2,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:46.442315+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:46.444935+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "e1c4ee9e3f57c700c65626c31cc9052845d051005833ad9f249a600bf6ced65d",
+          "created_at": "2026-10-27T17:34:46.446362+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:46.447565+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:46.450049+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:46.451392+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "quality_retry_exhausted",
+      "fixture_id": "chest_clean.png",
+      "run_id": "b80b350f-b011-4358-bb83-77cfc195da85",
+      "thread_id": "b80b350f-b011-4358-bb83-77cfc195da85",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "inference_mode": "MOCK",
+      "fault_profile": "quality_fail_always",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 2,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:47.569521+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:47.572430+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "e1c4ee9e3f57c700c65626c31cc9052845d051005833ad9f249a600bf6ced65d",
+          "created_at": "2026-10-27T17:34:47.573640+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:47.574802+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:47.576998+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "e1c4ee9e3f57c700c65626c31cc9052845d051005833ad9f249a600bf6ced65d",
+          "created_at": "2026-10-27T17:34:47.578526+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "model_timeout",
+      "fixture_id": "chest_clean.png",
+      "run_id": "36194f72-407e-49ce-9482-8857d14b49ee",
+      "thread_id": "36194f72-407e-49ce-9482-8857d14b49ee",
+      "status": "FAILED",
+      "inference_mode": "MOCK",
+      "fault_profile": "model_timeout",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "model_unavailable",
+      "fixture_id": "chest_clean.png",
+      "run_id": "27a40673-13f8-4cbd-b627-f6784dc0b838",
+      "thread_id": "27a40673-13f8-4cbd-b627-f6784dc0b838",
+      "status": "FAILED",
+      "inference_mode": "MOCK",
+      "fault_profile": "model_unavailable",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "revision_then_approval",
+      "fixture_id": "chest_clean.png",
+      "run_id": "b81ad6e6-4155-45fa-8016-b7b75bfaeb84",
+      "thread_id": "b81ad6e6-4155-45fa-8016-b7b75bfaeb84",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 1,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:49.352645+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:49.355083+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:49.356761+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:49.874654+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:49.877847+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:49.879450+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "revision_limit_exhaustion",
+      "fixture_id": "chest_clean.png",
+      "run_id": "8d3e33d8-a1f6-48ea-851c-e3a0fb5e3861",
+      "thread_id": "8d3e33d8-a1f6-48ea-851c-e3a0fb5e3861",
+      "status": "NEEDS_HUMAN_REVIEW",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 2,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:51.003995+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:51.006361+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:51.007924+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:51.523557+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:51.525722+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:51.526797+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:52.044778+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:52.047182+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:52.048464+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "technical_retry_success",
+      "fixture_id": "chest_clean.png",
+      "run_id": "45d1c97a-edef-4878-a320-881c4daefb0b",
+      "thread_id": "45d1c97a-edef-4878-a320-881c4daefb0b",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:53.754186+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:53.756551+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:34:53.758111+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "cancel_queued",
+      "fixture_id": "chest_clean.png",
+      "run_id": "05bfa4b6-c2a9-4ccc-bdd9-c63a5a8cdeba",
+      "thread_id": "05bfa4b6-c2a9-4ccc-bdd9-c63a5a8cdeba",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "cancel_active",
+      "fixture_id": "chest_clean.png",
+      "run_id": "01b90c2e-37d9-43be-9071-97026fa67518",
+      "thread_id": "01b90c2e-37d9-43be-9071-97026fa67518",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": "slow_draft",
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "mock-synthetic-provider",
+          "latency_ms": 0,
+          "status": "SUCCESS",
+          "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+          "created_at": "2026-10-27T17:34:56.869777+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_1",
+      "fixture_id": "chest_clean.png",
+      "run_id": "53029383-935c-4c38-a158-1936c8ea79f4",
+      "thread_id": "53029383-935c-4c38-a158-1936c8ea79f4",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_2",
+      "fixture_id": "chest_clean.png",
+      "run_id": "31011549-999f-46ab-b882-ab6293a6333e",
+      "thread_id": "31011549-999f-46ab-b882-ab6293a6333e",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_3",
+      "fixture_id": "chest_clean.png",
+      "run_id": "f2dfb08d-4ba0-4e0d-8b80-ee0b5f47fc83",
+      "thread_id": "f2dfb08d-4ba0-4e0d-8b80-ee0b5f47fc83",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_4",
+      "fixture_id": "chest_clean.png",
+      "run_id": "064fbf3d-def1-4319-a863-d12a061d351a",
+      "thread_id": "064fbf3d-def1-4319-a863-d12a061d351a",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_5",
+      "fixture_id": "chest_clean.png",
+      "run_id": "a0ba9a80-2a81-4fc6-acf4-e2903ce5a8ff",
+      "thread_id": "a0ba9a80-2a81-4fc6-acf4-e2903ce5a8ff",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_6",
+      "fixture_id": "chest_clean.png",
+      "run_id": "a5cc4557-c116-4b1e-908f-8feb2006846a",
+      "thread_id": "a5cc4557-c116-4b1e-908f-8feb2006846a",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_7",
+      "fixture_id": "chest_clean.png",
+      "run_id": "f0a6444e-bec5-4455-8095-100e1dfd3cc6",
+      "thread_id": "f0a6444e-bec5-4455-8095-100e1dfd3cc6",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": null,
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "queue_saturation_active",
+      "fixture_id": "chest_clean.png",
+      "run_id": "67a56e5c-c83d-4722-8812-ed10f258a284",
+      "thread_id": "67a56e5c-c83d-4722-8812-ed10f258a284",
+      "status": "CANCELLED",
+      "inference_mode": "MOCK",
+      "fault_profile": "slow_draft",
+      "source_sha256": "",
+      "prepared_sha256": null,
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": null,
+      "attempt": 0,
+      "revision": 0,
+      "model_call_receipts": [],
+      "export_eligible": false,
+      "export_count": 0
+    }
+  ]
+}

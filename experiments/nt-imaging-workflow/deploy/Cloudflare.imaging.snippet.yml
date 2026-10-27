@@ -1,0 +1,2 @@
+  - hostname: imaging.nightthoughts.dev
+    service: http://127.0.0.1:9080

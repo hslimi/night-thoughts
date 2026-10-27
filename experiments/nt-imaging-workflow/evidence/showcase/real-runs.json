@@ -1,0 +1,291 @@
+{
+  "label": "REAL oMLX inference",
+  "mode": "REAL",
+  "base_url": "http://127.0.0.1:8003",
+  "fixture_provenance": "Project-generated deterministic artificial pixels; no patient data; see fixtures/README.md",
+  "run_count": 6,
+  "runs": [
+    {
+      "scenario": "real_png_awaiting",
+      "fixture_id": "chest_clean.png",
+      "run_id": "d145fb70-2fe6-41f6-aade-0c498342291e",
+      "thread_id": "d145fb70-2fe6-41f6-aade-0c498342291e",
+      "status": "AWAITING_HUMAN_APPROVAL",
+      "inference_mode": "REAL",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 9678,
+          "status": "SUCCESS",
+          "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+          "created_at": "2026-10-27T17:35:07.279287+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 962,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:08.246122+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "Qwen3.5-9B-MLX-4bit",
+          "latency_ms": 498,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:08.748466+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "real_mono1_approved",
+      "fixture_id": "chest_mono1.dcm",
+      "run_id": "29beaafd-e197-429f-b40d-4efc0f2c6c50",
+      "thread_id": "29beaafd-e197-429f-b40d-4efc0f2c6c50",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "REAL",
+      "fault_profile": null,
+      "source_sha256": "ab34d08ee533278cf987112328e149a0bb6fb771a38092068571759f4a41a955",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "7a9962459d242e6c8ec018a3aa8db4b3",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 9435,
+          "status": "SUCCESS",
+          "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+          "created_at": "2026-10-27T17:35:18.785746+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 997,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:19.788602+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "Qwen3.5-9B-MLX-4bit",
+          "latency_ms": 495,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:20.287407+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "real_signed_voi_revision",
+      "fixture_id": "chest_signed_voi.dcm",
+      "run_id": "d9dc27fd-47c7-4f46-b847-f55ae1715252",
+      "thread_id": "d9dc27fd-47c7-4f46-b847-f55ae1715252",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "REAL",
+      "fault_profile": null,
+      "source_sha256": "78a315f72d68392940577e717215e7cf0ff049fdf8d39a984c4154453c0a0279",
+      "prepared_sha256": "61be3857dbb2df27708cfe88918dfadd3676898045f7a7c2c790287a10a7f31b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "ac407ad4298f137fe5250e30bd47d033",
+      "attempt": 1,
+      "revision": 1,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 12445,
+          "status": "SUCCESS",
+          "output_sha256": "d7909dfa2d25218458f8c1541b67bff4f8a279000b45515ad1759f2570ed4856",
+          "created_at": "2026-10-27T17:35:33.845334+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 1263,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:35.113761+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "Qwen3.5-9B-MLX-4bit",
+          "latency_ms": 555,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:35.671712+00:00"
+        },
+        {
+          "stage": "DRAFT",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 9697,
+          "status": "SUCCESS",
+          "output_sha256": "15a37596cdd666995e702d335f254c7b95b743b4bed228802dc14b102ed65583",
+          "created_at": "2026-10-27T17:35:45.883835+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 991,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:46.880137+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "Qwen3.5-9B-MLX-4bit",
+          "latency_ms": 1180,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:35:48.064109+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "real_rejected",
+      "fixture_id": "chest_clean.png",
+      "run_id": "25bbaa73-fe6c-4237-a0ff-b7bd930b6d6c",
+      "thread_id": "25bbaa73-fe6c-4237-a0ff-b7bd930b6d6c",
+      "status": "HUMAN_REJECTED",
+      "inference_mode": "REAL",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 9843,
+          "status": "SUCCESS",
+          "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+          "created_at": "2026-10-27T17:35:59.050613+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 988,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:36:00.042996+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "Qwen3.5-9B-MLX-4bit",
+          "latency_ms": 510,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:36:00.555738+00:00"
+        }
+      ],
+      "export_eligible": false,
+      "export_count": 0
+    },
+    {
+      "scenario": "real_dx_approved",
+      "fixture_id": "chest_dx.dcm",
+      "run_id": "f7e428c4-995a-45b9-8d10-3b1a95273639",
+      "thread_id": "f7e428c4-995a-45b9-8d10-3b1a95273639",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "REAL",
+      "fault_profile": null,
+      "source_sha256": "e573a425415839a3ef36911a021c47081d1ac40a4548ee2ca568d0641816a5e5",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "08cd15197991f5466998a35c189625a5",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 9752,
+          "status": "SUCCESS",
+          "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+          "created_at": "2026-10-27T17:36:11.426250+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 1011,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:36:12.441262+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "Qwen3.5-9B-MLX-4bit",
+          "latency_ms": 501,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:36:12.945543+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    },
+    {
+      "scenario": "real_png_approved",
+      "fixture_id": "chest_clean.png",
+      "run_id": "88a117d6-9bbc-4004-ae87-96e50123ac8d",
+      "thread_id": "88a117d6-9bbc-4004-ae87-96e50123ac8d",
+      "status": "APPROVED_DRAFT_EXPORTED",
+      "inference_mode": "REAL",
+      "fault_profile": null,
+      "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+      "preparation_policy_version": "cxr-preparation-v2",
+      "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+      "attempt": 1,
+      "revision": 0,
+      "model_call_receipts": [
+        {
+          "stage": "DRAFT",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 9536,
+          "status": "SUCCESS",
+          "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+          "created_at": "2026-10-27T17:36:23.608178+00:00"
+        },
+        {
+          "stage": "VISUAL_CONSISTENCY",
+          "model_id": "MedMO-8B-Next",
+          "latency_ms": 990,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:36:24.603129+00:00"
+        },
+        {
+          "stage": "TEXT_QUALITY",
+          "model_id": "Qwen3.5-9B-MLX-4bit",
+          "latency_ms": 495,
+          "status": "SUCCESS",
+          "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+          "created_at": "2026-10-27T17:36:25.100556+00:00"
+        }
+      ],
+      "export_eligible": true,
+      "export_count": 3
+    }
+  ]
+}

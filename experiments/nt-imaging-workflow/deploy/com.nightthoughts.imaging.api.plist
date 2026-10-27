@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.nightthoughts.imaging.api</string>
+  <key>UserName</key><string>__SERVICE_USER__</string>
+  <key>ProgramArguments</key><array>
+    <string>__PROJECT_ROOT__/.venv/bin/python</string>
+    <string>-m</string><string>uvicorn</string>
+    <string>nt_imaging.controlplane.api:app</string>
+    <string>--host</string><string>127.0.0.1</string>
+    <string>--port</string><string>8001</string>
+    <string>--workers</string><string>1</string>
+  </array>
+  <key>WorkingDirectory</key><string>__PROJECT_ROOT__</string>
+  <key>EnvironmentVariables</key><dict>
+    <key>HOME</key><string>__HOME__</string>
+    <key>APP_ENV</key><string>production</string>
+    <key>INFERENCE_MODE</key><string>REAL</string>
+    <key>WORKFLOW_VERSION</key><string>nt-cxr-draft-v1</string>
+    <key>MAX_ATTEMPTS</key><string>2</string>
+    <key>MAX_TOTAL_MODEL_CALLS</key><string>8</string>
+    <key>OMLX_BASE_URL</key><string>http://127.0.0.1:8000/v1</string>
+    <key>OMLX_VISION_MODEL</key><string>MedMO-8B-Next</string>
+    <key>OMLX_TEXT_MODEL</key><string>Qwen3.5-9B-MLX-4bit</string>
+    <key>DATA_ROOT</key><string>__PROJECT_ROOT__/var</string>
+    <key>MAX_UPLOAD_BYTES</key><string>26214400</string>
+    <key>MAX_DECODED_PIXELS</key><string>25000000</string>
+    <key>MODEL_TIMEOUT_SECONDS</key><string>300</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>10</integer>
+  <key>StandardOutPath</key><string>__PROJECT_ROOT__/var/logs/api-service.log</string>
+  <key>StandardErrorPath</key><string>__PROJECT_ROOT__/var/logs/api-service-error.log</string>
+</dict></plist>

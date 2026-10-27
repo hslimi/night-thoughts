@@ -1,0 +1,14 @@
+{
+  "policy_version": "cxr-preparation-v2",
+  "supported_modalities": ["CR", "DX", "XR"],
+  "max_input_dimension": 1024,
+  "thumbnail_dimension": 512,
+  "allowed_bits_stored": [8, 10, 12, 16],
+  "resampling": "SimpleITK BSpline",
+  "orientation": "Preserve decoded orientation; no arbitrary flips",
+  "border_crop": "Disabled",
+  "normalization": "Modality LUT/rescale then VOI/window; signed theoretical-range mapping only when no VOI is present",
+  "photometric": "MONOCHROME1 inversion after display mapping; MONOCHROME2 unchanged",
+  "encoding": "Lossless PNG; separate display thumbnail",
+  "prohibited": ["CLAHE", "histogram_equalization", "sharpening", "denoising", "elastic_transforms", "random_augmentation", "lesion_region_cropping", "lossy_recompression", "source_overwrite", "generic_per_image_min_max"]
+}

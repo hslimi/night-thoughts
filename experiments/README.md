@@ -15,6 +15,12 @@ Planned experiments are not listed as completed work.
 
 ## Available Experiments
 
+### NT Imaging Workflow
+
+[NT Imaging Workflow](nt-imaging-workflow/): a local LangGraph/oMLX chest-radiograph drafting workflow with a deterministic Imaging Readiness Agent, durable single-worker execution, local graph inspection, and mandatory doctor review before idempotent export. Includes REAL and labelled MOCK/FAULT showcases, responsive console tests, two private-draft blog sources, and sanitized v3 evidence.
+
+This is an Internet-accessible research showcase, not a clinically validated or institutionally hardened deployment. Its public GitHub source is readable even while the corresponding Hashnode guides remain private drafts.
+
 ### DDXPlus MLX LoRA
 
 [DDXPlus MLX LoRA experiment](ddxplus-mlx-lora/): an educational local-AI workflow using synthetic DDXPlus cases, MLX LM LoRA, identical 490-case held-out evaluations, independent fused-model verification, and oMLX/QwenPaw deployment and rollback.

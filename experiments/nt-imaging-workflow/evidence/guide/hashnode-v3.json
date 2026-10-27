@@ -1,0 +1,22 @@
+{
+  "publication": "https://nightthoughts.me",
+  "status": "DRAFT_ONLY",
+  "public_publish_command_executed": false,
+  "cdn_uploads_verified": 34,
+  "guides": [
+    {
+      "draft_id": "6ae13586c56b068ecf07ed6c",
+      "title": "Build a Local Medical Imaging Workflow with LangGraph, oMLX, and a Doctor Review Console",
+      "status": "DRAFT",
+      "publicly_live": false,
+      "edit_url": "https://hashnode.com/draft/6ae13586c56b068ecf07ed6c",
+      "preview_url": "https://nightthoughts.me/_drafts/6ae13586c56b068ecf07ed6c",
+      "preview_access": "Author authentication required; unauthenticated 404 is expected",
+      "cdn_images_verified": 3,
+      "source": "docs/installation-and-configuration.md",
+      "blog_source": "blog/local-langgraph-installation-guide.md",
+      "upload_operation": "hashnode --publication-id 6a9439bd520526685ca0ce83 --json draft update 6ae13586c56b068ecf07ed6c --content-file var/hashnode-installation-guide.md",
+      "updated_at": "2026-10-27T23:44:42.562175+00:00"
+    }
+  ]
+}

@@ -1,0 +1,517 @@
+{
+  "base_url": "http://127.0.0.1:8002",
+  "inference_mode": "MOCK",
+  "viewports": [
+    {
+      "viewport": [
+        320,
+        568
+      ],
+      "run_id": "d44bf578-fb1b-4003-b9b0-7c1bd4392807",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 320,
+          "viewportWidth": 320,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 320,
+          "viewportWidth": 320,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "review",
+          "documentWidth": 320,
+          "viewportWidth": 320,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "exports",
+          "documentWidth": 320,
+          "viewportWidth": 320,
+          "outside": [],
+          "small": []
+        }
+      ]
+    },
+    {
+      "viewport": [
+        360,
+        800
+      ],
+      "run_id": "3d1c0ffd-fa89-4da0-a6ba-bb99817bc067",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 360,
+          "viewportWidth": 360,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 360,
+          "viewportWidth": 360,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "review",
+          "documentWidth": 360,
+          "viewportWidth": 360,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "exports",
+          "documentWidth": 360,
+          "viewportWidth": 360,
+          "outside": [],
+          "small": []
+        }
+      ]
+    },
+    {
+      "viewport": [
+        375,
+        812
+      ],
+      "run_id": "4cc507ca-44bc-48a8-b0ff-172fe3b5139b",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 375,
+          "viewportWidth": 375,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 375,
+          "viewportWidth": 375,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "review",
+          "documentWidth": 375,
+          "viewportWidth": 375,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "exports",
+          "documentWidth": 375,
+          "viewportWidth": 375,
+          "outside": [],
+          "small": []
+        }
+      ]
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "run_id": "103abf7e-c2d3-44ed-aab0-03341e2a674c",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "review",
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "exports",
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "outside": [],
+          "small": []
+        }
+      ]
+    },
+    {
+      "viewport": [
+        412,
+        915
+      ],
+      "run_id": "4ada5171-d8ca-4e06-bd09-709e5509a47e",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 412,
+          "viewportWidth": 412,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 412,
+          "viewportWidth": 412,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "review",
+          "documentWidth": 412,
+          "viewportWidth": 412,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "exports",
+          "documentWidth": 412,
+          "viewportWidth": 412,
+          "outside": [],
+          "small": []
+        }
+      ]
+    },
+    {
+      "viewport": [
+        768,
+        1024
+      ],
+      "run_id": "dd1f1ef7-d1d7-4412-8c0b-24271f32a5c0",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 768,
+          "viewportWidth": 768,
+          "outside": [],
+          "small": [
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192"
+          ]
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 768,
+          "viewportWidth": 768,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "review",
+          "documentWidth": 768,
+          "viewportWidth": 768,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "exports",
+          "documentWidth": 768,
+          "viewportWidth": 768,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1024,
+        768
+      ],
+      "run_id": "1f262856-f40a-4e83-973e-3a9654f00fe9",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 1024,
+          "viewportWidth": 1024,
+          "outside": [],
+          "small": [
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192"
+          ]
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 1024,
+          "viewportWidth": 1024,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "review",
+          "documentWidth": 1024,
+          "viewportWidth": 1024,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "exports",
+          "documentWidth": 1024,
+          "viewportWidth": 1024,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "run_id": "f68f2842-5809-4a78-a9e9-abaa4e0d7eed",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 1440,
+          "viewportWidth": 1440,
+          "outside": [],
+          "small": [
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192"
+          ]
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 1440,
+          "viewportWidth": 1440,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "review",
+          "documentWidth": 1440,
+          "viewportWidth": 1440,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "exports",
+          "documentWidth": 1440,
+          "viewportWidth": 1440,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": [
+        844,
+        390
+      ],
+      "run_id": "6b459277-ed81-46d9-bbc1-76224ab7b8fd",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 844,
+          "viewportWidth": 844,
+          "outside": [],
+          "small": [
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192",
+            "Open \u2192"
+          ]
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 844,
+          "viewportWidth": 844,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "review",
+          "documentWidth": 844,
+          "viewportWidth": 844,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        },
+        {
+          "label": "exports",
+          "documentWidth": 844,
+          "viewportWidth": 844,
+          "outside": [],
+          "small": [
+            "Monitor",
+            "Doctor review",
+            "Local graph",
+            "Audit & provenance",
+            "Exports"
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": [
+        568,
+        320
+      ],
+      "run_id": "1cee44d1-05f3-4bdb-89bb-35bdf4669b95",
+      "checks": [
+        {
+          "label": "dashboard",
+          "documentWidth": 568,
+          "viewportWidth": 568,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "monitor",
+          "documentWidth": 568,
+          "viewportWidth": 568,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "review",
+          "documentWidth": 568,
+          "viewportWidth": 568,
+          "outside": [],
+          "small": []
+        },
+        {
+          "label": "exports",
+          "documentWidth": 568,
+          "viewportWidth": 568,
+          "outside": [],
+          "small": []
+        }
+      ]
+    }
+  ],
+  "interventions": {
+    "request_changes_then_reject": "95ff9aba-9f29-4467-97ed-e1c4b314f49d",
+    "cancelled": "fe31429a-aab0-4c4a-ba1a-7f97136e9c03"
+  },
+  "session_expiry_and_recovery": true
+}

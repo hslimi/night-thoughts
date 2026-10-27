@@ -1,0 +1,8 @@
+import type { Run } from '../types'
+
+export default function ExportView({ run }: { run: Run }) {
+  const manifest = run.export_manifest
+  if (run.status !== 'APPROVED_DRAFT_EXPORTED' || !manifest) return <div className="empty-state panel"><h2>No approved export</h2><p>Exports become available only after every gate passes and a doctor approves the research draft.</p></div>
+  const labels: Record<string, string> = { report_json: 'Structured JSON report', report_markdown: 'Watermarked Markdown report', manifest: 'Provenance manifest' }
+  return <section className="export-layout"><div className="watermark">AI-ASSISTED DRAFT · RESEARCH DEMONSTRATION · NOT FOR CLINICAL USE</div><div className="panel"><div className="panel-heading"><div><p className="eyebrow">APPROVED EXPORT</p><h2>Research-draft artifacts</h2></div><span>{new Date(manifest.created_at).toLocaleString()}</span></div><div className="export-list">{Object.entries(manifest.files).map(([id, filename]) => <article className="export-item" key={id}><div><h3>{labels[id] ?? id}</h3><code>{filename}</code><p>{manifest.hashes[filename] ?? 'Hash recorded in manifest file'}</p></div><a className="button secondary" href={`/api/v1/runs/${run.run_id}/exports/${id}`} download>Download</a></article>)}</div></div><aside className="panel"><h2>Export provenance</h2><dl className="metadata-grid"><dt>Workflow</dt><dd>{manifest.workflow_version}</dd><dt>Prompt / policy</dt><dd>{manifest.prompt_version} / {manifest.policy_version}</dd><dt>Vision model</dt><dd>{manifest.vision_model_id}</dd><dt>Text model</dt><dd>{manifest.text_model_id}</dd><dt>Source hash</dt><dd><code>{manifest.source_sha256}</code></dd><dt>Derived hash</dt><dd><code>{manifest.prepared_sha256}</code></dd></dl></aside></section>
+}

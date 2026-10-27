@@ -1,0 +1,9 @@
+{
+  "version": "cxr-quality-v1",
+  "max_findings": 20,
+  "max_impression_items": 20,
+  "max_limitations": 20,
+  "max_text_characters": 6000,
+  "forbidden_placeholders": ["TBD", "TODO", "<placeholder>", "[insert"],
+  "required_notice": "AI-ASSISTED DRAFT — RESEARCH AND DEMONSTRATION ONLY — NOT FOR CLINICAL USE"
+}
