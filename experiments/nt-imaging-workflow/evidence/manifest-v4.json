@@ -1,6 +1,6 @@
 {
   "schema": "nt-imaging-evidence-v4",
-  "generated_at": "2026-10-28T16:42:40.935158+00:00",
+  "generated_at": "2026-10-28T23:26:00.141365+00:00",
   "application_version": "4.0.0",
   "research_demonstration": true,
   "clinical_validation_performed": false,
@@ -1816,6 +1816,18 @@
       "sha256": "5c57c6dc693bae198ee03be6bff854fa6675ab547c167cfa6272b18e8ada27fa",
       "width": 1440,
       "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/09-public-live-worklist.png",
+      "sha256": "d94100f4ea61b6adcb18828c134e4866e1aac61101147da2ae98dd6ed09907c1",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/10-public-export-mobile.png",
+      "sha256": "dc107a278f462771d7e4daabf54c8aeb5af4ff80b4b0495a726eb5ebfcbee22d",
+      "width": 390,
+      "height": 844
     }
   ],
   "videos": [
@@ -1831,9 +1843,11 @@
     "local_url": "http://127.0.0.1:8001",
     "public_login_verified": true,
     "unauthenticated_api_denied": true,
-    "current_live_revision_verified": false,
-    "worker_program": "Obsolete path still present at last inspection",
-    "status": "Canonical code and evidence are complete; effective privileged deployment and public REAL decision/export verification remain pending."
+    "current_live_revision_verified": true,
+    "public_real_workflow_verified": true,
+    "daemon_persistence_verified": false,
+    "worker_program": "Canonical foreground recovery passed; installed worker plist remained obsolete at last inspection",
+    "status": "Public REAL approval/export passed with live events. Final LaunchDaemon identity/persistence verification remains pending."
   },
   "limitations_not_verified": [
     "No physical phone or tablet was available; tests used Chromium phone/tablet viewports with touch emulation.",

@@ -39,7 +39,7 @@ The original two REAL jobs `17477107-2b44-41cb-82bb-512c09e2e077` and `fdba621b-
 
 Process and plist inspection showed the actual mismatch: API PID 70924 ran `/Users/night-thoughts/night-thoughts/experiments/nt-imaging-workflow/.venv/bin/python` with canonical `DATA_ROOT`, while worker PID 70634 ran `/Users/night-thoughts/healthcare/nt-imaging-workflow/.venv/bin/python -m nt_imaging.controlplane.worker` with the obsolete working directory and `DATA_ROOT`. The running worker therefore never consumed the canonical queue. Process existence was not a valid health check.
 
-The correction is to run both services from the canonical Python and data root and verify identity/heartbeat rather than delete or reseed jobs. `scripts/deploy_canonical.sh` builds the frontend, runs migrations, validates plists, reloads only the two application services, and checks program paths, `DATA_ROOT`, code fingerprint, data fingerprint, and readiness. The two queued jobs were preserved. Deployment is not claimed complete until those checks and actual job transitions are observed.
+The correction is to run both services from the canonical Python and data root and verify identity/heartbeat rather than delete or reseed jobs. `scripts/deploy_canonical.sh` builds the frontend, runs migrations, validates plists, reloads only the two application services, and checks program paths, `DATA_ROOT`, code fingerprint, data fingerprint, and readiness. The two queued jobs were preserved. A non-daemon canonical recovery process then emitted matching fingerprints and heartbeat; the first original job reached human approval and all six preserved jobs reached that interrupt without deletion. Public REAL scenarios also passed approval/export, revision, and rejection, with desktop/mobile login and export controls verified. These application checks do not by themselves prove LaunchDaemon persistence.
 
 ## Durable events and live verification
 
@@ -55,7 +55,7 @@ Actual checks at this revision: 95 non-real tests, one REAL oMLX test, ten respo
 - No physical phone/tablet, institutional identity, multi-node high availability, or formal hospital security assessment was tested.
 - Optional Phoenix is not enabled. MONAI/PyTorch and study-level 2D/3D transforms are future work.
 - Public traffic transits Cloudflare; the deployment is not air-gapped.
-- The public login was captured. A public REAL upload reached review, but the new `/graph-inspector` endpoint returned 404 and the installed plists retained their old environment entries, proving the current readiness API revision is not deployed. A complete public REAL decision/export cycle is therefore not claimed. The final application-only reload script is `scripts/reload_installed_services.sh`; it still needs an effective privileged run and post-reload verification.
+- Public REAL approval/export and desktop/mobile export controls passed with live events. The installed worker plist still pointed to the obsolete path at last inspection, so LaunchDaemon persistence is not yet claimed. `scripts/deploy_canonical.sh` remains the final application-only installation step.
 - Runtime databases, checkpoints, controlled uploads, derivatives, exports, credentials, logs, and model files are intentionally excluded from publication.
 
 Refer to the evidence manifest for actual run/thread/model-call correlation, fixture hashes, screenshot hashes, runtime status counts, and current limitations.
