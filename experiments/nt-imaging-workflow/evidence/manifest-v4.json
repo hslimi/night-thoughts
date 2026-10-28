@@ -1,6 +1,6 @@
 {
   "schema": "nt-imaging-evidence-v4",
-  "generated_at": "2026-10-28T23:26:00.141365+00:00",
+  "generated_at": "2026-10-28T23:47:14.035689+00:00",
   "application_version": "4.0.0",
   "research_demonstration": true,
   "clinical_validation_performed": false,
@@ -1845,13 +1845,13 @@
     "unauthenticated_api_denied": true,
     "current_live_revision_verified": true,
     "public_real_workflow_verified": true,
-    "daemon_persistence_verified": false,
-    "worker_program": "Canonical foreground recovery passed; installed worker plist remained obsolete at last inspection",
-    "status": "Public REAL approval/export passed with live events. Final LaunchDaemon identity/persistence verification remains pending."
+    "daemon_persistence_verified": true,
+    "worker_program": "Canonical LaunchDaemon worker PID 8970 with fresh heartbeat after temporary worker shutdown",
+    "status": "Canonical API and worker LaunchDaemons, public REAL approval/export, live events, and desktop/mobile export controls verified."
   },
   "limitations_not_verified": [
     "No physical phone or tablet was available; tests used Chromium phone/tablet viewports with touch emulation.",
-    "The production worker still uses the obsolete path at last inspection; canonical heartbeat and public REAL approval/export are not claimed.",
+    "Canonical LaunchDaemon persistence and public REAL approval/export are verified; no fresh-clone deployment was performed beyond the canonical working copy.",
     "Public traffic transits the existing Cloudflare/Caddy path; this Internet-accessible deployment is not air-gapped.",
     "PHI screening is fail-closed demonstration screening, not guaranteed anonymization.",
     "Model-assisted visual/text reviews and doctor approval are not clinical validation or diagnostic certification.",

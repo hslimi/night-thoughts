@@ -55,7 +55,7 @@ Actual checks at this revision: 95 non-real tests, one REAL oMLX test, ten respo
 - No physical phone/tablet, institutional identity, multi-node high availability, or formal hospital security assessment was tested.
 - Optional Phoenix is not enabled. MONAI/PyTorch and study-level 2D/3D transforms are future work.
 - Public traffic transits Cloudflare; the deployment is not air-gapped.
-- Public REAL approval/export and desktop/mobile export controls passed with live events. The installed worker plist still pointed to the obsolete path at last inspection, so LaunchDaemon persistence is not yet claimed. `scripts/deploy_canonical.sh` remains the final application-only installation step.
+- Public REAL approval/export and desktop/mobile export controls passed with live events. The canonical worker LaunchDaemon PID 8970 remained running with fresh heartbeat after the temporary worker stopped, confirming persistent startup and no duplicate worker execution.
 - Runtime databases, checkpoints, controlled uploads, derivatives, exports, credentials, logs, and model files are intentionally excluded from publication.
 
 Refer to the evidence manifest for actual run/thread/model-call correlation, fixture hashes, screenshot hashes, runtime status counts, and current limitations.
