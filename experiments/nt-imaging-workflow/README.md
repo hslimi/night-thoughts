@@ -12,7 +12,10 @@ A local-first [Nightthoughts](https://nightthoughts.me) experiment running a Lan
 - [Imaging Readiness Agent policy](docs/imaging-readiness-policy.md)
 - [Security and limitations](docs/security-and-limitations.md)
 - [Verification and evidence](docs/verification.md)
-- [Machine-readable v3 evidence manifest](evidence/manifest-v3.json)
+- [Durable event and SSE schema](docs/event-schema.md)
+- [Debugging and recovery](docs/debugging-guide.md)
+- [Account management without restarts](docs/account-management.md)
+- [Machine-readable v4 evidence manifest](evidence/manifest-v4.json)
 - Blog sources: [installation guide](blog/local-langgraph-installation-guide.md) and [doctor/operator guide](blog/doctor-operator-user-guide.md). The corresponding Hashnode items are private drafts, not publicly published articles.
 
 ## Corrected workflow

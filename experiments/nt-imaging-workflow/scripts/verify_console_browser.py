@@ -59,7 +59,9 @@ def login(page: Page, base: str, password: str, *, wrong_first: bool = False) ->
 def create_run(page: Page) -> str:
     page.get_by_role("button", name="New synthetic run").click()
     page.locator("#artifact").set_input_files(str(FIXTURE))
-    page.get_by_role("checkbox").check()
+    page.get_by_role(
+        "checkbox", name="I confirm this is synthetic or authorized de-identified data."
+    ).check()
     page.get_by_role("button", name="Create run", exact=True).click()
     page.wait_for_url("**/runs/*", timeout=20_000)
     expect(page.locator("h1").first).to_have_text("AWAITING HUMAN APPROVAL", timeout=30_000)

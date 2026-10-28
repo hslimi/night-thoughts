@@ -8,8 +8,8 @@
     {
       "scenario": "real_png_awaiting",
       "fixture_id": "chest_clean.png",
-      "run_id": "d145fb70-2fe6-41f6-aade-0c498342291e",
-      "thread_id": "d145fb70-2fe6-41f6-aade-0c498342291e",
+      "run_id": "31cdec99-4283-435a-9765-1cc163ae0b82",
+      "thread_id": "31cdec99-4283-435a-9765-1cc163ae0b82",
       "status": "AWAITING_HUMAN_APPROVAL",
       "inference_mode": "REAL",
       "fault_profile": null,
@@ -23,26 +23,26 @@
         {
           "stage": "DRAFT",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 9678,
+          "latency_ms": 9065,
           "status": "SUCCESS",
           "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
-          "created_at": "2026-10-27T17:35:07.279287+00:00"
+          "created_at": "2026-10-28T16:29:35.104274+00:00"
         },
         {
           "stage": "VISUAL_CONSISTENCY",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 962,
+          "latency_ms": 942,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:08.246122+00:00"
+          "created_at": "2026-10-28T16:29:36.056681+00:00"
         },
         {
           "stage": "TEXT_QUALITY",
           "model_id": "Qwen3.5-9B-MLX-4bit",
-          "latency_ms": 498,
+          "latency_ms": 475,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:08.748466+00:00"
+          "created_at": "2026-10-28T16:29:36.542212+00:00"
         }
       ],
       "export_eligible": false,
@@ -51,41 +51,41 @@
     {
       "scenario": "real_mono1_approved",
       "fixture_id": "chest_mono1.dcm",
-      "run_id": "29beaafd-e197-429f-b40d-4efc0f2c6c50",
-      "thread_id": "29beaafd-e197-429f-b40d-4efc0f2c6c50",
+      "run_id": "89f0e5ea-5bb8-45a2-bbe3-7435a543daf0",
+      "thread_id": "89f0e5ea-5bb8-45a2-bbe3-7435a543daf0",
       "status": "APPROVED_DRAFT_EXPORTED",
       "inference_mode": "REAL",
       "fault_profile": null,
       "source_sha256": "ab34d08ee533278cf987112328e149a0bb6fb771a38092068571759f4a41a955",
       "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
       "preparation_policy_version": "cxr-preparation-v2",
-      "readiness_receipt_id": "7a9962459d242e6c8ec018a3aa8db4b3",
+      "readiness_receipt_id": "4268271d47b36fef493282fb9194ff93",
       "attempt": 1,
       "revision": 0,
       "model_call_receipts": [
         {
           "stage": "DRAFT",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 9435,
+          "latency_ms": 8981,
           "status": "SUCCESS",
           "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
-          "created_at": "2026-10-27T17:35:18.785746+00:00"
+          "created_at": "2026-10-28T16:29:46.178119+00:00"
         },
         {
           "stage": "VISUAL_CONSISTENCY",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 997,
+          "latency_ms": 919,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:19.788602+00:00"
+          "created_at": "2026-10-28T16:29:47.111423+00:00"
         },
         {
           "stage": "TEXT_QUALITY",
           "model_id": "Qwen3.5-9B-MLX-4bit",
-          "latency_ms": 495,
+          "latency_ms": 470,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:20.287407+00:00"
+          "created_at": "2026-10-28T16:29:47.592097+00:00"
         }
       ],
       "export_eligible": true,
@@ -94,65 +94,65 @@
     {
       "scenario": "real_signed_voi_revision",
       "fixture_id": "chest_signed_voi.dcm",
-      "run_id": "d9dc27fd-47c7-4f46-b847-f55ae1715252",
-      "thread_id": "d9dc27fd-47c7-4f46-b847-f55ae1715252",
+      "run_id": "0a755b0c-08f9-4e1d-a44c-02cb362bb16e",
+      "thread_id": "0a755b0c-08f9-4e1d-a44c-02cb362bb16e",
       "status": "APPROVED_DRAFT_EXPORTED",
       "inference_mode": "REAL",
       "fault_profile": null,
       "source_sha256": "78a315f72d68392940577e717215e7cf0ff049fdf8d39a984c4154453c0a0279",
       "prepared_sha256": "61be3857dbb2df27708cfe88918dfadd3676898045f7a7c2c790287a10a7f31b",
       "preparation_policy_version": "cxr-preparation-v2",
-      "readiness_receipt_id": "ac407ad4298f137fe5250e30bd47d033",
+      "readiness_receipt_id": "bb5730f489c9470e8b8cf36709e0e361",
       "attempt": 1,
       "revision": 1,
       "model_call_receipts": [
         {
           "stage": "DRAFT",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 12445,
+          "latency_ms": 11325,
           "status": "SUCCESS",
           "output_sha256": "d7909dfa2d25218458f8c1541b67bff4f8a279000b45515ad1759f2570ed4856",
-          "created_at": "2026-10-27T17:35:33.845334+00:00"
+          "created_at": "2026-10-28T16:30:00.098361+00:00"
         },
         {
           "stage": "VISUAL_CONSISTENCY",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 1263,
+          "latency_ms": 890,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:35.113761+00:00"
+          "created_at": "2026-10-28T16:30:01.003851+00:00"
         },
         {
           "stage": "TEXT_QUALITY",
           "model_id": "Qwen3.5-9B-MLX-4bit",
-          "latency_ms": 555,
+          "latency_ms": 474,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:35.671712+00:00"
+          "created_at": "2026-10-28T16:30:01.489837+00:00"
         },
         {
           "stage": "DRAFT",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 9697,
+          "latency_ms": 8788,
           "status": "SUCCESS",
           "output_sha256": "15a37596cdd666995e702d335f254c7b95b743b4bed228802dc14b102ed65583",
-          "created_at": "2026-10-27T17:35:45.883835+00:00"
+          "created_at": "2026-10-28T16:30:10.831892+00:00"
         },
         {
           "stage": "VISUAL_CONSISTENCY",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 991,
+          "latency_ms": 910,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:46.880137+00:00"
+          "created_at": "2026-10-28T16:30:11.759566+00:00"
         },
         {
           "stage": "TEXT_QUALITY",
           "model_id": "Qwen3.5-9B-MLX-4bit",
-          "latency_ms": 1180,
+          "latency_ms": 469,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:35:48.064109+00:00"
+          "created_at": "2026-10-28T16:30:12.241570+00:00"
         }
       ],
       "export_eligible": true,
@@ -161,8 +161,8 @@
     {
       "scenario": "real_rejected",
       "fixture_id": "chest_clean.png",
-      "run_id": "25bbaa73-fe6c-4237-a0ff-b7bd930b6d6c",
-      "thread_id": "25bbaa73-fe6c-4237-a0ff-b7bd930b6d6c",
+      "run_id": "0f6698cb-61f5-4b4c-b59c-3bc906623aac",
+      "thread_id": "0f6698cb-61f5-4b4c-b59c-3bc906623aac",
       "status": "HUMAN_REJECTED",
       "inference_mode": "REAL",
       "fault_profile": null,
@@ -176,26 +176,26 @@
         {
           "stage": "DRAFT",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 9843,
+          "latency_ms": 8928,
           "status": "SUCCESS",
           "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
-          "created_at": "2026-10-27T17:35:59.050613+00:00"
+          "created_at": "2026-10-28T16:30:22.338468+00:00"
         },
         {
           "stage": "VISUAL_CONSISTENCY",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 988,
+          "latency_ms": 908,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:36:00.042996+00:00"
+          "created_at": "2026-10-28T16:30:23.258276+00:00"
         },
         {
           "stage": "TEXT_QUALITY",
           "model_id": "Qwen3.5-9B-MLX-4bit",
-          "latency_ms": 510,
+          "latency_ms": 471,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:36:00.555738+00:00"
+          "created_at": "2026-10-28T16:30:23.740881+00:00"
         }
       ],
       "export_eligible": false,
@@ -204,41 +204,41 @@
     {
       "scenario": "real_dx_approved",
       "fixture_id": "chest_dx.dcm",
-      "run_id": "f7e428c4-995a-45b9-8d10-3b1a95273639",
-      "thread_id": "f7e428c4-995a-45b9-8d10-3b1a95273639",
+      "run_id": "15aeacea-7d49-4d2b-8ee9-e3c0b3c42aba",
+      "thread_id": "15aeacea-7d49-4d2b-8ee9-e3c0b3c42aba",
       "status": "APPROVED_DRAFT_EXPORTED",
       "inference_mode": "REAL",
       "fault_profile": null,
       "source_sha256": "e573a425415839a3ef36911a021c47081d1ac40a4548ee2ca568d0641816a5e5",
       "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
       "preparation_policy_version": "cxr-preparation-v2",
-      "readiness_receipt_id": "08cd15197991f5466998a35c189625a5",
+      "readiness_receipt_id": "172771e6fcddbbf396ce10a00d58993d",
       "attempt": 1,
       "revision": 0,
       "model_call_receipts": [
         {
           "stage": "DRAFT",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 9752,
+          "latency_ms": 8979,
           "status": "SUCCESS",
           "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
-          "created_at": "2026-10-27T17:36:11.426250+00:00"
+          "created_at": "2026-10-28T16:30:33.907315+00:00"
         },
         {
           "stage": "VISUAL_CONSISTENCY",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 1011,
+          "latency_ms": 919,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:36:12.441262+00:00"
+          "created_at": "2026-10-28T16:30:34.842322+00:00"
         },
         {
           "stage": "TEXT_QUALITY",
           "model_id": "Qwen3.5-9B-MLX-4bit",
-          "latency_ms": 501,
+          "latency_ms": 466,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:36:12.945543+00:00"
+          "created_at": "2026-10-28T16:30:35.320422+00:00"
         }
       ],
       "export_eligible": true,
@@ -247,8 +247,8 @@
     {
       "scenario": "real_png_approved",
       "fixture_id": "chest_clean.png",
-      "run_id": "88a117d6-9bbc-4004-ae87-96e50123ac8d",
-      "thread_id": "88a117d6-9bbc-4004-ae87-96e50123ac8d",
+      "run_id": "55c1a893-6b2d-4afe-8923-7ae7095e0dc3",
+      "thread_id": "55c1a893-6b2d-4afe-8923-7ae7095e0dc3",
       "status": "APPROVED_DRAFT_EXPORTED",
       "inference_mode": "REAL",
       "fault_profile": null,
@@ -262,26 +262,26 @@
         {
           "stage": "DRAFT",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 9536,
+          "latency_ms": 8971,
           "status": "SUCCESS",
           "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
-          "created_at": "2026-10-27T17:36:23.608178+00:00"
+          "created_at": "2026-10-28T16:30:45.453955+00:00"
         },
         {
           "stage": "VISUAL_CONSISTENCY",
           "model_id": "MedMO-8B-Next",
-          "latency_ms": 990,
+          "latency_ms": 913,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:36:24.603129+00:00"
+          "created_at": "2026-10-28T16:30:46.382261+00:00"
         },
         {
           "stage": "TEXT_QUALITY",
           "model_id": "Qwen3.5-9B-MLX-4bit",
-          "latency_ms": 495,
+          "latency_ms": 467,
           "status": "SUCCESS",
           "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
-          "created_at": "2026-10-27T17:36:25.100556+00:00"
+          "created_at": "2026-10-28T16:30:46.862319+00:00"
         }
       ],
       "export_eligible": true,

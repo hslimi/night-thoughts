@@ -40,7 +40,9 @@ def main() -> None:
             page.locator("#artifact").set_input_files(
                 str(ROOT / "fixtures/synthetic/chest_clean.png")
             )
-            page.get_by_role("checkbox").check()
+            page.get_by_role(
+                "checkbox", name="I confirm this is synthetic or authorized de-identified data."
+            ).check()
             page.get_by_role("button", name="Create run", exact=True).click()
             page.wait_for_url("**/runs/*")
             expect(page.locator("h1").first).to_have_text("AWAITING HUMAN APPROVAL", timeout=60_000)

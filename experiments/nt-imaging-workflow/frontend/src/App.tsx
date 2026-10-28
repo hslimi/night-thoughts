@@ -5,6 +5,7 @@ import Login from './components/Login'
 import Worklist from './components/Worklist'
 import RunDetail from './components/RunDetail'
 import MobileNav from './components/MobileNav'
+import DebugCenter from './components/DebugCenter'
 
 export default function App() {
   const [username, setUsername] = useState<string | null>(null)
@@ -40,6 +41,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Worklist />} />
         <Route path="/runs/:runId" element={<RunDetail />} />
+        <Route path="/debug" element={<DebugCenter />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <footer>Synthetic or authorized de-identified data only · Approval exports a research draft, not clinical sign-off.</footer>

@@ -72,7 +72,7 @@ def main() -> None:
         "capture_scope": "Actual local REAL and explicitly labelled MOCK/FAULT workflows plus public login. Chromium emulation, not physical-device testing.",
         "credentials_included": False,
     }
-    (OUT / "manifest-v3.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (OUT / "manifest-v4.json").write_text(json.dumps(manifest, indent=2) + "\n")
     print("PASS guide structure/source sync, 34 image references/hashes, sensitive-content scan")
 
 

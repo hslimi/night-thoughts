@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, cast
 
@@ -114,8 +115,14 @@ def prepare_artifact(
     source_artifact_id: str,
     source_format: str,
     policy_root: Path,
+    progress: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     started = time.monotonic()
+
+    def emit(operation: str) -> None:
+        if progress:
+            progress(operation)
+
     policy = _policy(policy_root)
     source_path = store.derived_path(
         run_id, source_artifact_id, ".dcm" if source_format == "DICOM" else ".png"
@@ -156,13 +163,17 @@ def prepare_artifact(
             raise PreparationError("Unsupported DICOM bit depth")
         operations: list[str] = []
         pixels = _rescale(dataset, pixels, operations)
+        emit("MODALITY_LUT_OR_RESCALE")
         pixels = _display_map(dataset, pixels, operations)
+        emit("VOI_LUT_OR_DISPLAY_MAPPING")
         if str(dataset.get("PhotometricInterpretation", "")) == "MONOCHROME1":
             pixels = 255.0 - pixels
             operations.append("MONOCHROME1_INVERSION")
+            emit("MONOCHROME1_INVERSION")
         elif str(dataset.get("PhotometricInterpretation", "")) != "MONOCHROME2":
             raise PreparationError("Unsupported photometric interpretation")
         operations.append("PRESERVE_DECODED_ORIENTATION_NO_FLIP")
+        emit("PRESERVE_DECODED_ORIENTATION_NO_FLIP")
         dtype = str(pixels.dtype)
         transfer_syntax = str(dataset.file_meta.TransferSyntaxUID)
         signed = bool(dataset.get("PixelRepresentation", 0))
@@ -172,6 +183,8 @@ def prepare_artifact(
             image = source.convert("L")
         pixels = np.asarray(image, dtype=np.float64)
         operations = ["RASTER_GRAYSCALE_8_BIT", "PRESERVE_DECODED_ORIENTATION_NO_FLIP"]
+        emit("RASTER_GRAYSCALE_8_BIT")
+        emit("PRESERVE_DECODED_ORIENTATION_NO_FLIP")
         bits = 8
         dtype = str(pixels.dtype)
         transfer_syntax = None
@@ -187,7 +200,10 @@ def prepare_artifact(
     image = Image.fromarray(pixels, "L")
     image, resize_operations = _resample(image, policy["max_input_dimension"])
     operations.extend(resize_operations)
+    if resize_operations:
+        emit("ASPECT_PRESERVING_RESAMPLE")
     thumbnail = _thumbnail(image, policy["thumbnail_dimension"])
+    emit("DISPLAY_THUMBNAIL_CREATED")
     prepared_pixels = np.asarray(image)
     metrics = _metrics(prepared_pixels, dtype, bits, signed)
     metrics.update(
@@ -200,6 +216,7 @@ def prepare_artifact(
         }
     )
     _validate_pixels(prepared_pixels, metrics)
+    emit("DERIVATIVE_PIXELS_VALIDATED")
     thumbnail_id = sha256_bytes(f"{readiness_key}:thumbnail".encode())[:32]
     thumbnail_path = store.derived_path(run_id, thumbnail_id, ".png")
     _atomic_png(image, prepared_path)
@@ -209,6 +226,7 @@ def prepare_artifact(
         check.load()
         if check.size != image.size:
             raise PreparationError("Prepared image dimensions changed during encoding")
+    emit("LOSSLESS_DERIVATIVE_VERIFIED")
     receipt = {
         "receipt_id": receipt_id,
         "run_id": run_id,

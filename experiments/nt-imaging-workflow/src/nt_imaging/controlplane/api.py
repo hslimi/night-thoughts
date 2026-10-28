@@ -551,6 +551,8 @@ async def retry_run(request: Request, run: str, username: str = Depends(actor)) 
     job = db.job_for_run(state["run_id"])
     if not job:
         raise HTTPException(404, "Run not found")
+    if job["status"] not in {"FAILED", "CANCELLED"}:
+        raise HTTPException(409, "The previous job is still executing and cannot be retried")
     payload = json.loads(job["payload_json"])
     original = payload.get("state", {}).get("source_path")
     if not original or not Path(original).is_file():
@@ -572,6 +574,13 @@ async def retry_run(request: Request, run: str, username: str = Depends(actor)) 
     queued["status"] = "QUEUED"
     db.save_snapshot(queued, "QUEUED")
     db.security_event("RUN_RETRIED", username, state["run_id"], {"new_run_id": new_run})
+    db.record_event(
+        "TECHNICAL_RETRY_REQUESTED",
+        state=state,
+        job_id=job["job_id"],
+        node_name="technical_retry",
+        payload={"new_run_id": new_run, "reviewer": username},
+    )
     return {"run_id": new_run, "status": "QUEUED"}
 
 
@@ -744,6 +753,12 @@ async def download_export(run: str, export_id: str, _: str = Depends(actor)) -> 
     media_type = "application/json" if filename.endswith(".json") else "text/markdown"
     return FileResponse(path, media_type=media_type, filename=filename)
 
+
+from .debug import register_debug_routes
+from .sse import register_sse_routes
+
+register_debug_routes(app, settings, db, audit, actor, state_for)
+register_sse_routes(app, db, actor, state_for)
 
 frontend = Path(__file__).resolve().parents[3] / "frontend" / "dist"
 if frontend.exists():

@@ -67,9 +67,15 @@ The worker streams graph updates, persists the current node and heartbeat, and c
 
 Clinical/run/audit/artifact/export APIs require application authentication. Sessions use opaque random tokens stored only as hashes, absolute/idle expiry, Secure/HttpOnly/SameSite cookies, CSRF checks, and rate-limited Argon2id login. Object IDs and run ownership are validated. No arbitrary client paths, public registration, raw traces, hidden model reasoning, or public OpenAPI endpoints are exposed.
 
-## Local observability
+## Durable events, SSE, and local observability
 
-There is no Agent Server, hosted Studio, LangSmith account, tracing configuration, SDK, CLI, or callback requirement. The **Local graph** console view uses the same snapshot, audit, checkpoint thread, preparation receipt, and model-call records as the deployed runtime. It displays current/completed/pending nodes, failed edges, attempts/revisions, timestamps, durations, decisions, and receipts without prompts or hidden reasoning.
+There is no Agent Server, hosted Studio, LangSmith account, tracing configuration, SDK, CLI, or callback requirement. `app_events` in the canonical control database stores global and per-run sequences, transition types, aggregate status, node, attempts, revisions, model-call sequence, UTC timestamps, measured durations, safe payloads, workflow version, and inference mode. Snapshot/job changes and event appends share transactions; replay detects gaps without duplicating events.
+
+Graph wrappers emit actual node boundaries, preparation operations, model calls, attempts, revisions, human decisions, export, cancellation, and technical retry. Worker startup, idle/active heartbeat, and shutdown include canonical instance/code/data fingerprints. Model-call running does not imply token streaming.
+
+Authenticated SSE endpoints `GET /api/events` and `GET /api/runs/{run_id}/events` send initial snapshots, durable event IDs, Last-Event-ID replay, gap `resync`, heartbeat packets, and session-expiry closure. Headers disable buffering. Browser connections do not hold the inference worker open and multiple tabs cause no duplicate writes. A bounded JSON snapshot fallback exists only when EventSource is unavailable.
+
+The worklist, workflow graph, attempts/revisions/model calls, and debugging center update from event snapshots. `LIVE` requires recent packets; stale/reconnecting/offline states are explicit. The local graph and debugging views show current/completed/pending/failed/skipped/waiting nodes, traces, durations, gate results, and receipts without prompts or hidden reasoning. See `docs/event-schema.md` and `docs/debugging-guide.md`.
 
 Optional Phoenix/OpenTelemetry is not enabled. If added later it must be loopback/Tailscale-only, carry bounded operational metadata only, and remain optional for tests and execution.
 
@@ -82,4 +88,4 @@ Optional Phoenix/OpenTelemetry is not enabled. If added later it must be loopbac
 - `src/nt_imaging/controlplane/`: authentication, versioned API, SQLite jobs/snapshots, single worker.
 - `frontend/src/`: responsive React/TypeScript doctor console and local inspector.
 - `fixtures/`, `tests/`, `scripts/`: deterministic synthetic inputs, verification, API-driven showcases, evidence.
-- `evidence/manifest-v3.json`: sanitized machine-readable execution record and limitations.
+- `evidence/manifest-v4.json`: sanitized machine-readable execution record and limitations.

@@ -1,6 +1,6 @@
 # Verification record
 
-The sanitized machine-readable source is [`evidence/manifest-v3.json`](../evidence/manifest-v3.json). This document distinguishes executed evidence from unverified or future work.
+The sanitized machine-readable source is [`evidence/manifest-v4.json`](../evidence/manifest-v4.json). This document distinguishes executed evidence from unverified or future work.
 
 ## Final executed checks
 
@@ -32,6 +32,22 @@ oMLX, QwenPaw, Caddy, Cloudflare, Tailscale, SSH, power settings, and unrelated 
 ## Local-only verification
 
 Source, scripts, deployment examples, and tests contain no required LangSmith account, `LANGSMITH_*`, `LANGCHAIN_TRACING_*`, Agent Server SDK/CLI, hosted Studio, or tracing callback. LangGraph's transitive `langsmith` package may remain in the lockfile; it is not a required integration. The local inspector uses snapshots, SQLite checkpoints, structured events, preparation receipts, and model-call audit records.
+
+## Live execution root cause and correction
+
+The original two REAL jobs `17477107-2b44-41cb-82bb-512c09e2e077` and `fdba621b-d8bf-431f-a460-06ef1b5f2c72` remained `QUEUED` with `heartbeat_at = NULL`. The canonical control database existed, but `deployed-checkpoints.sqlite3` did not exist because no canonical worker had opened it. The obsolete worker's stdout/stderr logs were empty, so there was no evidence of a lock, crash, checkpoint exception, or model failure.
+
+Process and plist inspection showed the actual mismatch: API PID 70924 ran `/Users/night-thoughts/night-thoughts/experiments/nt-imaging-workflow/.venv/bin/python` with canonical `DATA_ROOT`, while worker PID 70634 ran `/Users/night-thoughts/healthcare/nt-imaging-workflow/.venv/bin/python -m nt_imaging.controlplane.worker` with the obsolete working directory and `DATA_ROOT`. The running worker therefore never consumed the canonical queue. Process existence was not a valid health check.
+
+The correction is to run both services from the canonical Python and data root and verify identity/heartbeat rather than delete or reseed jobs. `scripts/deploy_canonical.sh` builds the frontend, runs migrations, validates plists, reloads only the two application services, and checks program paths, `DATA_ROOT`, code fingerprint, data fingerprint, and readiness. The two queued jobs were preserved. Deployment is not claimed complete until those checks and actual job transitions are observed.
+
+## Durable events and live verification
+
+`app_events` stores global and per-run sequences transactionally with snapshots. Graph nodes, preparation operations, model calls, attempts, revisions, human decisions, exports, cancellation, retries, and worker lifecycle emit safe structured events. SSE provides initial snapshots, Last-Event-ID replay, real gap `resync`, heartbeat packets, and session revalidation. Multiple tabs do not create duplicate events.
+
+The live frontend uses event snapshots to update worklist lanes and run state. It includes real node states, elapsed stages, attempts, revision comparison, model-call state, global activity, and a debugging center with traces/logs/diagnostics/support bundles. Event parsing and initialization races were fixed after browser evidence showed stale `QUEUED` state. The frontend now yields to received SSE events rather than late initial REST responses.
+
+Actual checks at this revision: 95 non-real tests, one REAL oMLX test, ten responsive browser workflows, and a dedicated live-experience test covering approval, revision, rejection, debug tabs/support bundle, and mobile approval with reduced motion. The isolated live screenshots are under `docs/images/live-operations/`.
 
 ## Not verified or limited
 

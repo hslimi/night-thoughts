@@ -211,9 +211,15 @@ curl http://127.0.0.1:8000/health
 
 Application-only LaunchDaemons, when installed from `deploy/`, are `com.nightthoughts.imaging.api` and `com.nightthoughts.imaging.worker`. They use absolute paths and explicit non-secret environment, run as the unprivileged account, bind loopback, and read oMLX's key only at runtime. Repository plists contain `__PROJECT_ROOT__`, `__SERVICE_USER__`, and `__HOME__` placeholders; the reload script substitutes local values into validated configured copies under `var/deploy-backups/` without embedding workstation details in Git.
 
+For the complete self-checking deployment, use one command:
+
 ```bash
-sudo ./scripts/reload_installed_services.sh
+sudo ./scripts/deploy_canonical.sh
 ```
+
+It installs only missing project dependencies, builds the frontend before startup, runs migrations, validates plists, reloads only the two application services, checks canonical program/`DATA_ROOT` and code/data fingerprints, waits for readiness, and reports canonical/public URLs and non-secret runtime identity. A missing frontend build stops deployment before service startup.
+
+To reload without rebuilding:
 
 For a restart without changing plist contents:
 

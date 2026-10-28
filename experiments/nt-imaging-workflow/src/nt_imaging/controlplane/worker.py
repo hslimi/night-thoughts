@@ -12,6 +12,7 @@ from ..config import Settings
 from ..graph import build_graph
 from ..schemas import safe_error
 from .db import ControlDB
+from .runtime import runtime_identity
 
 
 def public_state(values: dict[str, Any]) -> dict[str, Any]:
@@ -25,11 +26,21 @@ class Worker:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.db = ControlDB(settings.data_root / "controlplane.sqlite3")
+        self.identity = runtime_identity(settings)
+        self.worker_id = str(self.identity["instance_id"])
+
+    def heartbeat(self) -> None:
+        self.db.worker_heartbeat(
+            self.worker_id,
+            int(self.identity["pid"]),
+            str(self.identity["code_fingerprint"]),
+            str(self.identity["data_fingerprint"]),
+        )
 
     def recover(self) -> None:
         with self.db.connect() as db:
             rows = db.execute(
-                "SELECT job_id, run_id FROM jobs WHERE status IN ('RUNNING','EXPORTING')"
+                "SELECT job_id,run_id FROM jobs WHERE status IN ('RUNNING','EXPORTING')"
             ).fetchall()
         for row in rows:
             snapshot = self.db.snapshot(row["run_id"])
@@ -42,20 +53,40 @@ class Worker:
                     "Worker restarted; explicit technical retry is required",
                     retryable=True,
                 )
-                self.db.finish_job(row["job_id"], "FAILED", snapshot, snapshot["error"])
+                self.db.finish_job(
+                    row["job_id"], "FAILED", snapshot, snapshot["error"], event_type="RUN_FAILED"
+                )
 
     def run(self, once: bool = False) -> None:
-        self.recover()
-        while True:
-            job = self.db.claim()
-            if not job:
+        self.db.worker_started(
+            self.worker_id,
+            int(self.identity["pid"]),
+            str(self.identity["code_fingerprint"]),
+            str(self.identity["data_fingerprint"]),
+        )
+        last_heartbeat = 0.0
+        try:
+            self.recover()
+            while True:
+                if time.monotonic() - last_heartbeat >= 2:
+                    self.heartbeat()
+                    last_heartbeat = time.monotonic()
+                job = self.db.claim()
+                if not job:
+                    if once:
+                        return
+                    time.sleep(0.5)
+                    continue
+                self.execute(job)
                 if once:
                     return
-                time.sleep(0.5)
-                continue
-            self.execute(job)
-            if once:
-                return
+        finally:
+            self.db.worker_stopped(
+                self.worker_id,
+                int(self.identity["pid"]),
+                str(self.identity["code_fingerprint"]),
+                str(self.identity["data_fingerprint"]),
+            )
 
     def execute(self, job: Any) -> None:
         run_id = job["run_id"]
@@ -63,7 +94,9 @@ class Worker:
             if self.db.is_cancelled(run_id):
                 snapshot = self.db.snapshot(run_id) or json.loads(job["payload_json"])
                 snapshot["status"] = "CANCELLED"
-                self.db.finish_job(job["job_id"], "CANCELLED", public_state(snapshot))
+                self.db.finish_job(
+                    job["job_id"], "CANCELLED", public_state(snapshot), event_type="RUN_CANCELLED"
+                )
                 return
             payload = json.loads(job["payload_json"])
             with SqliteSaver.from_conn_string(
@@ -119,7 +152,7 @@ class Worker:
                 )
             if self.db.is_cancelled(run_id):
                 snapshot["status"] = "CANCELLED"
-                self.db.finish_job(job["job_id"], "CANCELLED", snapshot)
+                self.db.finish_job(job["job_id"], "CANCELLED", snapshot, event_type="RUN_CANCELLED")
                 return
             snapshot["status"] = "FAILED"
             error = safe_error(
@@ -128,7 +161,9 @@ class Worker:
                 retryable=True,
             )
             snapshot["error"] = error
-            self.db.finish_job(job["job_id"], "FAILED", public_state(snapshot), error)
+            self.db.finish_job(
+                job["job_id"], "FAILED", public_state(snapshot), error, event_type="RUN_FAILED"
+            )
 
 
 def main() -> None:

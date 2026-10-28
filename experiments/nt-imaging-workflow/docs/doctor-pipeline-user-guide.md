@@ -428,11 +428,21 @@ Use a current browser and confirm viewport zoom is 100%. The phone UI supports m
 
 Recovery does not automatically replay in-flight inference. Inspect `WORKER_RESTART_RECOVERY`, then explicitly retry only if eligible. Existing approved exports remain idempotent; audit counts must not increase on replay.
 
-## 10. Operator evidence
+## 10. Live operations and debugging
+
+The worklist and run monitor update from durable application events; no page refresh is needed. **LIVE** means recent packets were received. **RECONNECTING** means connection retry/staleness, and **OFFLINE** means updates are unavailable or too old. Queue position, active node, attempts, revisions, model calls, counters, and completed exports come from real transitions, not animations.
+
+Use **Follow live activity** only if you want automatic navigation to the oldest active run. It is off by default and never overrides decision entry. The global activity feed shows concise events across runs. The graph shows pending, active, completed, failed, skipped, and human-waiting states, bounded retry/revision loops, and the export boundary. Timeline auto-scroll occurs only when you are already at the bottom.
+
+The **Debugging center** provides runtime identity, run inspection, trace waterfall, structured logs, diagnostics, stale worker/job/model-call alerts, and sanitized support bundles. Retry is available only for eligible technical failure after the previous job is no longer executing. It never bypasses gates or approval. See `docs/debugging-guide.md`.
+
+Account creation/reset takes effect immediately in SQLite with no API/worker restart. Use `./scripts/create_doctor.sh --reset` and see `docs/account-management.md`. The self-checking application deployment command is `sudo ./scripts/deploy_canonical.sh`.
+
+## 11. Operator evidence
 
 ```bash
 make test-browser
 uv run python scripts/build_v3_evidence.py
 ```
 
-The authoritative manifest is `evidence/manifest-v3.json`. It records test totals, model/service versions, deployment status, run/thread/model-call correlation, screenshot/export hashes, fixture provenance, and limitations. Do not include credentials, cookies, tokens, password hashes, private account details, or real patient information in evidence. For Hashnode, images are uploaded through the CLI and referenced only by the returned CDN URLs; local paths are never used.
+The authoritative manifest is `evidence/manifest-v4.json`. It records test totals, model/service versions, deployment status, run/thread/model-call correlation, screenshot/export hashes, fixture provenance, and limitations. Do not include credentials, cookies, tokens, password hashes, private account details, or real patient information in evidence. For Hashnode, images are uploaded through the CLI and referenced only by the returned CDN URLs; local paths are never used.

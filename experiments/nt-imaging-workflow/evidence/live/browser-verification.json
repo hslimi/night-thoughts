@@ -1,0 +1,30 @@
+{
+  "mode": "MOCK / FAULT INJECTION",
+  "checks": [
+    {
+      "live_node_and_model_call_events": "1eda9789-f987-47b6-8f1b-5a2255940411"
+    },
+    {
+      "normal_approval": "1eda9789-f987-47b6-8f1b-5a2255940411"
+    },
+    {
+      "requested_revision": "25086d87-3f52-4e36-b62a-4b689e4a8c25"
+    },
+    {
+      "rejection": "25086d87-3f52-4e36-b62a-4b689e4a8c25"
+    },
+    {
+      "debug_tabs_and_support_bundle": true
+    },
+    {
+      "mobile_approval": "a9d47524-9434-4d78-8635-1ddea2206108",
+      "reduced_motion": true
+    }
+  ],
+  "screenshots": [
+    "01-live-run-desktop.png",
+    "02-live-revision-desktop.png",
+    "03-debug-diagnostics-desktop.png",
+    "04-live-review-mobile.png"
+  ]
+}

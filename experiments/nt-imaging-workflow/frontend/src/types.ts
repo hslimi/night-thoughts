@@ -43,6 +43,7 @@ export type Run = {
   review_issues?: ReviewIssue[]
   human_decision?: { decision: Decision; reviewer_display_name: string; note: string; revision: number; timestamp: string } | null
   export_manifest?: ExportManifest | null
+  draft?: Draft | null
 }
 export type Finding = { label: string; status: string; anatomy?: string; description: string }
 export type Draft = {

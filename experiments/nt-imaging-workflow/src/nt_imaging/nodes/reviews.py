@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 from typing import Any
 
 from ..artifacts import ArtifactStore, sha256_bytes
 from ..audit import AuditDB
 from ..config import Settings
+from ..controlplane.telemetry import model_call_completed, model_call_failed, model_call_started
 from ..inference.structured import StructuredOutputError, parse_structured
 from ..schemas import ReviewResult, safe_error
 from .drafting import _issues, provider_for
@@ -54,8 +56,15 @@ def _review(state: dict[str, Any], settings: Settings, stage: str) -> dict[str, 
     prompt = (Path(__file__).resolve().parents[3] / "prompts" / prompt_name).read_text()
     audit = AuditDB(settings.data_root / "nt_imaging.sqlite3")
     calls = 0
+    call_started = time.monotonic()
+    model_id = (
+        state.get("vision_model_id")
+        if stage == "VISUAL_CONSISTENCY"
+        else state.get("text_model_id")
+    ) or "unknown"
     try:
         calls = 1
+        model_call_started(state, settings, stage, state["model_calls"] + calls, model_id)
         if stage == "VISUAL_CONSISTENCY":
             response = provider.visual_review(
                 ArtifactStore(settings.data_root).derived_path(
@@ -71,8 +80,27 @@ def _review(state: dict[str, Any], settings: Settings, stage: str) -> dict[str, 
                 ).read_text()
             )
             response = provider.quality_review(prompt, state["draft"], policy)
+        output_hash = sha256_bytes(response.raw.encode())
+        model_call_completed(
+            state,
+            settings,
+            stage,
+            state["model_calls"] + calls,
+            response.model_id,
+            response.latency_ms,
+            output_hash,
+        )
         result = parse_structured(response.raw, ReviewResult)
     except (StructuredOutputError, TimeoutError, RuntimeError, OSError, ValueError, KeyError):
+        model_call_failed(
+            state,
+            settings,
+            stage,
+            state["model_calls"] + calls,
+            model_id,
+            int((time.monotonic() - call_started) * 1000),
+            "REVIEW_OUTPUT_INVALID",
+        )
         audit.event(
             state["run_id"],
             "visual_consistency_review" if stage == "VISUAL_CONSISTENCY" else "text_quality_review",

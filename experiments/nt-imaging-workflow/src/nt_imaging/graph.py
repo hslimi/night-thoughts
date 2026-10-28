@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Callable
+from typing import Any, cast
 
 from langgraph.graph import END, START, StateGraph
 
@@ -32,25 +33,34 @@ from nt_imaging.state import AgentState
 def build_graph(checkpointer: Any = None) -> Any:
     settings = Settings.from_env()
     builder = StateGraph(AgentState)
-    nodes = {
-        "ingest_validate": lambda state: ingest_validate(state, settings),
-        "phi_screen": lambda state: phi_screen(state, settings),
-        "modality_gate": lambda state: modality_gate(state, settings),
-        "imaging_readiness": lambda state: imaging_readiness(state, settings),
-        "derived_image_safety_check": lambda state: derived_image_safety_check(state, settings),
-        "generate_draft": lambda state: generate_draft(state, settings),
-        "deterministic_contract_gate": lambda state: deterministic_contract_gate(state, settings),
-        "visual_consistency_review": lambda state: visual_consistency_review(state, settings),
-        "text_quality_review": lambda state: text_quality_review(state, settings),
-        "human_approval": lambda state: human_approval(state, settings),
-        "export_approved_draft": lambda state: export_approved_draft(state, settings),
-        "quarantine": lambda state: quarantine(state, settings),
-        "needs_review": lambda state: needs_review(state, settings),
-        "fail_closed": lambda state: fail_closed(state, settings),
-        "reject_draft": lambda state: reject_draft(state, settings),
+    from nt_imaging.controlplane.telemetry import track_node
+
+    nodes: dict[str, Callable[[dict[str, Any], Settings], dict[str, Any]]] = {
+        "ingest_validate": ingest_validate,
+        "phi_screen": phi_screen,
+        "modality_gate": modality_gate,
+        "imaging_readiness": imaging_readiness,
+        "derived_image_safety_check": derived_image_safety_check,
+        "generate_draft": generate_draft,
+        "deterministic_contract_gate": deterministic_contract_gate,
+        "visual_consistency_review": visual_consistency_review,
+        "text_quality_review": text_quality_review,
+        "human_approval": human_approval,
+        "export_approved_draft": export_approved_draft,
+        "quarantine": quarantine,
+        "needs_review": needs_review,
+        "fail_closed": fail_closed,
+        "reject_draft": reject_draft,
     }
     for name, node in nodes.items():
-        builder.add_node(name, node)
+
+        def wrapped(
+            state: dict[str, Any],
+            node: Callable[[dict[str, Any], Settings], dict[str, Any]] = node,
+        ) -> dict[str, Any]:
+            return node(state, settings)
+
+        builder.add_node(name, cast(Any, track_node(name, wrapped, settings)))
     builder.add_edge(START, "ingest_validate")
     builder.add_conditional_edges(
         "ingest_validate",

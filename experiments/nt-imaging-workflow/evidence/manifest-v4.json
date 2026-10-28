@@ -1,0 +1,1847 @@
+{
+  "schema": "nt-imaging-evidence-v4",
+  "generated_at": "2026-10-28T16:42:40.935158+00:00",
+  "application_version": "4.0.0",
+  "research_demonstration": true,
+  "clinical_validation_performed": false,
+  "workflow_version": "nt-cxr-draft-v1",
+  "preparation_policy_version": "cxr-preparation-v2",
+  "preparation_code_version": "imaging-readiness-v2",
+  "graph": [
+    "ingest_validate",
+    "phi_screen",
+    "modality_gate",
+    "imaging_readiness",
+    "derived_image_safety_check",
+    "generate_draft",
+    "deterministic_contract_gate",
+    "visual_consistency_review",
+    "text_quality_review",
+    "human_approval",
+    "export_approved_draft"
+  ],
+  "queue_root_cause": {
+    "run_ids": [
+      "17477107-2b44-41cb-82bb-512c09e2e077",
+      "fdba621b-d8bf-431f-a460-06ef1b5f2c72"
+    ],
+    "symptom": "QUEUED with null job heartbeat and no canonical checkpoint database",
+    "api": "Canonical code and data root",
+    "worker": "Obsolete code, WorkingDirectory, and DATA_ROOT; process alive but consuming another database",
+    "secondary_failures_found": [],
+    "corrective_action": "Canonical service identity plus deployment assertions and durable heartbeat; jobs preserved"
+  },
+  "event_architecture": {
+    "database": "app_events in canonical controlplane.sqlite3 with WAL",
+    "transactional_with_state": true,
+    "global_and_per_run_sequences": true,
+    "gap_detection": true,
+    "sse": [
+      "/api/events",
+      "/api/runs/{run_id}/events"
+    ],
+    "last_event_id_replay": true,
+    "resync_snapshot": true,
+    "heartbeat_packets": true,
+    "session_revalidation": true,
+    "multiple_tabs_no_duplicate_writes": true,
+    "token_streaming_claimed": false
+  },
+  "dependencies": {
+    "uv_lock_sha256": "10258ab207897e19e433c5a389355239c134a0ff12c768ba5e0565f60d187351",
+    "package_lock_sha256": "628835ab6b9f01d3513fb7139095ac4d308ef16b961f5743096369d49c88a3fd"
+  },
+  "models": {
+    "vision": "MedMO-8B-Next",
+    "text": "Qwen3.5-9B-MLX-4bit",
+    "provider": "Existing local oMLX at 127.0.0.1:8000; exact IDs verified by REAL receipts"
+  },
+  "fixtures": {
+    "provenance": "Original deterministic artificial pixels; CC0-1.0; no patient data",
+    "hashes": {
+      "chest_burned_in.dcm": "75e7be92278805eac4146a0797ce351ad59e5519841917c15b4ec473edb4573c",
+      "chest_clean.png": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+      "chest_dx.dcm": "e573a425415839a3ef36911a021c47081d1ac40a4548ee2ca568d0641816a5e5",
+      "chest_marker.dcm": "9c159b72184e5cd41dcb6fa98a94149219279a29468284fc93c09bfed26ff75f",
+      "chest_mono1.dcm": "ab34d08ee533278cf987112328e149a0bb6fb771a38092068571759f4a41a955",
+      "chest_phi.dcm": "8fad85ed5c55d71697093156dc1735babbd1198c04996af26db0d53fe4454baa",
+      "chest_private.dcm": "037ce1bf0a18820b6181589963e848685a5365ab53b39e6757594de742212a11",
+      "chest_signed_voi.dcm": "78a315f72d68392940577e717215e7cf0ff049fdf8d39a984c4154453c0a0279",
+      "chest_unexpected_text.png": "7a0307fbe7ad6eda8319eed8e4b2cc71073970abc5a9435f6feec0e40f4dd14a",
+      "mismatch.png": "5464533c9647b67eb320c40ccc5959537c09102ae75388f6a7675b433e745c9d",
+      "multiframe.dcm": "4ec59d16589bcd96ca727071c7f7de862eb5a97508a62f2c5d8ca6820363a7d9",
+      "too_many_pixels.png": "2c9d419a4aff0178dbb100297923158aa201a0f2c7ad6869f57f150ef5435611",
+      "truncated.png": "29b978c62617c817f5b0c06542f3e4dc7fcfef1aae90aa2736c674b4f5171c9b",
+      "uniform.png": "ad3d92a33d5e7480ffec17b96da3df67a2e986a4bd45e6f0cd77edf3c284cd79",
+      "unsupported_ct.dcm": "0bfb9f0ba9a208da0b19c811d75a18bf1e9fec03c4556c0fd48b61fa62632a9c"
+    }
+  },
+  "tests": {
+    "non_real": {
+      "command": "make test",
+      "passed": 95,
+      "failed": 0,
+      "deselected": 1
+    },
+    "real": {
+      "command": "make test-real",
+      "passed": 1,
+      "failed": 0,
+      "deselected": 95
+    },
+    "browser": {
+      "command": "make test-browser",
+      "passed_viewports": 10,
+      "viewports": [
+        [
+          320,
+          568
+        ],
+        [
+          360,
+          800
+        ],
+        [
+          375,
+          812
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          412,
+          915
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1024,
+          768
+        ],
+        [
+          1440,
+          900
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          568,
+          320
+        ]
+      ],
+      "interventions": {
+        "request_changes_then_reject": "9a7b0b27-af0a-4b44-a6be-a1dcf3566616",
+        "cancelled": "32fe77f0-968f-4d90-971e-d9ce560cb1b7"
+      },
+      "session_expiry_and_recovery": true,
+      "physical_device_tested": false
+    },
+    "live_experience": {
+      "mode": "MOCK / FAULT INJECTION",
+      "checks": [
+        {
+          "live_node_and_model_call_events": "1eda9789-f987-47b6-8f1b-5a2255940411"
+        },
+        {
+          "normal_approval": "1eda9789-f987-47b6-8f1b-5a2255940411"
+        },
+        {
+          "requested_revision": "25086d87-3f52-4e36-b62a-4b689e4a8c25"
+        },
+        {
+          "rejection": "25086d87-3f52-4e36-b62a-4b689e4a8c25"
+        },
+        {
+          "debug_tabs_and_support_bundle": true
+        },
+        {
+          "mobile_approval": "a9d47524-9434-4d78-8635-1ddea2206108",
+          "reduced_motion": true
+        }
+      ],
+      "screenshots": [
+        "01-live-run-desktop.png",
+        "02-live-revision-desktop.png",
+        "03-debug-diagnostics-desktop.png",
+        "04-live-review-mobile.png"
+      ]
+    },
+    "frontend_build": "npm run build passed",
+    "account_reset_without_restart": true
+  },
+  "curated_showcase": {
+    "mock_fault_injection": {
+      "label": "MOCK / FAULT INJECTION \u2014 not model-quality evidence",
+      "mode": "MOCK",
+      "base_url": "http://127.0.0.1:8002",
+      "fixture_provenance": "Project-generated deterministic artificial pixels; no patient data; see fixtures/README.md",
+      "run_count": 31,
+      "runs": [
+        {
+          "scenario": "approved_png",
+          "fixture_id": "chest_clean.png",
+          "run_id": "4e1182c2-a500-453e-aca1-eca650e51285",
+          "thread_id": "4e1182c2-a500-453e-aca1-eca650e51285",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:11.928105+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:11.932944+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:11.938796+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "approved_mono1",
+          "fixture_id": "chest_mono1.dcm",
+          "run_id": "5f684f9c-64de-4cd5-8a94-d1e82b33d3bc",
+          "thread_id": "5f684f9c-64de-4cd5-8a94-d1e82b33d3bc",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "ab34d08ee533278cf987112328e149a0bb6fb771a38092068571759f4a41a955",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "e370efa55b5442f1ec19317c01f71e0b",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:13.126209+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:13.130436+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:13.133584+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "rejected",
+          "fixture_id": "chest_clean.png",
+          "run_id": "bd0013eb-d863-47aa-90c2-407bf70c313f",
+          "thread_id": "bd0013eb-d863-47aa-90c2-407bf70c313f",
+          "status": "HUMAN_REJECTED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:14.297055+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:14.303969+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:14.308099+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "phi_quarantine",
+          "fixture_id": "chest_unexpected_text.png",
+          "run_id": "2e93aa46-cb6f-4ab6-a0d1-b29fffc091bd",
+          "thread_id": "2e93aa46-cb6f-4ab6-a0d1-b29fffc091bd",
+          "status": "QUARANTINED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "7a0307fbe7ad6eda8319eed8e4b2cc71073970abc5a9435f6feec0e40f4dd14a",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "unsupported_modality",
+          "fixture_id": "unsupported_ct.dcm",
+          "run_id": "421fab2c-ae2c-48fb-85d0-8a2f0ee2c42e",
+          "thread_id": "421fab2c-ae2c-48fb-85d0-8a2f0ee2c42e",
+          "status": "NEEDS_HUMAN_REVIEW",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "0bfb9f0ba9a208da0b19c811d75a18bf1e9fec03c4556c0fd48b61fa62632a9c",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "corrupt_upload",
+          "fixture_id": "mismatch.png",
+          "run_id": "2509cd18-c875-43a9-b78e-2a0de82598c5",
+          "thread_id": "2509cd18-c875-43a9-b78e-2a0de82598c5",
+          "status": "NEEDS_HUMAN_REVIEW",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "preparation_failure",
+          "fixture_id": "uniform.png",
+          "run_id": "82441e00-6f27-4269-a1ab-91718ce0396e",
+          "thread_id": "82441e00-6f27-4269-a1ab-91718ce0396e",
+          "status": "IMAGE_PREPARATION_FAILED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "ad3d92a33d5e7480ffec17b96da3df67a2e986a4bd45e6f0cd77edf3c284cd79",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "pixel_limit",
+          "fixture_id": "too_many_pixels.png",
+          "run_id": "20168eb3-eadc-4b08-8c7a-7e4afab07fd4",
+          "thread_id": "20168eb3-eadc-4b08-8c7a-7e4afab07fd4",
+          "status": "NEEDS_HUMAN_REVIEW",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "derived_safety_fault",
+          "fixture_id": "chest_clean.png",
+          "run_id": "5378a65b-444a-4809-856f-8efd2482d68c",
+          "thread_id": "5378a65b-444a-4809-856f-8efd2482d68c",
+          "status": "IMAGE_PREPARATION_FAILED",
+          "inference_mode": "MOCK",
+          "fault_profile": "derived_phi_block",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "malformed_repaired",
+          "fixture_id": "chest_clean.png",
+          "run_id": "a5283d4f-b78a-46ad-bd08-e1811cb626e9",
+          "thread_id": "a5283d4f-b78a-46ad-bd08-e1811cb626e9",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": "malformed_draft_once",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "fe24b95284456889a7e92f242999f08346f6f86b139b90ad3f193eaebf6abbb6",
+              "created_at": "2026-10-28T16:39:18.875152+00:00"
+            },
+            {
+              "stage": "DRAFT_SYNTAX_REPAIR",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:18.876895+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:18.881438+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:18.885383+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "malformed_persistent",
+          "fixture_id": "chest_clean.png",
+          "run_id": "ad109196-2110-4119-8c60-b85addad9ad6",
+          "thread_id": "ad109196-2110-4119-8c60-b85addad9ad6",
+          "status": "MODEL_OUTPUT_INVALID",
+          "inference_mode": "MOCK",
+          "fault_profile": "malformed_draft_always",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "fe24b95284456889a7e92f242999f08346f6f86b139b90ad3f193eaebf6abbb6",
+              "created_at": "2026-10-28T16:39:20.058409+00:00"
+            },
+            {
+              "stage": "DRAFT_SYNTAX_REPAIR",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "6139d179f13bf921b3eda31e8bcf79cbbede0071f902d526452c96ce1cac0f4f",
+              "created_at": "2026-10-28T16:39:20.060180+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "contract_retry_success",
+          "fixture_id": "chest_clean.png",
+          "run_id": "cc3d8a05-2b48-46aa-bf35-595e1a139c6e",
+          "thread_id": "cc3d8a05-2b48-46aa-bf35-595e1a139c6e",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": "contract_fail_once",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 2,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "b955ff317ac99cf67a4c9451313d5d615691b217f01f04c044026acdf5eddecb",
+              "created_at": "2026-10-28T16:39:20.693416+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:20.699570+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:20.705132+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:20.710188+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "grounding_retry_success",
+          "fixture_id": "chest_clean.png",
+          "run_id": "2050d437-7414-4d78-a88a-1a931abac603",
+          "thread_id": "2050d437-7414-4d78-a88a-1a931abac603",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": "grounding_fail_once",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 2,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:21.860058+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "02a62ef4e3c75117470455167cea62fc8a26798dfcb10fa5a4f928c3af795579",
+              "created_at": "2026-10-28T16:39:21.864921+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:21.868404+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:21.873461+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:21.877073+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "grounding_retry_exhausted",
+          "fixture_id": "chest_clean.png",
+          "run_id": "54803b22-2110-47bf-a0f0-6b07c5f4e742",
+          "thread_id": "54803b22-2110-47bf-a0f0-6b07c5f4e742",
+          "status": "NEEDS_HUMAN_REVIEW",
+          "inference_mode": "MOCK",
+          "fault_profile": "grounding_fail_always",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 2,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:23.059173+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "02a62ef4e3c75117470455167cea62fc8a26798dfcb10fa5a4f928c3af795579",
+              "created_at": "2026-10-28T16:39:23.064037+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:23.067491+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "02a62ef4e3c75117470455167cea62fc8a26798dfcb10fa5a4f928c3af795579",
+              "created_at": "2026-10-28T16:39:23.072116+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "quality_retry_success",
+          "fixture_id": "chest_clean.png",
+          "run_id": "e425504d-1a34-4623-9e01-847df0422c08",
+          "thread_id": "e425504d-1a34-4623-9e01-847df0422c08",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": "quality_fail_once",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 2,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:23.710950+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:23.715724+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "e1c4ee9e3f57c700c65626c31cc9052845d051005833ad9f249a600bf6ced65d",
+              "created_at": "2026-10-28T16:39:23.718662+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:23.724739+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:23.730266+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:23.732979+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "quality_retry_exhausted",
+          "fixture_id": "chest_clean.png",
+          "run_id": "612fbe5e-2557-4313-b4f8-00addbc70a8e",
+          "thread_id": "612fbe5e-2557-4313-b4f8-00addbc70a8e",
+          "status": "NEEDS_HUMAN_REVIEW",
+          "inference_mode": "MOCK",
+          "fault_profile": "quality_fail_always",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 2,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:24.910271+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:24.915817+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "e1c4ee9e3f57c700c65626c31cc9052845d051005833ad9f249a600bf6ced65d",
+              "created_at": "2026-10-28T16:39:24.918836+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:24.922791+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:24.927679+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "e1c4ee9e3f57c700c65626c31cc9052845d051005833ad9f249a600bf6ced65d",
+              "created_at": "2026-10-28T16:39:24.930532+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "model_timeout",
+          "fixture_id": "chest_clean.png",
+          "run_id": "2e2bd549-94f6-4cf4-9f2f-690fb021b17b",
+          "thread_id": "2e2bd549-94f6-4cf4-9f2f-690fb021b17b",
+          "status": "FAILED",
+          "inference_mode": "MOCK",
+          "fault_profile": "model_timeout",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "model_unavailable",
+          "fixture_id": "chest_clean.png",
+          "run_id": "e9e26fea-a414-4478-b5ed-45a5ca20223a",
+          "thread_id": "e9e26fea-a414-4478-b5ed-45a5ca20223a",
+          "status": "FAILED",
+          "inference_mode": "MOCK",
+          "fault_profile": "model_unavailable",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "revision_then_approval",
+          "fixture_id": "chest_clean.png",
+          "run_id": "c48a01b5-d052-4c1b-a08f-f453b95a031c",
+          "thread_id": "c48a01b5-d052-4c1b-a08f-f453b95a031c",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 1,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:26.826348+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:26.833711+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:26.836772+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:27.372366+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:27.378995+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:27.383182+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "revision_limit_exhaustion",
+          "fixture_id": "chest_clean.png",
+          "run_id": "2b4e1fe7-9fc8-4a04-b1ab-09178e2e2445",
+          "thread_id": "2b4e1fe7-9fc8-4a04-b1ab-09178e2e2445",
+          "status": "NEEDS_HUMAN_REVIEW",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 2,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:28.558913+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:28.563582+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:28.568934+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:29.109890+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:29.117046+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:29.122793+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:29.663283+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:29.670389+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:29.674545+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "technical_retry_success",
+          "fixture_id": "chest_clean.png",
+          "run_id": "b224ea88-9cc7-49c2-9d4e-0e9e53649cda",
+          "thread_id": "b224ea88-9cc7-49c2-9d4e-0e9e53649cda",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:31.476451+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:31.481682+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:39:31.484667+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "cancel_queued",
+          "fixture_id": "chest_clean.png",
+          "run_id": "e23ca94e-b97f-4699-a0c9-dae4a63f2f46",
+          "thread_id": "e23ca94e-b97f-4699-a0c9-dae4a63f2f46",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "cancel_active",
+          "fixture_id": "chest_clean.png",
+          "run_id": "ab827446-e6ff-4e83-84ed-bd2b3cb997a5",
+          "thread_id": "ab827446-e6ff-4e83-84ed-bd2b3cb997a5",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": "slow_draft",
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "mock-synthetic-provider",
+              "latency_ms": 0,
+              "status": "SUCCESS",
+              "output_sha256": "0f983cce03b4a671f03df306ae8b78eb1423ff59711fe5dfb9de321c2f6ae55d",
+              "created_at": "2026-10-28T16:39:34.669774+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_1",
+          "fixture_id": "chest_clean.png",
+          "run_id": "8c22ef90-dfe8-47a0-8537-090626c8d1fc",
+          "thread_id": "8c22ef90-dfe8-47a0-8537-090626c8d1fc",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_2",
+          "fixture_id": "chest_clean.png",
+          "run_id": "d883483b-6590-4a2c-a5d6-d19cc5d4eb0c",
+          "thread_id": "d883483b-6590-4a2c-a5d6-d19cc5d4eb0c",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_3",
+          "fixture_id": "chest_clean.png",
+          "run_id": "28911e82-e9ee-4ccc-a17c-3b601e0d0d4d",
+          "thread_id": "28911e82-e9ee-4ccc-a17c-3b601e0d0d4d",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_4",
+          "fixture_id": "chest_clean.png",
+          "run_id": "020f73a7-89dc-4013-ac64-655799b18cdf",
+          "thread_id": "020f73a7-89dc-4013-ac64-655799b18cdf",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_5",
+          "fixture_id": "chest_clean.png",
+          "run_id": "3f4a52a1-2271-469f-b4b7-2f64d277127f",
+          "thread_id": "3f4a52a1-2271-469f-b4b7-2f64d277127f",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_6",
+          "fixture_id": "chest_clean.png",
+          "run_id": "3a4003bd-270a-4a16-9a54-b058a495092a",
+          "thread_id": "3a4003bd-270a-4a16-9a54-b058a495092a",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_7",
+          "fixture_id": "chest_clean.png",
+          "run_id": "4f572084-27b1-40ff-a0e7-7ffd1e3b6d92",
+          "thread_id": "4f572084-27b1-40ff-a0e7-7ffd1e3b6d92",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": null,
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "queue_saturation_active",
+          "fixture_id": "chest_clean.png",
+          "run_id": "c0cc5428-05cb-4ec7-baf1-721f30120fe8",
+          "thread_id": "c0cc5428-05cb-4ec7-baf1-721f30120fe8",
+          "status": "CANCELLED",
+          "inference_mode": "MOCK",
+          "fault_profile": "slow_draft",
+          "source_sha256": "",
+          "prepared_sha256": null,
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": null,
+          "attempt": 0,
+          "revision": 0,
+          "model_call_receipts": [],
+          "export_eligible": false,
+          "export_count": 0
+        }
+      ]
+    },
+    "real": {
+      "label": "REAL oMLX inference",
+      "mode": "REAL",
+      "base_url": "http://127.0.0.1:8003",
+      "fixture_provenance": "Project-generated deterministic artificial pixels; no patient data; see fixtures/README.md",
+      "run_count": 6,
+      "runs": [
+        {
+          "scenario": "real_png_awaiting",
+          "fixture_id": "chest_clean.png",
+          "run_id": "31cdec99-4283-435a-9765-1cc163ae0b82",
+          "thread_id": "31cdec99-4283-435a-9765-1cc163ae0b82",
+          "status": "AWAITING_HUMAN_APPROVAL",
+          "inference_mode": "REAL",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 9065,
+              "status": "SUCCESS",
+              "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+              "created_at": "2026-10-28T16:29:35.104274+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 942,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:29:36.056681+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "Qwen3.5-9B-MLX-4bit",
+              "latency_ms": 475,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:29:36.542212+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "real_mono1_approved",
+          "fixture_id": "chest_mono1.dcm",
+          "run_id": "89f0e5ea-5bb8-45a2-bbe3-7435a543daf0",
+          "thread_id": "89f0e5ea-5bb8-45a2-bbe3-7435a543daf0",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "REAL",
+          "fault_profile": null,
+          "source_sha256": "ab34d08ee533278cf987112328e149a0bb6fb771a38092068571759f4a41a955",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "4268271d47b36fef493282fb9194ff93",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 8981,
+              "status": "SUCCESS",
+              "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+              "created_at": "2026-10-28T16:29:46.178119+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 919,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:29:47.111423+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "Qwen3.5-9B-MLX-4bit",
+              "latency_ms": 470,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:29:47.592097+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "real_signed_voi_revision",
+          "fixture_id": "chest_signed_voi.dcm",
+          "run_id": "0a755b0c-08f9-4e1d-a44c-02cb362bb16e",
+          "thread_id": "0a755b0c-08f9-4e1d-a44c-02cb362bb16e",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "REAL",
+          "fault_profile": null,
+          "source_sha256": "78a315f72d68392940577e717215e7cf0ff049fdf8d39a984c4154453c0a0279",
+          "prepared_sha256": "61be3857dbb2df27708cfe88918dfadd3676898045f7a7c2c790287a10a7f31b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "bb5730f489c9470e8b8cf36709e0e361",
+          "attempt": 1,
+          "revision": 1,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 11325,
+              "status": "SUCCESS",
+              "output_sha256": "d7909dfa2d25218458f8c1541b67bff4f8a279000b45515ad1759f2570ed4856",
+              "created_at": "2026-10-28T16:30:00.098361+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 890,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:01.003851+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "Qwen3.5-9B-MLX-4bit",
+              "latency_ms": 474,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:01.489837+00:00"
+            },
+            {
+              "stage": "DRAFT",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 8788,
+              "status": "SUCCESS",
+              "output_sha256": "15a37596cdd666995e702d335f254c7b95b743b4bed228802dc14b102ed65583",
+              "created_at": "2026-10-28T16:30:10.831892+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 910,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:11.759566+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "Qwen3.5-9B-MLX-4bit",
+              "latency_ms": 469,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:12.241570+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "real_rejected",
+          "fixture_id": "chest_clean.png",
+          "run_id": "0f6698cb-61f5-4b4c-b59c-3bc906623aac",
+          "thread_id": "0f6698cb-61f5-4b4c-b59c-3bc906623aac",
+          "status": "HUMAN_REJECTED",
+          "inference_mode": "REAL",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 8928,
+              "status": "SUCCESS",
+              "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+              "created_at": "2026-10-28T16:30:22.338468+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 908,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:23.258276+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "Qwen3.5-9B-MLX-4bit",
+              "latency_ms": 471,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:23.740881+00:00"
+            }
+          ],
+          "export_eligible": false,
+          "export_count": 0
+        },
+        {
+          "scenario": "real_dx_approved",
+          "fixture_id": "chest_dx.dcm",
+          "run_id": "15aeacea-7d49-4d2b-8ee9-e3c0b3c42aba",
+          "thread_id": "15aeacea-7d49-4d2b-8ee9-e3c0b3c42aba",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "REAL",
+          "fault_profile": null,
+          "source_sha256": "e573a425415839a3ef36911a021c47081d1ac40a4548ee2ca568d0641816a5e5",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "172771e6fcddbbf396ce10a00d58993d",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 8979,
+              "status": "SUCCESS",
+              "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+              "created_at": "2026-10-28T16:30:33.907315+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 919,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:34.842322+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "Qwen3.5-9B-MLX-4bit",
+              "latency_ms": 466,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:35.320422+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        },
+        {
+          "scenario": "real_png_approved",
+          "fixture_id": "chest_clean.png",
+          "run_id": "55c1a893-6b2d-4afe-8923-7ae7095e0dc3",
+          "thread_id": "55c1a893-6b2d-4afe-8923-7ae7095e0dc3",
+          "status": "APPROVED_DRAFT_EXPORTED",
+          "inference_mode": "REAL",
+          "fault_profile": null,
+          "source_sha256": "3d7e544162c88515ab45a4b7adf8699e331c134836f5558e73a531e48ca294b2",
+          "prepared_sha256": "c8d16664c56bbac7ad3ec34e8325bc56acc179e7c9bbe711218c47a2c0c5046b",
+          "preparation_policy_version": "cxr-preparation-v2",
+          "readiness_receipt_id": "19b4d2b2347cdb2d291cd273ed28f627",
+          "attempt": 1,
+          "revision": 0,
+          "model_call_receipts": [
+            {
+              "stage": "DRAFT",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 8971,
+              "status": "SUCCESS",
+              "output_sha256": "09e3663434146c4304b9eaa04bbc6b0727321d73d9e55832316e4ea1918eb3e7",
+              "created_at": "2026-10-28T16:30:45.453955+00:00"
+            },
+            {
+              "stage": "VISUAL_CONSISTENCY",
+              "model_id": "MedMO-8B-Next",
+              "latency_ms": 913,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:46.382261+00:00"
+            },
+            {
+              "stage": "TEXT_QUALITY",
+              "model_id": "Qwen3.5-9B-MLX-4bit",
+              "latency_ms": 467,
+              "status": "SUCCESS",
+              "output_sha256": "8e027c922552b43b75ac99e563fcfd04594606e07dae9b252ba45cde2ffe2c36",
+              "created_at": "2026-10-28T16:30:46.862319+00:00"
+            }
+          ],
+          "export_eligible": true,
+          "export_count": 3
+        }
+      ]
+    },
+    "total": 37
+  },
+  "runtime_database_counts": {
+    "mock_evidence": {
+      "total": 92,
+      "by_status": {
+        "APPROVED_DRAFT_EXPORTED": 41,
+        "AWAITING_HUMAN_APPROVAL": 7,
+        "CANCELLED": 12,
+        "FAILED": 6,
+        "HUMAN_REJECTED": 6,
+        "IMAGE_PREPARATION_FAILED": 4,
+        "MODEL_OUTPUT_INVALID": 2,
+        "NEEDS_HUMAN_REVIEW": 12,
+        "QUARANTINED": 2
+      },
+      "by_mode": {
+        "MOCK": 92
+      },
+      "fault_injection": 25
+    },
+    "real_evidence": {
+      "total": 7,
+      "by_status": {
+        "APPROVED_DRAFT_EXPORTED": 6,
+        "HUMAN_REJECTED": 1
+      },
+      "by_mode": {
+        "REAL": 7
+      },
+      "fault_injection": 0
+    }
+  },
+  "migration": {
+    "backup": "var/migration-backups/20261027T160203Z",
+    "report": "var/migration-backups/v3-migration.json",
+    "snapshots_migrated": 15,
+    "legacy_display": "LEGACY_NO_PREPARATION_RECEIPT"
+  },
+  "langsmith": {
+    "required": false,
+    "hosted_studio_required": false,
+    "source_and_runtime_configuration_references": [],
+    "note": "No account, tracing, Agent Server SDK/CLI, or hosted UI required. Local events/SSE/checkpoints/receipts are authoritative."
+  },
+  "screenshots": [
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/01-login-desktop.png",
+      "sha256": "3ea3d233a945258c0f3ad4f507273df428523069a267c0495ffc5f4f2318843a",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/02-dashboard-desktop.png",
+      "sha256": "4d81b865950cf2064d94f9e26d5786424f078383053bd7d9ad7e5d31be3f6690",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/03-new-run-upload.png",
+      "sha256": "1def3470a205b271a3fe6917b20736d7d16d12c57f2923108c3385b96927eaaa",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/04-run-monitoring.png",
+      "sha256": "40c1534339e89f14f0518263630bf0b3c678bf9ee72dd5ccaf1f2b2dd2f0eca4",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/05-gate-timeline.png",
+      "sha256": "40c1534339e89f14f0518263630bf0b3c678bf9ee72dd5ccaf1f2b2dd2f0eca4",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/06-awaiting-doctor-review.png",
+      "sha256": "afd6b123c26b450b6bba4df65ef127bb73ee09e9919a65137e3d0a9d931abac7",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/07-review-workspace-desktop.png",
+      "sha256": "8b57ccf46b156bb9aec0d43f714bdb3a6b966f99d68fc68eb8d89bd9943dd3dd",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/08-approve-confirmation.png",
+      "sha256": "a3e4f11b237e70c42a5f66d164c14be66487707b8e0fa8fc4bb3fc0880596d0e",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/09-approved-export.png",
+      "sha256": "95d61f8befa3d1a35ba82befac38d3efc7105447cf86ca5da271511e78c9aeb3",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/10-reject-dialog.png",
+      "sha256": "b6ae81e1c1697d9a21c58391e15de92828f0fa3bd53b757b93c452c1cab55fc7",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/11-request-changes.png",
+      "sha256": "04f804490820b78fc8f9e155cdf1b12b990dd88a9378cebbe55fb5b15dd98880",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/12-revised-draft.png",
+      "sha256": "33b9454850b0e4d0eb194ee48be17ef4530a07b9c3eda2e7470eb06ee58c49e7",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/13-phi-quarantine.png",
+      "sha256": "5d460847bb29ee5251c1f14808a3e4e312723acf60d54b83789e7d6bb75bf4e7",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/14-unsupported-modality.png",
+      "sha256": "6a7f3c8f25c36942f61c142ab688be20bdf91ea787c441a98309891569160415",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/15-grounding-retry.png",
+      "sha256": "72c1213807f9cb76db0eea2819ef242c8c781a4ec47aa3ca16bb62e27ad84487",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/16-retry-exhausted-no-export.png",
+      "sha256": "8f70f863b01ce8cc61389027351d8b7e25e1698df4681ca560a64bb3162eef48",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/17-cancelled-run.png",
+      "sha256": "e0c6c2df2256328aa242d2741266263faa06391a66b62febf7d7b6c15363db24",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/18-audit-timeline.png",
+      "sha256": "66dcdf522ff77df828a80d8dc195bc9261dbb27bf8f81f3369c59c081425be1e",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/19-session-expired.png",
+      "sha256": "466de1c50819c2b0f2b32dd2b6daa0cba9dfdcaa01ab9257661cd5bfb995b37e",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/20-public-login.png",
+      "sha256": "3ea3d233a945258c0f3ad4f507273df428523069a267c0495ffc5f4f2318843a",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/21-login-mobile.png",
+      "sha256": "006e4dd2f69e3aa5da9aa710b823e8c55d5e2fce3e31695d4a46b45ece971df2",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/22-navigation-mobile.png",
+      "sha256": "ce70af2d6b428b40df1019846f84fa2c6099457020f946f6f24bfdfe141211ba",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/23-dashboard-mobile.png",
+      "sha256": "d9dd8a57b8b5304126d576dbdf98582beba2498d276ec8edd04ce71aceff175a",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/24-run-monitoring-mobile.png",
+      "sha256": "0a5a1cfb7c054f9e3c0a8994a2647269ebb53bcba29043ccb1a80c135fa111ad",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/25-image-review-mobile.png",
+      "sha256": "b33ee96efb2a963f04e48f7acfe4da45fb4469be53036a1578767df75879f8de",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/26-draft-review-mobile.png",
+      "sha256": "b0fdc7a2d5b73ec2b8b07a32a99cce2bc8653aace92dcf498a33e341ac5a93e6",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/27-approve-mobile.png",
+      "sha256": "90f66a3fc548e79315e332d9a36544aafe99e79332b9440ffc6e387856e6ddcf",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/28-reject-mobile.png",
+      "sha256": "e32785f15cbf09f6f9d4decc71c36da242991486586fcbdb4abfb4a7d3237b2d",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/29-request-changes-mobile.png",
+      "sha256": "cc8c19932c997f80630951040832ef17400123127b51c2fc126c7cab5f6578b4",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/30-export-mobile.png",
+      "sha256": "80d154862d2d226cabb67fc15c2cc45fc30db1d1f25ed700ec3536043ff1efa5",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/31-source-prepared-comparison.png",
+      "sha256": "8b57ccf46b156bb9aec0d43f714bdb3a6b966f99d68fc68eb8d89bd9943dd3dd",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/32-local-graph-inspector.png",
+      "sha256": "e1044a870ced0f2cf829ca7c8990be30f58d309cd465d2be87097a7f0790cfb8",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/33-preparation-failure.png",
+      "sha256": "ab68f8c85792d5ac02bc1efb2495943ea9943000e32307e4f63882447c90ca1f",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/doctor-pipeline-user-guide/34-model-service-failure.png",
+      "sha256": "c124f74f98355046a7b7a7fbc6b96ae034815754ee40d28fa9662bca56e1f8aa",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/01-live-run-desktop.png",
+      "sha256": "7e90b0a3d5277af8e8c2065a4d266bf597650685dd492b861ec2e0e08ee65ee4",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/02-live-revision-desktop.png",
+      "sha256": "0e446c23a1d559374a11786478dcef18c14edaed0a63db92a8fc49d2bcbf8f04",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/03-debug-diagnostics-desktop.png",
+      "sha256": "479f3b0bac379739d5f0284576f6e99f48ac5644df0657096793cefd8e08e003",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/04-live-review-mobile.png",
+      "sha256": "ae7649f83ff4843dad0ca511f806cc19acb0ee8982c3d3c69fd8a20f36d47cb5",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/live-operations/05-real-worklist.png",
+      "sha256": "1c119fda79ecfc84ddb3fad680c9631e5ff044440c62d256728b195323b1eb5f",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/06-real-live-workflow.png",
+      "sha256": "96d0272f70a2368d66f10db801bf7829e2b0cf1b8961a560e364ce46b6b7947d",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "docs/images/live-operations/07-real-export-mobile.png",
+      "sha256": "1ea6da16de57a6cb065c871085689608aa007311ae20dff043266cb4f148c252",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "docs/images/live-operations/08-real-debug-inspector.png",
+      "sha256": "5c57c6dc693bae198ee03be6bff854fa6675ab547c167cfa6272b18e8ada27fa",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "videos": [
+    {
+      "path": "docs/images/live-operations/page@49bd7c72d698ff3ddc6b87632e9b1663.webm",
+      "sha256": "e936b2b91e954fef9ea4a99b7e3f6f1476a82b7b1b3b021d1ca91a1ef116477b",
+      "bytes": 2313158,
+      "altered": false
+    }
+  ],
+  "deployment": {
+    "public_url": "https://imaging.nightthoughts.dev",
+    "local_url": "http://127.0.0.1:8001",
+    "public_login_verified": true,
+    "unauthenticated_api_denied": true,
+    "current_live_revision_verified": false,
+    "worker_program": "Obsolete path still present at last inspection",
+    "status": "Canonical code and evidence are complete; effective privileged deployment and public REAL decision/export verification remain pending."
+  },
+  "limitations_not_verified": [
+    "No physical phone or tablet was available; tests used Chromium phone/tablet viewports with touch emulation.",
+    "The production worker still uses the obsolete path at last inspection; canonical heartbeat and public REAL approval/export are not claimed.",
+    "Public traffic transits the existing Cloudflare/Caddy path; this Internet-accessible deployment is not air-gapped.",
+    "PHI screening is fail-closed demonstration screening, not guaranteed anonymization.",
+    "Model-assisted visual/text reviews and doctor approval are not clinical validation or diagnostic certification.",
+    "Optional Phoenix/OpenTelemetry integration is not enabled or required.",
+    "Preparation is limited to supported single-frame CR/DX chest radiographs and PNG/JPEG demonstration input; no study-level 2D/3D pipeline."
+  ]
+}

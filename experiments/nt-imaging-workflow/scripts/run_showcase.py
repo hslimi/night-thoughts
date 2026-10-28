@@ -284,10 +284,10 @@ class Showcase:
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
             current = self.detail(active["run_id"])
-            if (
-                current.get("job_status") == "RUNNING"
-                and current.get("current_node") == "derived_image_safety_check"
-            ):
+            if current.get("job_status") == "RUNNING" and current.get("current_node") in {
+                "derived_image_safety_check",
+                "generate_draft",
+            }:
                 break
             time.sleep(0.1)
         else:

@@ -7,7 +7,7 @@
         320,
         568
       ],
-      "run_id": "d44bf578-fb1b-4003-b9b0-7c1bd4392807",
+      "run_id": "28290eeb-7b14-46e8-bc1d-cc76356e3e68",
       "checks": [
         {
           "label": "dashboard",
@@ -44,7 +44,7 @@
         360,
         800
       ],
-      "run_id": "3d1c0ffd-fa89-4da0-a6ba-bb99817bc067",
+      "run_id": "632dd004-94cb-4fa4-a471-28c7c089e3a7",
       "checks": [
         {
           "label": "dashboard",
@@ -81,7 +81,7 @@
         375,
         812
       ],
-      "run_id": "4cc507ca-44bc-48a8-b0ff-172fe3b5139b",
+      "run_id": "b0766917-578b-4570-9072-5bb623a1e656",
       "checks": [
         {
           "label": "dashboard",
@@ -118,7 +118,7 @@
         390,
         844
       ],
-      "run_id": "103abf7e-c2d3-44ed-aab0-03341e2a674c",
+      "run_id": "f1ccd317-62e4-4aa2-915f-fc6509de2f68",
       "checks": [
         {
           "label": "dashboard",
@@ -155,7 +155,7 @@
         412,
         915
       ],
-      "run_id": "4ada5171-d8ca-4e06-bd09-709e5509a47e",
+      "run_id": "801a49af-ec6d-48d8-bc1a-d4bf378d9434",
       "checks": [
         {
           "label": "dashboard",
@@ -192,7 +192,7 @@
         768,
         1024
       ],
-      "run_id": "dd1f1ef7-d1d7-4412-8c0b-24271f32a5c0",
+      "run_id": "abb3bb78-fdea-4795-b315-754626f82ad2",
       "checks": [
         {
           "label": "dashboard",
@@ -200,9 +200,6 @@
           "viewportWidth": 768,
           "outside": [],
           "small": [
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
             "Open \u2192",
             "Open \u2192",
             "Open \u2192",
@@ -263,30 +260,14 @@
         1024,
         768
       ],
-      "run_id": "1f262856-f40a-4e83-973e-3a9654f00fe9",
+      "run_id": "f5972b4b-f91e-4e60-8960-0ca606d40fb9",
       "checks": [
         {
           "label": "dashboard",
           "documentWidth": 1024,
           "viewportWidth": 1024,
           "outside": [],
-          "small": [
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192"
-          ]
+          "small": []
         },
         {
           "label": "monitor",
@@ -334,7 +315,7 @@
         1440,
         900
       ],
-      "run_id": "f68f2842-5809-4a78-a9e9-abaa4e0d7eed",
+      "run_id": "67f273bb-dcb1-426e-8049-811ccdf12c5d",
       "checks": [
         {
           "label": "dashboard",
@@ -342,9 +323,6 @@
           "viewportWidth": 1440,
           "outside": [],
           "small": [
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
             "Open \u2192",
             "Open \u2192",
             "Open \u2192",
@@ -405,7 +383,7 @@
         844,
         390
       ],
-      "run_id": "6b459277-ed81-46d9-bbc1-76224ab7b8fd",
+      "run_id": "03769166-df48-429f-b912-3f393449b143",
       "checks": [
         {
           "label": "dashboard",
@@ -413,9 +391,6 @@
           "viewportWidth": 844,
           "outside": [],
           "small": [
-            "Open \u2192",
-            "Open \u2192",
-            "Open \u2192",
             "Open \u2192",
             "Open \u2192",
             "Open \u2192",
@@ -476,7 +451,7 @@
         568,
         320
       ],
-      "run_id": "1cee44d1-05f3-4bdb-89bb-35bdf4669b95",
+      "run_id": "3022ca20-db35-40f7-8e7e-64a3dd5a2183",
       "checks": [
         {
           "label": "dashboard",
@@ -510,8 +485,8 @@
     }
   ],
   "interventions": {
-    "request_changes_then_reject": "95ff9aba-9f29-4467-97ed-e1c4b314f49d",
-    "cancelled": "fe31429a-aab0-4c4a-ba1a-7f97136e9c03"
+    "request_changes_then_reject": "9a7b0b27-af0a-4b44-a6be-a1dcf3566616",
+    "cancelled": "32fe77f0-968f-4d90-971e-d9ce560cb1b7"
   },
   "session_expiry_and_recovery": true
 }

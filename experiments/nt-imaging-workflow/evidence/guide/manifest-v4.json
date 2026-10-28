@@ -1,0 +1,252 @@
+{
+  "guide": "docs/doctor-pipeline-user-guide.md",
+  "blog_source": "blog/doctor-operator-user-guide.md",
+  "guide_sha256": "3f0cad7cb3bfef924fc0a23d6da2e76623c33a9ca489b12311d1732fd10a8b4c",
+  "generated_at": "2026-10-28T16:42:40.762214+00:00",
+  "desktop_screenshots": 20,
+  "mobile_screenshots": 10,
+  "additional_screenshots": 4,
+  "screenshots": [
+    {
+      "path": "images/doctor-pipeline-user-guide/01-login-desktop.png",
+      "sha256": "3ea3d233a945258c0f3ad4f507273df428523069a267c0495ffc5f4f2318843a",
+      "bytes": 72832,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/21-login-mobile.png",
+      "sha256": "006e4dd2f69e3aa5da9aa710b823e8c55d5e2fce3e31695d4a46b45ece971df2",
+      "bytes": 52541,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/02-dashboard-desktop.png",
+      "sha256": "4d81b865950cf2064d94f9e26d5786424f078383053bd7d9ad7e5d31be3f6690",
+      "bytes": 139627,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/20-public-login.png",
+      "sha256": "3ea3d233a945258c0f3ad4f507273df428523069a267c0495ffc5f4f2318843a",
+      "bytes": 72832,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/19-session-expired.png",
+      "sha256": "466de1c50819c2b0f2b32dd2b6daa0cba9dfdcaa01ab9257661cd5bfb995b37e",
+      "bytes": 77203,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/22-navigation-mobile.png",
+      "sha256": "ce70af2d6b428b40df1019846f84fa2c6099457020f946f6f24bfdfe141211ba",
+      "bytes": 28738,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/03-new-run-upload.png",
+      "sha256": "1def3470a205b271a3fe6917b20736d7d16d12c57f2923108c3385b96927eaaa",
+      "bytes": 146115,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/04-run-monitoring.png",
+      "sha256": "40c1534339e89f14f0518263630bf0b3c678bf9ee72dd5ccaf1f2b2dd2f0eca4",
+      "bytes": 91309,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/05-gate-timeline.png",
+      "sha256": "40c1534339e89f14f0518263630bf0b3c678bf9ee72dd5ccaf1f2b2dd2f0eca4",
+      "bytes": 91309,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/06-awaiting-doctor-review.png",
+      "sha256": "afd6b123c26b450b6bba4df65ef127bb73ee09e9919a65137e3d0a9d931abac7",
+      "bytes": 185509,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/07-review-workspace-desktop.png",
+      "sha256": "8b57ccf46b156bb9aec0d43f714bdb3a6b966f99d68fc68eb8d89bd9943dd3dd",
+      "bytes": 185246,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/08-approve-confirmation.png",
+      "sha256": "a3e4f11b237e70c42a5f66d164c14be66487707b8e0fa8fc4bb3fc0880596d0e",
+      "bytes": 85716,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/10-reject-dialog.png",
+      "sha256": "b6ae81e1c1697d9a21c58391e15de92828f0fa3bd53b757b93c452c1cab55fc7",
+      "bytes": 79698,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/11-request-changes.png",
+      "sha256": "04f804490820b78fc8f9e155cdf1b12b990dd88a9378cebbe55fb5b15dd98880",
+      "bytes": 85706,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/12-revised-draft.png",
+      "sha256": "33b9454850b0e4d0eb194ee48be17ef4530a07b9c3eda2e7470eb06ee58c49e7",
+      "bytes": 185448,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/09-approved-export.png",
+      "sha256": "95d61f8befa3d1a35ba82befac38d3efc7105447cf86ca5da271511e78c9aeb3",
+      "bytes": 129199,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/18-audit-timeline.png",
+      "sha256": "66dcdf522ff77df828a80d8dc195bc9261dbb27bf8f81f3369c59c081425be1e",
+      "bytes": 137222,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/32-local-graph-inspector.png",
+      "sha256": "e1044a870ced0f2cf829ca7c8990be30f58d309cd465d2be87097a7f0790cfb8",
+      "bytes": 145442,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/31-source-prepared-comparison.png",
+      "sha256": "8b57ccf46b156bb9aec0d43f714bdb3a6b966f99d68fc68eb8d89bd9943dd3dd",
+      "bytes": 185246,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/23-dashboard-mobile.png",
+      "sha256": "d9dd8a57b8b5304126d576dbdf98582beba2498d276ec8edd04ce71aceff175a",
+      "bytes": 58604,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/24-run-monitoring-mobile.png",
+      "sha256": "0a5a1cfb7c054f9e3c0a8994a2647269ebb53bcba29043ccb1a80c135fa111ad",
+      "bytes": 52668,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/25-image-review-mobile.png",
+      "sha256": "b33ee96efb2a963f04e48f7acfe4da45fb4469be53036a1578767df75879f8de",
+      "bytes": 107717,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/26-draft-review-mobile.png",
+      "sha256": "b0fdc7a2d5b73ec2b8b07a32a99cce2bc8653aace92dcf498a33e341ac5a93e6",
+      "bytes": 63398,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/27-approve-mobile.png",
+      "sha256": "90f66a3fc548e79315e332d9a36544aafe99e79332b9440ffc6e387856e6ddcf",
+      "bytes": 24902,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/28-reject-mobile.png",
+      "sha256": "e32785f15cbf09f6f9d4decc71c36da242991486586fcbdb4abfb4a7d3237b2d",
+      "bytes": 19507,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/29-request-changes-mobile.png",
+      "sha256": "cc8c19932c997f80630951040832ef17400123127b51c2fc126c7cab5f6578b4",
+      "bytes": 24248,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/30-export-mobile.png",
+      "sha256": "80d154862d2d226cabb67fc15c2cc45fc30db1d1f25ed700ec3536043ff1efa5",
+      "bytes": 56472,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/13-phi-quarantine.png",
+      "sha256": "5d460847bb29ee5251c1f14808a3e4e312723acf60d54b83789e7d6bb75bf4e7",
+      "bytes": 89488,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/14-unsupported-modality.png",
+      "sha256": "6a7f3c8f25c36942f61c142ab688be20bdf91ea787c441a98309891569160415",
+      "bytes": 93299,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/15-grounding-retry.png",
+      "sha256": "72c1213807f9cb76db0eea2819ef242c8c781a4ec47aa3ca16bb62e27ad84487",
+      "bytes": 88848,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/16-retry-exhausted-no-export.png",
+      "sha256": "8f70f863b01ce8cc61389027351d8b7e25e1698df4681ca560a64bb3162eef48",
+      "bytes": 93710,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/17-cancelled-run.png",
+      "sha256": "e0c6c2df2256328aa242d2741266263faa06391a66b62febf7d7b6c15363db24",
+      "bytes": 89074,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/33-preparation-failure.png",
+      "sha256": "ab68f8c85792d5ac02bc1efb2495943ea9943000e32307e4f63882447c90ca1f",
+      "bytes": 93868,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "images/doctor-pipeline-user-guide/34-model-service-failure.png",
+      "sha256": "c124f74f98355046a7b7a7fbc6b96ae034815754ee40d28fa9662bca56e1f8aa",
+      "bytes": 90903,
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "responsive_results": "evidence/responsive/console-browser-tests.json",
+  "capture_scope": "Actual local REAL and explicitly labelled MOCK/FAULT workflows plus public login. Chromium emulation, not physical-device testing.",
+  "credentials_included": false
+}

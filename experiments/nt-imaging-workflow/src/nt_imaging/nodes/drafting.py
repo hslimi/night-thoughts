@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import time
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +11,7 @@ from ..artifacts import ArtifactStore, sha256_bytes
 from ..audit import AuditDB
 from ..config import Settings
 from ..constants import DRAFT_NOTICE
+from ..controlplane.telemetry import model_call_completed, model_call_failed, model_call_started
 from ..inference import get_provider
 from ..inference.structured import StructuredOutputError, parse_structured
 from ..schemas import ImagingDraft, contains_placeholder, safe_error
@@ -80,8 +82,16 @@ def generate_draft(state: dict[str, Any], settings: Settings) -> dict[str, Any]:
     calls = 0
     audit = AuditDB(settings.data_root / "nt_imaging.sqlite3")
     prior_issues = _concise_prior_issues(state.get("review_issues", []))
+    call_started = time.monotonic()
     try:
         calls += 1
+        model_call_started(
+            state,
+            settings,
+            "DRAFT",
+            state["model_calls"] + calls,
+            state.get("vision_model_id") or "unknown",
+        )
         response = provider.generate_draft(
             ArtifactStore(settings.data_root).derived_path(
                 state["run_id"], state["prepared_artifact_id"], ".png"
@@ -89,13 +99,23 @@ def generate_draft(state: dict[str, Any], settings: Settings) -> dict[str, Any]:
             prompt,
             prior_issues,
         )
+        output_hash = sha256_bytes(response.raw.encode())
+        model_call_completed(
+            state,
+            settings,
+            "DRAFT",
+            state["model_calls"] + calls,
+            response.model_id,
+            response.latency_ms,
+            output_hash,
+        )
         audit.model_call(
             state["run_id"],
             "DRAFT",
             response.model_id,
             response.latency_ms,
             "SUCCESS",
-            sha256_bytes(response.raw.encode()),
+            output_hash,
         )
         try:
             draft = parse_structured(response.raw, ImagingDraft)
@@ -103,14 +123,32 @@ def generate_draft(state: dict[str, Any], settings: Settings) -> dict[str, Any]:
             if calls > 1 or state["model_calls"] + calls >= state["max_total_model_calls"]:
                 raise
             calls += 1
+            call_started = time.monotonic()
+            model_call_started(
+                state,
+                settings,
+                "DRAFT_SYNTAX_REPAIR",
+                state["model_calls"] + calls,
+                state.get("vision_model_id") or "unknown",
+            )
             repaired = provider.repair_draft(response.raw, str(validation_error))
+            repair_hash = sha256_bytes(repaired.raw.encode())
+            model_call_completed(
+                state,
+                settings,
+                "DRAFT_SYNTAX_REPAIR",
+                state["model_calls"] + calls,
+                repaired.model_id,
+                repaired.latency_ms,
+                repair_hash,
+            )
             audit.model_call(
                 state["run_id"],
                 "DRAFT_SYNTAX_REPAIR",
                 repaired.model_id,
                 repaired.latency_ms,
                 "SUCCESS",
-                sha256_bytes(repaired.raw.encode()),
+                repair_hash,
             )
             draft = parse_structured(repaired.raw, ImagingDraft)
     except (StructuredOutputError, TimeoutError, RuntimeError, OSError, ValueError) as exc:
@@ -120,6 +158,15 @@ def generate_draft(state: dict[str, Any], settings: Settings) -> dict[str, Any]:
             else "MODEL_OUTPUT_INVALID"
             if isinstance(exc, StructuredOutputError)
             else "MODEL_UNAVAILABLE"
+        )
+        model_call_failed(
+            state,
+            settings,
+            "DRAFT",
+            state["model_calls"] + max(calls, 1),
+            state.get("vision_model_id") or "unknown",
+            int((time.monotonic() - call_started) * 1000),
+            code,
         )
         audit.event(
             state["run_id"],

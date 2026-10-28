@@ -6,6 +6,7 @@ from typing import Any
 from ..artifacts import ArtifactStore
 from ..audit import AuditDB
 from ..config import Settings
+from ..controlplane.telemetry import emit
 from ..imaging.readiness import PreparationError, prepare_artifact
 from ..schemas import safe_error
 
@@ -19,6 +20,16 @@ def imaging_readiness(state: dict[str, Any], settings: Settings) -> dict[str, An
                 "READINESS_PREREQUISITE", "PHI clearance and supported modality are required"
             ),
         }
+
+    def report_progress(operation: str) -> None:
+        emit(
+            state,
+            settings,
+            "PREPARATION_OPERATION_COMPLETED",
+            "imaging_readiness",
+            payload={"operation": operation},
+        )
+
     try:
         receipt = prepare_artifact(
             ArtifactStore(settings.data_root),
@@ -26,6 +37,7 @@ def imaging_readiness(state: dict[str, Any], settings: Settings) -> dict[str, An
             state["sanitized_artifact_id"],
             state["source_format"],
             Path(__file__).resolve().parents[3],
+            progress=report_progress,
         )
     except (PreparationError, OSError, ValueError) as exc:
         AuditDB(settings.data_root / "nt_imaging.sqlite3").event(
