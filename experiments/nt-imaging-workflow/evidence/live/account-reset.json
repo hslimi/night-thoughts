@@ -1,0 +1,5 @@
+{
+  "login_immediate": true,
+  "session_invalidated_on_reset": true,
+  "service_restart_performed": false
+}
