@@ -1,0 +1,12 @@
+unsloth==2026.10.10
+unsloth-zoo==2026.10.10
+torch==2.11.0+cu130
+transformers==5.17.0
+trl==1.15.0
+peft==0.21.2
+datasets==4.8.5
+accelerate==1.15.0
+bitsandbytes==0.50.2
+xformers==0.0.35
+pandas==2.2.3
+matplotlib==3.10.0

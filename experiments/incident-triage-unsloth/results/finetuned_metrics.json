@@ -1,0 +1,13 @@
+{
+  "cases": 40,
+  "json_valid_rate": 1.0,
+  "schema_valid_rate": 1.0,
+  "exact_match_rate": 0.0,
+  "service_accuracy": 0.975,
+  "severity_accuracy": 0.425,
+  "category_accuracy": 0.6,
+  "summary_accuracy": 0.0,
+  "next_action_accuracy": 0.7,
+  "escalate_accuracy": 0.6,
+  "unknown_category_recall": 1.0
+}
