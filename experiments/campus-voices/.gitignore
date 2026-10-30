@@ -1,0 +1,40 @@
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+auth.json
+credentials.json
+*token*
+*secret*
+
+# Private learning data and generated media
+recordings/
+transcripts/
+student-data/
+*.wav
+*.mp3
+*.m4a
+*.webm
+*.jsonl
+
+# Runtime, logs, dependencies, and build outputs
+node_modules/
+dist/
+dist-server/
+logs/
+var/
+*.log
+.DS_Store
+
+# Test and temporary capture artifacts
+playwright-report/
+test-results/
+coverage/
+tmp/
+temp/
+.screenshots-tmp/
+*-sensitive.png
