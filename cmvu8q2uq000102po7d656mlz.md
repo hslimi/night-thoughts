@@ -3,6 +3,7 @@ title: "Teaching a Small Language Model to Triage Incidents: A Beginner’s Unsl
 datePublished: 2026-10-30T00:35:01.434Z
 cuid: cmvu8q2uq000102po7d656mlz
 slug: teaching-a-small-language-model-to-triage-incidents-a-beginner-s-unsloth-and-qlora-tutorial
+cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/6128f57e-8972-4407-8933-8ee037b84cc8.jpg
 tags: ai, machine-learning, google-colab, llm, finetuning, qlora, unsloth
 
 ---
@@ -70,7 +71,7 @@ Every alert must produce exactly six fields:
 The allowed values are deliberately small:
 
 | Field | Allowed values |
-|---|---|
+| --- | --- |
 | `service` | `payments-api`, `authentication`, `search`, `inventory`, `notifications`, `unknown` |
 | `severity` | `sev1`, `sev2`, `sev3`, `sev4` |
 | `category` | `database_capacity`, `deployment_regression`, `authentication`, `network`, `unknown` |
@@ -139,7 +140,7 @@ print("VRAM (GB):", round(torch.cuda.get_device_properties(0).total_memory / 1e9
 
 The actual runtime reported PyTorch 2.11.0+cu130, CUDA availability, and an NVIDIA RTX PRO 6000 Blackwell Server Edition with approximately 102 GB VRAM.
 
-![Colab GPU verification showing the RTX PRO 6000 and 102 GB VRAM](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/c2398306-0f78-40cf-bad9-2acb5a78f7e6.png)
+![Colab GPU verification showing the RTX PRO 6000 and 102 GB VRAM](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/c2398306-0f78-40cf-bad9-2acb5a78f7e6.png align="center")
 
 ## Part 2: Create a Persistent Project Folder
 
@@ -166,7 +167,7 @@ print("Project folder:", PROJECT_DIR)
 
 Colab will ask you to authorize Drive access. Select the same Google account you want to use for the experiment.
 
-![Google Drive mounted and the incident-triage project folder created](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/798afdd6-cd16-415d-86f0-d58d24a6fe7f.png)
+![Google Drive mounted and the incident-triage project folder created](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/798afdd6-cd16-415d-86f0-d58d24a6fe7f.png align="center")
 
 ## Part 3: Install Unsloth
 
@@ -188,7 +189,7 @@ print("Unsloth imported successfully.")
 
 Unsloth imported successfully. It warned that the installed xformers build did not match PyTorch 2.11.0+cu130 and used PyTorch attention instead. I kept that documented fallback rather than changing the tutorial environment.
 
-![Cell used to install Unsloth](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/37cdf04e-bcec-4057-8019-c4bf760565ce.png)
+![Cell used to install Unsloth](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/37cdf04e-bcec-4057-8019-c4bf760565ce.png align="center")
 
 ## Part 4: Generate the Synthetic Dataset
 
@@ -322,7 +323,7 @@ print("First target:", test_records[0]["target"])
 
 The actual counts matched those requirements exactly.
 
-![Actual dataset counts showing 1500 training, 400 validation, 400 test, and 2300 unique alerts](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/8171b0c9-45ac-49f7-89e9-da19c8ce106d.png)
+![Actual dataset counts showing 1500 training, 400 validation, 400 test, and 2300 unique alerts](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/8171b0c9-45ac-49f7-89e9-da19c8ce106d.png align="center")
 
 ### Cell 7 — Verify the split boundaries
 
@@ -357,7 +358,7 @@ for split, items in {
 
 The assertions passed. The run produced 15 training scenario IDs, five validation IDs, and five test IDs, with no overlap and all five categories in every split.
 
-![Scenario IDs and category counts verifying disjoint dataset splits](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/0b4bbf4b-638e-4b71-a4ef-b78cd88697ff.png)
+![Scenario IDs and category counts verifying disjoint dataset splits](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/0b4bbf4b-638e-4b71-a4ef-b78cd88697ff.png align="center")
 
 ### Cell 8 — Inspect and save the JSONL files
 
@@ -443,7 +444,7 @@ The first run downloads the model. Later runs may reuse cached files.
 
 The base model loaded in 4-bit and the tokenizer reported an available chat template.
 
-![Qwen2.5-1.5B-Instruct loaded in 4-bit with a chat template](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/48be144e-21d6-464f-891b-d95f5d39efda.png)
+![Qwen2.5-1.5B-Instruct loaded in 4-bit with a chat template](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/48be144e-21d6-464f-891b-d95f5d39efda.png align="center")
 
 ### Cell 11 — Render the training text with the chat template
 
@@ -471,7 +472,7 @@ print(train_dataset[0]["text"])
 
 The printed text should contain the system prompt, user alert, assistant JSON response, and the special tokens required by Qwen's chat template. Do not manually add a second copy of those tokens.
 
-![A training conversation rendered with Qwen's chat template](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/51db2e20-f514-4726-bc5f-1b0ff22cafaa.png)
+![A training conversation rendered with Qwen's chat template](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/51db2e20-f514-4726-bc5f-1b0ff22cafaa.png align="center")
 
 ## Part 7: Build the Evaluator
 
@@ -634,7 +635,7 @@ If the output is truncated, increase `max_new_tokens` in `generate_answer` from 
 
 The actual base sample was not truncated, so I kept 180 tokens. It wrapped the object in Markdown fences and also predicted several incorrect fields. Strict scoring rejects those fences.
 
-![Base model sample with Markdown fences and an incorrect incident classification](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b77766a0-8e1d-4118-a9c7-75be077d8862.png)
+![Base model sample with Markdown fences and an incorrect incident classification](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b77766a0-8e1d-4118-a9c7-75be077d8862.png align="center")
 
 Now run the full 40-case baseline:
 
@@ -655,7 +656,7 @@ Save these numbers. They are the comparison point for the adapter.
 
 The saved baseline contained 40 prediction rows. All strict metrics were 0.00%; this is not a fence-stripped semantic score.
 
-![Saved baseline metrics showing zero percent under the strict evaluator](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f7a06341-690b-455b-8abb-329d544987c5.png)
+![Saved baseline metrics showing zero percent under the strict evaluator](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f7a06341-690b-455b-8abb-329d544987c5.png align="center")
 
 ## Part 9: Add QLoRA Adapters
 
@@ -693,7 +694,7 @@ print("LoRA adapters attached.")
 
 `r=16` controls the adapter rank. It is a reasonable starting setting, not a universally optimal value.
 
-![QLoRA configuration showing rank 16 and the target modules](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d73b999f-ca50-4fcf-9a79-96be31e3f159.png)
+![QLoRA configuration showing rank 16 and the target modules](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d73b999f-ca50-4fcf-9a79-96be31e3f159.png align="center")
 
 ## Part 10: Train the Adapter
 
@@ -748,7 +749,7 @@ print(trainer_stats)
 
 The run completed all 200 optimizer steps. The training cell took 111.204 seconds; the trainer reported `train_runtime: 107.3805` seconds.
 
-![Training output at step 200 with real validation losses](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/bf864781-b11e-49ab-b819-0c6e8a45fa77.png)
+![Training output at step 200 with real validation losses](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/bf864781-b11e-49ab-b819-0c6e8a45fa77.png align="center")
 
 ### What the actual loss curves show
 
@@ -758,7 +759,7 @@ Validation loss did **not** follow the same direction. It increased at every mea
 
 Training and validation losses may be logged at different steps. The diagram uses only entries from `trainer.state.log_history`; it does not smooth the training curve or invent intermediate validation points. A loss curve alone cannot prove valid JSON or correct incident classification.
 
-![Training loss decreasing and plateauing while validation loss rises from step 50 to 200](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/69d74518-8e84-4219-8d70-157853778d96.png)
+![Training loss decreasing and plateauing while validation loss rises from step 50 to 200](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/69d74518-8e84-4219-8d70-157853778d96.png align="center")
 
 If you only want a quick pipeline test, change `max_steps` to `20`. Treat that as a smoke test, not the final experiment.
 
@@ -782,7 +783,7 @@ print("\nFINE-TUNED OUTPUT:\n", generate_answer(sample["alert"]))
 print("\nTARGET:\n", sample["target"])
 ```
 
-![Fine-tuned sample producing valid JSON but incorrect incident fields](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/0b08827b-0220-48dd-9c97-ecd130a61903.png)
+![Fine-tuned sample producing valid JSON but incorrect incident fields](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/0b08827b-0220-48dd-9c97-ecd130a61903.png align="center")
 
 ### Cell 18 — Evaluate the same 40 cases
 
@@ -814,7 +815,7 @@ percentages = comparison.loc[rate_metrics, ["base", "finetuned", "difference"]] 
 percentages.round(2)
 ```
 
-![Base and fine-tuned metrics with absolute percentage-point changes](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e7bc6b95-b04e-4718-ad8d-def442dc790e.png)
+![Base and fine-tuned metrics with absolute percentage-point changes](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e7bc6b95-b04e-4718-ad8d-def442dc790e.png align="center")
 
 Do not assume every metric must improve. A model can produce perfectly valid JSON while learning the wrong category. Exact matches and per-field behavior matter.
 
@@ -847,7 +848,7 @@ For each failure, ask:
 
 Keep both successes and failures in the article. A small synthetic experiment is more credible when its limitations are visible.
 
-![Failure inspection showing 40 non-exact fine-tuned cases and concrete misclassifications](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/83a6303a-9956-4596-83d8-4bd46b16dc40.png)
+![Failure inspection showing 40 non-exact fine-tuned cases and concrete misclassifications](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/83a6303a-9956-4596-83d8-4bd46b16dc40.png align="center")
 
 ## Part 13: Save and Reload the Adapter
 
@@ -865,7 +866,7 @@ print("Files:", sorted(path.name for path in ADAPTER_DIR.iterdir()))
 
 The saved directory should include adapter configuration and weight files, plus tokenizer files. Because it is on Drive, it should remain after the Colab runtime ends.
 
-![Adapter and tokenizer files saved to Google Drive](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/bb7fbfef-b732-4581-a057-06ea6e16be04.png)
+![Adapter and tokenizer files saved to Google Drive](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/bb7fbfef-b732-4581-a057-06ea6e16be04.png align="center")
 
 The adapter also reloaded successfully from Drive. No merged-model export or Apple Silicon/MLX conversion was needed for this core experiment.
 
@@ -945,7 +946,7 @@ All values below come from the saved prediction, metric, metadata, and trainer-l
 Rates are shown as percentages. The change column is an absolute change in **percentage points (pp)**, not a relative improvement.
 
 | Metric | Base | Fine-tuned | Absolute change |
-|---|---:|---:|---:|
+| --- | --: | --: | --: |
 | JSON validity | 0.00% | 100.00% | +100.00 pp |
 | Schema validity | 0.00% | 100.00% | +100.00 pp |
 | Exact match | 0.00% | 0.00% | +0.00 pp |
