@@ -1,0 +1,17 @@
+
+> ai-agent-engineering-feedback-loops@0.0.0 typecheck
+> tsc --noEmit
+
+
+> ai-agent-engineering-feedback-loops@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.5 .
+
+ ✓ tests/trial-ending-reminders.test.ts (10 tests) 3ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  01:51:41
+   Duration  65ms (transform 54%, import 24%, tests 15%, worker 7%)

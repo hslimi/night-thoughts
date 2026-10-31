@@ -1,0 +1,27 @@
+
+> ai-agent-engineering-feedback-loops@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.5 .
+
+ ❯ tests/trial-ending-reminders.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/trial-ending-reminders.test.ts [ tests/trial-ending-reminders.test.ts ]
+Error: Cannot find module '../src/trial-ending-reminders' imported from ./tests/trial-ending-reminders.test.ts
+ ❯ tests/trial-ending-reminders.test.ts:2:1
+      1| import { describe, expect, it } from "vitest";
+      2| import {
+       | ^
+      3|   sendTrialEndingReminder,
+      4|   type ReminderStore,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  01:43:38
+   Duration  57ms (worker 96%, environment 4%)
