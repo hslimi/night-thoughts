@@ -281,7 +281,7 @@ The production application was served locally with Vite preview:
 
 ```bash
 npm run build
-npx vite preview --host 127.0.0.1 --port 4173
+npx vite preview --port 4173
 ```
 
 Every UI image was captured independently with `page.screenshot({ fullPage: false })` and a fresh Chromium context. Desktop captures are 1440×900; mobile is 390×844.
@@ -388,7 +388,7 @@ Run verification:
 npm run test:unit
 npm run build
 npm run test:e2e
-npx vite preview --host 127.0.0.1 --port 4173
+npx vite preview --port 4173
 ```
 
 The following checks connect requirements to evidence:
