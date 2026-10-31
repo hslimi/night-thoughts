@@ -1,0 +1,536 @@
+kimi version 2.3.0
+• I need modify artifacts only no app code. Should inspect complete analysis ../evidence/09-analysis.txt and all feature artifacts. Should have tools. Likely many files spec plan tasks quickstart UI contract etc. Should be careful comprehensive. I should use TodoList multi-step. First list files via Glob, read analysis and all artifacts. Could use explore agent? I need understand full artifacts and modify myself; perhaps no need agent. Task explicitly focused. Should read AGENTS within dirs? I have applicable empty; when subdirs check own AGENTS. Glob all specs and perhaps evidence. I can parallel Read analysis and Glob artifacts.
+
+• I’ll read the analysis and the complete feature artifact set, then update the specifications, verification coverage, and consolidated task sequence while preserving the required early checkpoints.
+
+• Should absolute path for analysis <home>/experiments/spec-kit-expense-tracker/evidence? cwd app ../evidence yes <repository>/experiments/spec-kit-expense-tracker/evidence/09-analysis.txt. Read all artifacts parallel. Should complete tasks perhaps large <100k. Use Read default.I have full. Now modify spec UI quickstart tasks A1, C1, C2 plan I1. Consolidate tasks 73 to 45-55 preserve T001-T009 and checkpoint unchanged, renumber later sequential all refs. Tests before implementation. Eight e2e files preserved easiest. Should comprehensive task consolidation. Perhaps update data-model/research for A1? User says at source specifically spec UI quickstart tasks. Plan UI also old behavior should update plan as consistency sweep. Research currently mentions cross-month only not conflicting. Data-model replacement dialog generic focus no conflict. Checklists CHK004 references focus no exact; can leave. Perhaps plan summary no focus specifics. I'll update plan UI deterministic rules, project tree.
+
+  Main challenging tasks consolidation ~50. Should design new tasks preserving all content, named quickstart cases, test-first checkpoints, manual review, traceability. Could rewrite tasks.md fully due substantial renumbering and consolidation, allowed Write complete replacement if new contents little continuity? It's existing but full rewrite many changes. Write allowed if complete replacement. I have read. Could use Write entire tasks new ~250 lines. Other files incremental Edit each once maybe multiple modifications in same file combine old large strings or use complete? Should obey Edit mandatory incremental. Use Edit with multiple separate edits but cannot consecutive without re-read. I can plan edits one per file combining contiguous sections or replace all via broad blocks. For spec add deterministic behavior likely FR-026 new text and acceptance scenarios/SC005 maybe user only demands spec. Should add acceptance scenario in US3 maybe scenario 6, FR-026 exact. Also SC-005 currently deletion contains and restores focus vague; update to deterministic maybe include same-month edits in SC-005? Better add in FR-026 and US3 acceptance scenario 6 covering both same-month filtered edit and deletion fallback. Quickstart add new cases likely CORE-006 for same-month edit leaves filter, DELETE-005 deletion last visible result? User says add integrated test coverage. I can define new quickstart cases with IDs CORE-006 and DELETE-005. Or A11Y case? Should have no named case removed. Add to CORE and DELETE tables. Update requirement traceability FR-007/FR-026 and SC? Quickstart trace only FR. Spec SC-005 includes every deletion case so DELETE-005 automatically; SC-006 FILTER etc. SC-003? same-month edit maybe SC-002 CORE set includes CORE-006, okay. Could add SC-005 phrase deterministic focus and SC-002 same-month filter. Should avoid requirement removal.
+
+  Deterministic behavior exact wording user:
+  "after a same-month edit, restore focus to the edit requester if it remains visible; if an active category filter hides it, announce that result and focus the category filter. After deletion, focus the next visible transaction edit requester, else the previous visible requester, else Clear filter when a filter is active, else Add expense."
+
+  Should interpret next/previous relative to deleted item in current visible sorted order. Define precisely: next visible transaction edit requester in current filtered/sorted order after deletion; if none, previous visible requester. If no visible requester and active category filter, Clear filter; else Add expense. Focus after same-month edit if requester remains visible (even moved sort order) restore to it. If active category filter hides it announce result and focus category filter. What if same-month edit requester disappears other reason? Date same month means only filter hides; category only filter. Good.
+  Cross-month remains existing announce move focus selected month.
+
+  Deletion quickstart DELETE-003 generic updated deterministic full fallback perhaps test all branches? User asks integrated deletion last visible result active filter. DELETE-005 exactly active filter with one visible result but other hidden month records; confirm delete, focus Clear filter and announce no matches? User only says focus Clear filter. Define expected: last visible removed, no-match message maybe announced and focus clear. DELETE-003 can require next else previous else add. Should coverage all fallback order: existing DELETE-003 should exercise next and previous and no-filter last record Add expense. Add DELETE-005 active filter last visible -> Clear filter. Same-month edit filter case CORE-006: active category filter, edit only matching record to another category without month change; list result no matches announced, focus category filter. Also case where remains visible after same-month edit maybe CORE-005 add focus restore to same-ID edit requester. Should quickstart CORE-005 update expected same-month focus. Existing tasks tests editExpense and e2e. "integrated test coverage" likely UI integrated + e2e for these cases. I should ensure new tasks include both. I can add CORE-006 to editExpense.test and e2e edit-delete; DELETE-005 likewise. Perhaps transactionPreferences integrated test could cover, but best edit/delete suite. E2E actual integrated app. Good.
+
+  C1 quickstart MONEY-003 already explicit demo values both locales. Now tasks explicit verify demo transaction and summary values under en-US and de-DE fixed en-US USD. Could modify DEMO-002 or MONEY003. Already MONEY003 broad but C1 source coverage task missing. User says "For C1, explicitly verify demo transaction and summary values under en-US and de-DE with fixed en-US USD output." Could update quickstart DEMO-002 to run under both locales and list exact transaction and summary outputs. Task demo e2e include MONEY-003 both. Domain demoData baseline exact integer. Trace FR-014 include demo task. Spec FR-014 already. Good.
+
+  C2 quickstart MONEY-004 already says inspect every accepted/persisted AMOUNT and SCALE. Now make round-trip explicit: "For every accepted input in AMOUNT-001–003 in both add and edit, save/reload through normal persistence and inspect parsed JSON envelope; amountCents must equal expected integer number. SCALE fixture test verify every generated record amountCents integer and reload." Quickstart MONEY-004 row update. Task storage write test should roundtrip every accepted AMOUNT case through persistence and inspect JSON integer. But add/edit accepted inputs in UI tests then persistence? Could storage boundary use parsed expected cents values and write/read each; requirement says "round-trip every accepted AMOUNT case through persistence" probably storage test can use accepted raw inputs parsed with same parser? Better integrated persistence test could loop all accepted raw amount strings via parser and storage save/load. In `tests/persistence/expenseStorage.write.test.ts` cover accepted AMOUNT-001–003 by writing each parsed record and reading raw JSON + load result; exact. For both add/edit? Quickstart AMOUNT precondition every row add/edit, MONEY004 every accepted case persistence; tasks could say round-trip every accepted input through add and edit persistence, but storage boundary doesn't distinguish add/edit. UI e2e PERSIST can perhaps cover all via actual UI both add/edit. User explicitly "round-trip every accepted AMOUNT case through persistence and inspect integer-cent JSON values" not necessarily both add/edit, but SC-003 both. I can define task in persistence write: for each accepted AMOUNT case, parse via production parser? Test first before implementation. Write record with exact expected cents, reload via adapter, inspect raw JSON. It proves persistence, parser separately proves input. Combined enough. Could mention both add/edit representations if desired.
+  SCALE fixture verification map FR-014 in both tasks trace and quickstart trace: FR-014 currently MONEY-001–004 includes MONEY004 which covers SCALE, but analysis says tasks trace omitted T061/T062. User "map SCALE fixture verification into FR-014" likely explicit quickstart FR-014 add SCALE-001/fixture, tasks FR014 add scale fixture tasks. Should not change requirement coverage removing other. Add `SCALE fixture generation; SCALE-001` or `MONEY...; SCALE fixture verification; OVERFLOW`. Tasks trace include scale fixture test + generator + scale e2e. Good.
+
+  I1 plan tree add vitest.config.ts and test fixtures actual filenames perhaps user "align plan.md with vitest.config.ts, test fixtures, and the eight actual e2e suite filenames instead of tracker.spec.ts." Should tree include fixtures filenames `tests/fixtures/expenses.ts`, `verification.ts`, `scaleData.ts`, perhaps `scaleData.test.ts`? "test fixtures" likely include directory and files. Plan currently tests/domain etc. Add tests/fixtures with those. Eight e2e exact. vitest config at root. Good.
+
+  Tasks consolidation: Should produce 45-55. Aim 50 exactly? T001-T009 unchanged. Should have 41 later tasks T010-T050. I can combine per file/module and related verification suites. Keep eight e2e files each own task (8 tasks), domain tests combined per file existing fine, UI tests per file, persistence tests 2, demo test etc. Implementation combine per file/module: currently US1 11 impl -> perhaps 7; US2 6 -> 4; US3 6 -> 4; US4 4 ->3; US5 3 ->2. Polish 13 ->8. Total compute.
+
+  Keep tests:
+  US1 T010-T016 =7 unchanged descriptions plus updates perhaps T016 demo not. Implementation 7 (T017 expense domain, T018 money, T019 dates, T020 dashboard, T021 store, T022 all components? Combining per module perhaps components separate? 4 components + App styles. Should reduce total)
+  If 7 impl: T021 store, T022 ExpenseForm+StatusMessage (related form feedback) one task two files, T023 Dashboard+TransactionList, T024 App/main/styles integration (3 files) => only 4 after domain total 7? Domain 4 + store1 + components2 + integration1 =8. So US1 7+8=15, IDs through T024. Original US1 18 tasks ->15 reduction 3.
+
+  US2 tests 5 perhaps combine recovery UI+persistenceStatus UI? Related verification suites but different files. User "combining redundant work per file/module and related verification suites" not necessarily combine every. Could combine T030/T031 into one UI recovery/persistence test task with two files; okay related status. Then US2 tests 4: storage load, storage write+MONEY004, UI recovery/status combined, e2e persistence. Implementation 4: storage adapter, store all normal/recovery (one file combine T034-36), ConfirmDialog, App/Dashboard/Status wiring. US2 8 vs 11 reduction3. Total 23 -> IDs T032.
+
+  US3 tests 3 unchanged with added cases. Implementation 4: store edit/delete same file combine; ExpenseForm, ConfirmDialog, TransactionList + App integration? Could combine TransactionList/App in one task? Related focus integration, yes. 4. US3 7 vs9 reduction2 total30 -> T039.
+
+  US4 tests3, impl3: dashboard domain, store, components TransactionList/Dashboard combined. 6 vs7 reduction1 total36 -> T045.
+
+  US5 tests3, impl2: demoData, store+App/main fresh state? same module? combine integration all demo state and app. 5 vs6 reduction1 total41 -> T050.
+
+  Polish need ~9 tasks to total50:
+  SCALE fixture test+generator? Test-first checkpoint require test before corresponding implementation; if combine test+implementation in one task violates explicit test-first? Better separate two tasks. scale e2e one. accessibility e2e + responsive e2e perhaps related verification suites combine into one task but preserve eight distinct e2e files. Combine into one task writes both files (8 distinct e2e still). Performance optimization + fixes perhaps one task? Keep test first. manual reviews combine keyboard/VoiceOver/responsive/persistence recovery into perhaps two tasks (a11y/responsive one, persistence one), preserve manual. Trace audit + verification record one. Final run one. Remediation issues one? Should have accessibility and responsive fix tasks perhaps combine with performance into one polish correction task across modules. Count:
+  1 scale fixture tests
+  2 generator
+  3 scale e2e
+  4 accessibility+responsive e2e (two files)
+  5 performance/accessibility/responsive corrections (multiple files)
+  6 manual accessibility+responsive review
+  7 manual persistence/recovery review
+  8 trace audit
+  9 final run.
+  Total50. Great. 50 tasks exactly. T001-T050. This combines from73 to50, preserves all named cases and e2e files. I need ensure manual corrections record in verification. Task 5 remediation after automated and scale; manual issues discovered after task6/7 need final task resolve every defect. Fine.
+
+  But US1 15 + US2 8 + US3 7 + US4 6 + US5 5 =41, plus9=50 yes. IDs map precisely:
+
+  T001-009 unchanged.
+
+  US1 tests:
+  T010 money
+  T011 expense
+  T012 dates
+  T013 dashboard
+  T014 add UI
+  T015 monthly UI
+  T016 core e2e
+  Impl:
+  T017 expense
+  T018 money
+  T019 dates
+  T020 dashboard
+  T021 store
+  T022 ExpenseForm+StatusMessage
+  T023 Dashboard+TransactionList
+  T024 App/main/styles integration
+  Checkpoint. 15 tasks T010-24.
+
+  US2 tests:
+  T025 storage load (old28)
+  T026 storage write + MONEY004 (old29)
+  T027 UI recovery+persistence status (old30+31)
+  T028 e2e persistence (old32)
+  Impl:
+  T029 expenseStorage (old33)
+  T030 store all load/add/recovery (old34-36)
+  T031 ConfirmDialog (old37)
+  T032 App/Dashboard/Status wiring (old38)
+  8 tasks T025-32.
+
+  US3:
+  T033 edit UI (old39) add CORE006
+  T034 delete UI (old40) add DELETE005 deterministic
+  T035 e2e edit-delete (old41) add CORE006/DELETE005 and locales perhaps C1 no
+  T036 store edit/delete (old42+44)
+  T037 ExpenseForm (old43)
+  T038 ConfirmDialog (old45)
+  T039 TransactionList+App integration (old46+47) deterministic focus
+  7 tasks T033-39.
+
+  US4:
+  T040 domain list test (old48)
+  T041 UI prefs (old49)
+  T042 e2e transaction list (old50)
+  T043 domain filter sort (old51)
+  T044 store prefs (old52)
+  T045 TransactionList+Dashboard impl (old53+54)
+  6 tasks T040-45.
+
+  US5:
+  T046 demoData test (old55)
+  T047 demoMode UI (old56)
+  T048 demo e2e (old57) C1 MONEY003 both locales
+  T049 demoData impl (old58)
+  T050? Wait if final count 50, US5 impl2 would T049 and T050, leaving polish T051-T059 -> final59. My arithmetic error: previous totals: US1 15, US2 8=23, US3 7=30, US4 6=36, US5 5=41. Starting T010 means 41 tasks ends T050 (9+41=50), polish 9 ->59. Right target 50 overall means later 41 tasks total including polish, not 41 before polish. Should reduce story tasks or polish to total50. I currently total59, only reduction14. Should have more consolidation 9. Aim 50. Should combine more tasks while preserve test-first. Original after setup 64 tasks; need later41. I have story41+polish9=50 later ->59. Should story32 + polish9 =41. Reduce story tasks from41 to32. Could combine tests per related suites and impl more aggressively. Setup 9. Desired story tasks ~32, polish9.
+
+  Tests currently US1 7, US2 4, US3 3, US4 3, US5 3 =20. Implementations 8+4+4+3+2=21. Should have total32, reduce9. Could combine implementation per file/module further:
+  US1 impl8 ->6: combine money+dates? Different modules but related pure domain perhaps one task per module request "per file/module" combining redundant work per file/module doesn't forbid cross module. Better combine `Expense` and `dates`? Domain types + validation two files one task; money separate; dashboard separate; store; all components? I need 6:
+  - domain expense+dates (2 files)
+  - money
+  - dashboard
+  - store
+  - form+status
+  - Dashboard+TransactionList+App/main/styles integration (5 files) big. Not ideal but task consolidation per related integration okay. Reduction2.
+  US2 impl4 ->3: combine ConfirmDialog with App/Dashboard/Status wiring (dialog + integration), store one, adapter one. reduction1.
+  US3 impl4 ->3: combine ConfirmDialog + TransactionList/App integration? Then store, form, dialog/list/app. reduction1.
+  US4 impl3 ->2: combine store + components wiring? domain and UI integration. reduction1.
+  US5 impl2 ->1: demoData + store/App/main all in one task but test-first still tests separate. reduction1. Total impl reduction6, need3 more from tests.
+  Combine related test suites:
+  US1 domain money+expense? distinct files but one task author two. Or domain dates+dashboard related month totals combine one task. Reduce1.
+  US1 UI add+monthlyDashboard combine one task (two files) integrated core UI. Reduce1.
+  US2 UI already combined. storage load/write combine one task two files? Related persistence suites, and C2 included. Reduce1.
+  Then story32. All tests still files distinct. Test task can write multiple test files; test-first phase all before impl. Great. Total50.
+
+  I'll define exact 50 mapping.
+
+  US1 tests now5:
+  T010 domain money+expense? Which combine? Choose dates+dashboard perhaps related month:
+  T010 money test
+  T011 expense test
+  T012 dates + dashboard test (two files) CORE/DATE/OVERFLOW
+  T013 addExpense + monthlyDashboard UI tests (two files)
+  T014 core e2e
+  =5.
+  Impl6:
+  T015 expense+dates domain
+  T016 money
+  T017 dashboard
+  T018 store
+  T019 ExpenseForm+StatusMessage
+  T020 Dashboard+TransactionList+App/main/styles integration
+  =6. US1 total11 ends T020. Original18 reduce7.
+
+  US2 tests3:
+  T021 persistence load+write (two files) all PERSIST + MONEY004
+  T022 recovery+persistenceStatus UI (two files)
+  T023 e2e persistence
+  impl3:
+  T024 storage adapter
+  T025 store all
+  T026 ConfirmDialog+App/Dashboard/Status wiring
+  =6 ends T026. cumulative17 after T009? US1 11+US2 6=17, yes T010-26.
+
+  US3 tests3:
+  T027 edit UI CORE006
+  T028 delete UI DELETE005
+  T029 e2e edit-delete
+  impl3:
+  T030 store edit/delete
+  T031 ExpenseForm
+  T032 ConfirmDialog+TransactionList+App integration
+  =6 endsT032 cumulative23.
+
+  US4 tests3:
+  T033 domain list
+  T034 UI prefs
+  T035 e2e list
+  impl2:
+  T036 domain filtering/sorting
+  T037 store+TransactionList+Dashboard prefs
+  =5 endsT037 cumulative28.
+
+  US5 tests3:
+  T038 demoData
+  T039 demoMode UI
+  T040 demo e2e C1
+  impl1:
+  T041 demoData+store+App/main
+  =4 endsT041 cumulative32.
+
+  Polish9:
+  T042 scale fixture tests
+  T043 scale generator
+  T044 scale e2e
+  T045 accessibility+responsive e2e (two files)
+  T046 corrections performance/a11y/responsive
+  T047 manual accessibility+responsive
+  T048 manual persistence/recovery
+  T049 trace audit
+  T050 final full sequence
+  Final50. Eight e2e: core T014, persistence T023, edit-delete T029, transaction-list T035, demo T040, scale T044, accessibility+responsive T045. Good. Tests before corresponding implementation per phase. Scale fixture test before generator, scale e2e before optimization. Accessibility tests before fixes. Manual review before final.
+
+  Does this satisfy "without removing any requirement, named quickstart case, test-first checkpoint, manual review, or traceability." Should include every quickstart case in tasks. I must meticulously map all:
+  AMOUNT 001-008 T010/T013/T027; CORE001-005 T011 etc, add CORE006 T027/T029. DATE001-004 T012/T013/T014. MONEY001/002/004 T010, MONEY004 persistence T021, SCALE fixture T042/T043 and FR014. MONEY003 T028/T029 + demo T040; transaction/summaries normal T014 both locales. OVERFLOW T012/T013. FILTER/SORT/EMPTY T033-35. DELETE001-005 T028/T029. PERSIST001-013 T021/T022/T023 and edit/delete failures T029. RECOVERY001-007 T022/T023. DEMO001-007 T038-40. A11Y T045/T047 etc. SCALE001/002 T044. Good.
+
+  Task T021 storage load/write combining two files should include all previous details and C2. T022 UI includes all previous. T023 e2e unchanged.
+  Task T026 combines dialog and wiring, include native dialog and recovery statuses.
+  T032 combines ConfirmDialog deletion, requesters, App integration deterministic focus. Should have exact same-month behavior, deletion order. T030 store complete edits/deletes. T031 form.
+  T037 store+components combine defaults, empty actions, summaries no durable. Good.
+  T041 demo implementation one large but complete baseline exact values all ten etc. I need preserve exact baseline in tasks? "without removing any requirement" exact values normative elsewhere but task old had all records. Should keep complete description perhaps long. Fine.
+  Polish T046 combines optimization and fixes; include demonstrated calculation/rendering bottlenecks, semantic keyboard focus announcements contrast target size noncolor issues, zoom/reflow etc. All prior tests.
+  T047 manual review combine keyboard VoiceOver responsive; record case-ID results/corrections verification.md.
+  T048 manual persistence recovery same.
+  T049 audit FR1-29 requirement matrix record each mapped case etc.
+  T050 final commands etc.
+
+  Dependencies & Execution Order all task refs update. Should avoid ranges that imply incorrect parallel:
+  Setup same.
+  US1 tests T010–T014 parallel; after T015, T016/T017 can parallel? T017 dashboard depends expense+dates perhaps yes. T018 store after domain. T019 components can once domain contracts. T020 integration last.
+  US2 T021–T023 parallel; T026 alongside store after T024.
+  US3 T027–T029; T030/T031 parallel; T032 after.
+  US4 T033–T035; after T036, T037.
+  US5 T038–T040 before T041.
+  Polish T042->T043; T044/T045 can parallel once relevant impl. T046 after measurements/automated. T047/T048 manual separate? Same verification.md so not [P]. Good.
+
+  [P] markers: consolidated tasks with multiple files can [P] if no conflict with other marked tasks same group. Should watch T019 ExpenseForm/Status and T020 integration same files? sequential not P. T021 [P] two persistence test files, T022 [P] two UI test files, T023 [P]. Fine.
+  T015 not P because T016/T017 depend domain; T016 [P] money and T017 [P] dashboard after T015? T017 dashboard also needs money? types from expense, dates T015, okay. T018 store after all.
+  US3 T030/T031 [P] separate store/form. T032 integration.
+  US5 T041 no P.
+  Polish T044/T045 [P] distinct files. T046 no P.
+
+  Trace table final IDs:
+  FR001 T013,T014,T039,T040 (demo UI now T039)
+  FR002 T011,T013
+  FR003 T010,T013,T027,T045,T047
+  FR004 T012,T013,T014
+  FR005 T011,T013,T027
+  FR006 T010,T013,T027
+  FR007 T027,T029 (CORE006 too)
+  FR008 T028,T029
+  FR009 T028,T029,T045
+  FR010 T028,T029
+  FR011 T012,T013,T014
+  FR012 T012,T013,T038,T040
+  FR013 T012,T014,T027,T029
+  FR014 T010,T012,T013,T014,T021,T028,T029,T038,T040,T042,T043,T044 (perhaps T044 SCALE001). Include scale fixture T042/T043 explicitly.
+  FR015 T029,T044
+  FR016 T033,T034,T035
+  FR017 same
+  FR018 T033,T034,T035,T038,T040
+  FR019 T033,T034,T035
+  FR020 T021,T023,T044
+  FR021 T021,T022,T023
+  FR022 T022,T023,T045,T047,T048
+  FR023 T021,T022,T023,T029
+  FR024 T034,T035,T045,T047
+  FR025 T013,T022,T027,T028,T034,T039,T040,T045,T046,T047,T048,T050 (plus T046 fixes, yes)
+  FR026 T022,T023,T027,T028,T029,T045,T047 (same-month edit not dialog but focus requirement)
+  FR027 T039,T040
+  FR028 T038,T039,T040
+  FR029 T039,T040
+  Should quickstart matrix update FR007 CORE006; FR014 SCALE fixture; FR026 DELETE005 CORE006; perhaps FR016 CORE006 active filter? Not necessary but could add. FR014 MONEY004 already covers SCALE, add `SCALE fixture verification` explicitly.
+
+  Spec modifications:
+  - Add acceptance scenarios 6/7 under US3 perhaps same-month focus & deletion focus. Current 5. Add 6: same month edit requester visible; active category hides announce result focus filter. 7: deletion focus order exact. This is spec source.
+  - FR026 replace last clause with explicit behavior. Keep dialog requirements. Text: "... explicit focus restoration to requester on cancellation. After same-month edit... After confirmed deletion..." FR026 title dialog but includes edit. Good.
+  - SC005 update "restores focus using deterministic visible-requester/Clear filter/Add expense order" perhaps.
+  - Edge cases add bullet for same-month filter edit and deletion? Acceptance enough.
+  - FR007 perhaps no.
+  - US4 filter independent test says independently of edit/delete, but integrated coverage later okay.
+
+  UI contract update line49 and59 exact. Core inventory item4 include same-month edit that leaves active filter, item5 last visible deletion. Accessibility line89 mention same-month edits/deletion. Good.
+
+  Plan update line82 same-month deterministic; line84 deletion exact. Project tree. Verification perhaps tests mention new integrated case sets automatically.
+
+  Quickstart:
+  - Verification convention line40 perhaps explicitly demo both.
+  - CORE005 expected same-month requester focus if visible; add CORE006 row.
+  - MONEY003 already exact but perhaps expected demo transaction and summary values explicit both. Modify input to "Under each of `en-US` and `de-DE`, render normal transaction/monthly/category totals and deletion confirmation plus every demo October transaction and summary." Expected identical fixed etc exact baseline per DEMO002. Good.
+  - MONEY004 explicit roundtrip.
+  - DELETE003 expected exact fallback next/previous/Add. Add DELETE005 last visible under filter Clear filter.
+  - A11Y keyboard include same-month filter edit and deletion last visible.
+  - Trace update.
+  - SC spec covers all quickstart sets.
+
+  Tasks full rewrite easier. Perhaps no application code. Only markdown. I'll perform edits in parallel for different files. But tasks Write can be done after content ready. First update spec, UI, quickstart, plan using Edit one call per file. Should have each old_string unique. I can use one Edit per file replacing large relevant blocks perhaps multiple noncontiguous modifications impossible one Edit. I can do sequential with re-read between each or use Write full file but not appropriate incremental. I can use one Edit per file for a large span from acceptance through requirements? Spec modifications at lines77-78,158,178 noncontiguous; could only modify FR026 and acceptance via one huge old string from line72 to178, too large but possible. Better multiple Edit calls sequential with Read in between per instruction. I can parallel initial edits one per file (spec FR026, UI add/edit block, quickstart CORE block, plan UI block) then re-read targeted and next edits. Should many rounds. Could use Python script? Dedicated Edit mandatory, cannot use Bash for edits. I'll comply.
+
+  Perhaps use Edit with `old_string` whole file? That's complete replacement via Edit but cumbersome. Better 3 rounds.
+
+  Round 1:
+  spec replace US3 acceptance block lines72-79 to add scenarios.
+  ui replace Add/edit line49 and deletion line59 in one old string? Noncontiguous 10 lines apart can replace from line42-60 entire section. Good.
+  quickstart replace CORE/DATE section lines59-71 adding CORE006 and CORE005 focus; MONEY etc separate later.
+  plan replace UI/accessibility section lines80-85 with deterministic both.
+  tasks later Write.
+
+  Then round2 spec FR026; UI core inventory + perhaps accessibility in one span? core lines20-29 and accessibility line89 noncontiguous, separate rounds. Quickstart MONEY block lines73-81. Plan project tree lines113-150.
+
+  Round3 spec SC005; UI deletion? already done round1. UI core inventory. Quickstart DELETE block. Plan no more.
+
+  Round4 UI accessibility line89; Quickstart A11Y + trace perhaps can replace from A11Y section to FR matrix huge, or separate rounds. Should have C1 demo task handled tasks. Quickstart trace only later.
+  Round5 Quickstart trace FR rows via one block 174-206 full.
+
+  I should minimize but okay.
+
+  Before editing, mark first todo done second in progress.
+
+• The findings are confined to the documentation artifacts. I’ll add the exact focus fallback rules and new integrated cases, make the money checks explicit, align the planned file tree, and consolidate the task plan to 50 tasks with all eight browser suites retained.
+
+• Now re-read specific parts before next edit. Parallel Read spec 130-180, ui16-32, quick73-105, plan113-150.Apply second round. Spec FR026 exact and perhaps SC005 cannot same call unless old string from160 to180 includes many unchanged; could do one now FR026, next later. UI inventory. Quickstart money block. Plan tree.Should have remaining spec SC005, quickstart DELETE, A11Y, trace. UI accessibility line89. Plan done. Could do parallel next reads for exact current.Apply edits. Quickstart can replace DELETE003-004 adding 005. A11Y separate next due same file cannot consecutive without read. Trace separate later. Do spec SC005, UI focus, quick delete.Should continue quickstart A11Y and trace. Read quickstart current relevant before Edit.Could one Edit replace keyboard line and trace rows noncontiguous if old string from line156 through205 huge; easier separate with reread. First A11Y.Should re-read trace small then edit whole rows 186-205 perhaps only four rows noncontiguous. Could replace entire table all29 rows to update FR007,008 perhaps DELETE001-005? FR008 deletion request confirm should DELETE001–005 yes; FR010 includes DELETE005? no failed unaffected. FR014 scale fixture; FR015 DELETE005 timing perhaps include DELETE003/005; FR026 CORE005/006 DELETE001–003/005. FR016 CORE006 perhaps active filter edit not filtering operation itself optional. FR017 CORE006 summaries unchanged under filter edit? monthly totals change due amount perhaps category edit changes category summary intentionally, not filter. no.
+  Update FR007 CORE005/006, FR008 DELETE001–003/005 (DELETE004 also confirm failure but original omitted), not necessary. Keep original +005. FR026 CORE005/006; DELETE001–003/005. FR014 add SCALE fixture verification and SCALE001. Good.
+
+  Read lines180-206 then Edit entire table perhaps easiest.Core remediation done except tasks. Perhaps update quickstart SCALE-001 explicitly integer fixture verification to map C2, MONEY004 enough. Task scale test explicit. Plan test fixtures align done.
+
+  Now tasks full rewrite 50. I'll preserve T001-T009 exact and early checkpoint unchanged. In Write content copy exact lines 1-46. Consolidation note concise near Organization: "**Consolidation**: Combined redundant per-file/module implementation and related verification suites from 73 to 50 tasks; preserved ... eight e2e files." User asks concise note in tasks explaining reduction and final count. Add after Organization.
+
+  Make sure no app code written; markdown code paths okay.
+
+  I'll draft tasks meticulously. Length ~285 lines. Full content. Should test-first checkpoint for each phase existing headings. Keep early missing-App exact. Preserve phase checkpoints (US1-US5, Foundational, final). "test-first checkpoint" includes early and write/red headings. Scale fixture failing test. Good.
+
+  Potential concern T013 combines add and monthly UI test files and includes every AMOUNT add etc. T027 every AMOUNT edit. Good.
+  T010 covers MONEY004 exact parsing but persistence moved T021; update T010 description to "accepted parsing aspects of MONEY004" and T021 full. Trace clear.
+  T012 dates+dashboard includes CORE001, DATE etc pure overflow.
+  T013 includes UI CORE001/002/003/004 etc and overflow, no CORE005. Fine.
+  T014 e2e core includes MONEY003 normal transaction/summaries under both locales explicitly C1 normal. Original T016 only MONEY001/002; add MONEY003 transaction and summaries. T029 deletion MONEY003. T040 demo MONEY003. Full C1.
+  T021 roundtrip every accepted AMOUNT case through persistence inspect JSON and reloaded exact. Include `MONEY-004` all accepted values and SCALE handled later. Storage load PERSIST001-007, write008/011-013. Good.
+  T022 PERSIST008/011-013 UI failed-add later success plus recovery. Does failed edit/delete UI T029. okay.
+  T023 PERSIST001–008/011–013 e2e. Good.
+  T028 DELETE001–005 and MONEY003. Integrated last visible result UI.
+  T029 e2e CORE005/006 DELETE001–005 etc. Deterministic next/previous/Clear/Add all. same-month edit leaves active filter.
+  T032 implementation focus exact. Store T030 durable edit delete failures.
+  T034 UI transaction preferences includes FILTER/SORT/EMPTY. A1 integrated tests already US3 though US4 implementation comes later: Test-first issue! US3 tests T027/T029 include active category filter, but filtering implementation is US4 later. Original US3 independent no filter. If I add integrated tests in US3 before US4, US3 checkpoint cannot pass until US4 implemented, breaking story dependencies and tests before corresponding implementation maybe active filter tests should be in US4 phase (corresponding integration once filters exist). User asks add integrated coverage. I should put CORE006 and DELETE005 tasks in US4 test phase, not US3. Could include in T034 UI transactionPreferences and T035 e2e transaction-list (or keep e2e edit-delete for focus cases but authored later in US4? Task file could be edit-delete spec in US4, eight distinct). Better US3 tests base; US4 tests extend edit/delete integrated UI and e2e. I can put CORE006/DELETE005 in `tests/ui/transactionPreferences.test.tsx` T034 and `e2e/transaction-list.spec.ts` T035. But user might expect e2e edit-delete; no requirement specific file. Eight files preserved. This makes US3 independent. UI `editExpense.test` and `deleteExpense.test` should test same-month requester focus when visible and deletion next/previous/Add without filter, possible no filters. DELETE005 only US4. Good.
+  Spec SC005 includes all. Trace FR026 includes T034/T035 as well.
+  US4 goal filtering/sorting and integrated focus. Update independent test includes combined same-month edit/filter and deletion last visible perhaps independent test originally independent of edit/delete but now phase integration checkpoint can add separate integrated test sentence rather than changing independent test. Keep Independent Test original and add "**Integrated focus test**: ...". Great.
+  T027 same-month visible requester focus, cross-month. No CORE006 until US4.
+  T028 DELETE001–003 and MONEY003, exact next/previous/Add. DELETE005 later.
+  T029 e2e CORE005 DELETE001–004 no filter.
+  T034 covers FILTER etc + CORE006 DELETE005 integrated. T035 e2e FILTER SORT EMPTY CORE006 DELETE005. This ensures tests before corresponding US4 impl. Task T037 implements preferences and deterministic integrated focus perhaps T032 already implements generic same-month and deletion fallback including Clear filter control not yet exists. T032 can implement requester fallback and Add, leave filter-specific branch T037. Wording T032 after same-month edit restore visible requester; deletion next/previous/Add. T037 extend with active filter announce and focus filter, deletion Clear. Good.
+  Trace FR026 T027,T028,T029,T032? primary verification tasks not implementation, include T034/T035. Fine.
+
+  C1 demo tests in US5 no issue.
+  SCALE T044 includes same-month/cross-month edit and deletion at scale, active filters not needed.
+
+  Task implementation grouping T020 includes baseline styles plus app integration all components, big but okay. Does T019 build ExpenseForm/StatusMessage and T020 Dashboard/TransactionList/App/main/styles. Tests already.
+  T026 ConfirmDialog + wiring all. T032 ConfirmDialog deletion + TransactionList requesters + App integration. Same files modified across phases sequential.
+  T037 store+TransactionList+Dashboard.
+  T041 demoData + store + App/main. Test first.
+
+  Polish T045 writes accessibility and responsive in one task marked [P] alongside scale T044, distinct files. Eight files. T046 corrections includes multiple source files. T047 manual review after T046. T048 manual recovery. T049 audit. T050 final. Verification.md writes T047,T048,T049,T050 sequential not P.
+
+  Trace mappings adjust:
+  FR003 T010,T013,T027,T045,T047
+  FR007 T027,T029,T034,T035
+  FR008 T028,T029,T034,T035 (DELETE005)
+  FR010 T028,T029
+  FR014 T010,T012,T013,T014,T021,T028,T029,T038,T040,T042,T043,T044
+  FR024 T034,T035,T045,T047
+  FR026 T022,T023,T027,T028,T029,T034,T035,T045,T047
+  FR025 T013,T022,T027,T028,T034,T039,T040,T045,T046,T047,T048,T050
+  FR001 T013,T014,T039,T040
+  FR012 T012,T013,T038,T040
+  FR018 T033,T034,T035,T038,T040
+  SC not in tasks trace original only FR. Fine.
+
+  Dependencies refs final.
+  Polish scale T042–T043 can begin once shared fixtures stable, T044 requires stories.
+  Parallel examples update.
+
+  Consolidation note final count 50. Great.
+
+  Perhaps tasks `T001-T009` descriptions exact unchanged yes copy.
+  No requirement to preserve original task text after T009, okay.
+
+  Now Write tasks full.
+
+• The specification and contracts now define the requested focus order, and the quickstart includes the filtered-edit and last-visible-deletion cases plus explicit locale and persistence checks. I’m now renumbering the consolidated plan and its dependency and traceability tables.
+
+• Now audit. Should check all task IDs duplicates, sequential, references >50, early unchanged, named quickstart cases, e2e 8, plan alignment. Use Bash scripts for parsing counts, Grep for old terms/IDs. Dedicated Grep search file contents. Can use Bash Python for robust audit since data processing allowed, not reading secrets. I need no app code. I'll run a Python inline script reading artifacts and checks (not modification) plus Grep for outdated phrases and tracker.spec, T05[1-9]/T06/T07 references. Should be careful regex task ranges etc. Use Grep dedicated. Independent calls parallel: Bash Python audit, Grep stale terms, Read tasks maybe full to inspect after write? Instruction after Write don't re-read solely prove write; but audit exact contract requires inspect final. I can use Grep and Bash, not full re-read. I need verify every named quickstart case coverage. Script extract IDs from quickstart tables and tasks text (trace). All cases appear in tasks? DATE-002 might not appear explicitly tasks ranges DATE001–004 yes parsing range expansion needed. I can write custom expand case ranges. Also AMOUNT etc. Should have all named case rows: AMOUNT001-008 CORE001-006 DATE001-004 MONEY001-004 OVERFLOW001 FILTER001/002 SORT001/002 EMPTY001/002 DELETE001-005 PERSIST001-013 RECOVERY001-007 DEMO001-007 SCALE001/002. A11Y textual. Tasks mentions ranges with slash shorthand `PERSIST-001–008/011–013`, `DELETE-001–003/005`, `CORE-001–004`, etc. I can implement expansion or manually check. Audit script can list references >50 using regex `T(\d{3})`; detect duplicate task definitions `^- [ ]`. Task IDs all50 sequential. Also trace table FR001-29 exactly. Quickstart FR table29. Spec FR29. E2E plan names compare tasks names. Required files.
+
+  Potential issue quickstart MONEY004 says "Round-trip every accepted input in AMOUNT-001–003 through normal persistence" accepted inputs in AMOUNT-001–003 yes all accepted only those. Good.
+
+  Potential issue SC-002 says all CORE,DATE,MONEY,OVERFLOW exact expected integer-cent and formatted results; CORE006 focus no money but okay. SC005 all deletion focus. Good.
+
+  Potential missing `DELETE-005` in SC005 automatically.
+  Potential C1 exact demo transaction values under both: T040 every demo October transaction and monthly/category summary matching DEMO002. Yes.
+  Potential C2 every accepted AMOUNT roundtrip persistence and integer JSON: T021 explicit.
+  Scale FR014 tasks and quickstart.
+  I1 plan tree includes vitest and fixtures +8.
+  Task count50.
+
+  Should check tasks no accidental dropped test `DATE-002` add/edit invalid UI? T012 domain dates, T013 add date? T013 covers DATE001/003 only as original; original T016 e2e DATE001-004 includes DATE002 browser. T039 edit includes identical date validation. Fine.
+  Original T014 `CORE003` invalid category draft, T013 includes CORE001–004. good.
+  Original T015 DATE001/003, CORE001/002, OVERFLOW. T013 yes.
+  Original T016 CORE001-004 DATE001-004 MONEY001/002, now MONEY003 normal too.
+  Original T029 no MONEY004 now added.
+  Original T030 replacement accessible dialogs; T022 yes.
+  Original T031 failed add; T022 yes.
+  Original T032 e2e; T023 yes.
+  T039 original same-ID update both cross-month; T027 yes.
+  T040 original DELETE001-003; T028 yes.
+  T041 original DELETE004 PERSIST etc; T029 yes.
+  T048-050 US4; T033-35 yes plus integrated.
+  Demo all.
+  Polish all.
+
+  Implementation details dropped? T017 original domain `Expense` amount etc yes T015. T019 date lexical etc yes. T020 aggregate yes. T021 store yes. T022 form yes. T023 dashboard yes. T024 list no edit/delete yet T020 builds list before US3 yes. T025 status yes. T026 app no storage yes. T027 styles yes.
+  US2 T033 storage yes. T034 load yes. T035 add save yes. T036 recovery yes. T037 dialog yes. T038 wire yes.
+  US3 store edits/delete yes. Form yes. ConfirmDialog yes. List requesters yes. App integration yes.
+  US4 domain filter, store prefs, UI controls yes.
+  US5 exact baseline yes.
+  Polish performance optimization included T046.
+  Manual responsive no screenshots yes.
+  Final sequence exact.
+
+  Potential test-first concern T042 "Write failing deterministic SCALE fixture and MONEY-004 tests" after application implementation, still fails because generator missing; okay.
+  T043 implementation test generator. Good.
+  T045 combines accessibility and responsive verification in one task; eight files preserved note.
+  Consolidation note "per-file/module implementation" perhaps combining per file/module redundant. Fine.
+
+  Should audit with tools.
+
+• The consolidated plan is written with 50 sequentially numbered tasks. I’m auditing task IDs and references, all quickstart case sets and requirement mappings, the unchanged early red checkpoint, and the eight-suite file layout.
+
+task_count: 50
+task_sequence_exact: True
+duplicate_task_ids: []
+out_of_range_task_refs: []
+tasks_fr_trace_complete: False
+quickstart_fr_trace_complete: True
+plan_e2e_exact: True ['accessibility.spec.ts', 'core.spec.ts', 'demo.spec.ts', 'edit-delete.spec.ts', 'persistence.spec.ts', 'responsive.spec.ts', 'scale.spec.ts', 'transaction-list.spec.ts']
+tasks_e2e_exact: True ['accessibility.spec.ts', 'core.spec.ts', 'demo.spec.ts', 'edit-delete.spec.ts', 'persistence.spec.ts', 'responsive.spec.ts', 'scale.spec.ts', 'transaction-list.spec.ts']
+vitest_in_plan: True
+fixtures_in_plan: True
+consolidation_note_50: True
+early_checkpoint_present: True
+required_new_cases_in_tasks: True
+money004_scale_trace: False
+• Audit script trace split issue because `.split('---',1)` catches table separator `|---|`. So false script bug, not artifact. money false same. Should rerun correct using section to Implementation Strategy. Also need exhaustive quickstart case coverage script. I can build expected IDs and expand tasks references. Perhaps detect broken references outside tasks? Other artifacts no task refs except analysis not modify. Only tasks. Good.
+
+  Should inspect git diff perhaps no git? Use `git diff -- ...` read-only allowed, perhaps repo root not git? Current app perhaps inside git. Bash `git diff --check` and `git diff --stat` useful. `git diff --check` verifies whitespace. Could run with audit. Should have no tests because docs only, no app code standard build absent. I should not run npm. Use markdown consistency.
+
+  Should potential issue plan source tree test fixtures includes `scaleData.test.ts` but not `expenses` test etc fine. Eight exact.
+
+  Should check A1 deterministic spec UI quickstart tasks all exact. yes.
+
+  Perhaps quickstart "Precondition: one identified expense" now DELETE005 requires other month records hidden, row overrides precondition okay.
+
+  Potential issue requirement "Preserve T001-T009 and early missing-App red checkpoint unchanged so evidence commands remain stable" My Write copied exactly. Audit perhaps compare original impossible unless git diff can show lines no changes? Git diff can confirm T001-9 no changes. Use `git diff --unified=0 tasks.md` and inspect first changes after organization etc. Could use Python extract original from git `git show HEAD:...` but current repo perhaps files untracked? I have original in context. I can manually see exact copied. Fine.
+
+  Should run robust audit for case IDs. I can create expected dictionary and check strings/ranges using parser. Simpler since known expected ranges, manually define task required substrings for each set. For all cases, expand regex. Write function parse all occurrences:
+  Patterns `(AMOUNT|CORE|...)-([0-9]{3})(?:[–-]([0-9]{3}))?((?:/[0-9]{3}(?:–[0-9]{3})?)*)`
+  Should have tasks have `Every AMOUNT row` not numeric but also T010 AMOUNT001-008. PERSIST etc ranges. CORE006 standalone. DELETE005. SCALE001/002. MONEY001–003 and 004. OVERFLOW. A11Y plain.
+  Could just for each expected ID determine covered if exact string or within any range using regex. Implement extraction:
+  for each prefix, find all segments in tasks matching `PREFIX-\d{3}(?:–\d{3})?(?:/\d{3}(?:–\d{3})?)*`
+  Examples `PERSIST-001–008/011–013` works.
+  `AMOUNT-003/005/008` works.
+  `DELETE-001–003/005`.
+  `MONEY-001–004`.
+  `CORE-005/006`.
+  Should have `SCALE-001/002`.
+  Then expand.
+  Quickstart case sets extract expected manually ranges as above and assert missing none. Also A11Y string.
+  FR trace correct.
+  Task definitions tests before impl: parse phase indexes perhaps manual. Could script ensure within each story first test task numbers < impl tasks, obvious headings.
+  No duplicate IDs etc.
+
+  Perhaps verify all 8 e2e tasks not just mentions trace; each exactly one task definition writes file. Count task lines containing e2e each: T014,T023,T029,T035,T040,T044,T045 (two) =8. Good.
+
+  Run.
+
+• The first audit confirmed 50 unique sequential task IDs, no stale task references, and the exact eight browser suites. Two script checks used an overly broad section delimiter, so I’m rerunning those checks with the correct section boundary and expanding every quickstart case range.tasks_fr_trace_complete: True count: 29
+money004_scale_trace: True
+all_named_quickstart_cases_covered: True
+missing_cases: []
+a11y_manual_and_automated_tasks: True
+manual_persistence_review: True
+test_first_scale_checkpoint: True
+all_task_refs_defined: True
+
+
+• All good. But need review actual final result for subtle missing references and inconsistent task numbering, duplicate IDs done. Could check Markdown no whitespace. `git diff --stat` output empty weird? Bash result no output despite edits. Perhaps files untracked (git diff doesn't show untracked). `git status --short` to see. Not necessary but final modified files list known. Could inspect `git status --short` perhaps all untracked so diff check no actual. No need.
+
+  Make sure no unintended application code written. only markdown.
+
+  Should I update checklists requirements-quality note to include remediation? User all feature artifacts read, resolve at source. Not necessary. But checklist CHK004 specifically "focus placement after failed validation, cross-month, empty" now same-month too but remains satisfied. Could update note not required. User didn't ask analysis report file. Do not create docs unsolicited. Fine.
+
+  Potential concern user explicitly "For A1, define this deterministic behavior in the spec, UI contract, quickstart, and tasks: after a same-month edit, restore focus to the edit requester if it remains visible; if an active category filter hides it, announce that result and focus the category filter. After deletion, focus the next visible transaction edit requester, else the previous visible requester, else Clear filter when a filter is active, else Add expense." Quickstart DELETE003 and005 plus CORE006 define all. Yes.
+
+  "Add integrated test coverage for a same-month edit that leaves the active filter and deletion of the last visible result." T034/T035. Yes.
+
+  "C1 explicitly verify demo transaction and summary values under en-US and de-DE with fixed en-US USD output." T040 quickstart MONEY003. Yes.
+
+  "C2 round-trip every accepted AMOUNT case through persistence and inspect integer-cent JSON values, and map SCALE fixture verification into FR-014." Quickstart MONEY004/T021; scale T042/43; FR014 quick and tasks. Yes.
+
+  "I1 align plan.md with vitest.config.ts, test fixtures, and eight actual e2e suite filenames instead of tracker.spec.ts." yes.
+
+  "Consolidate tasks.md from 73 tasks to approximately 45-55 tasks by combining redundant work per file/module and related verification suites, without removing any requirement, named quickstart case, test-first checkpoint, manual review, or traceability." 50. Tests all before corresponding implementation. Manual all. Trace 29. Good.
+  "Preserve T001-T009 and early missing-App red checkpoint unchanged so evidence commands remain stable; renumber all later tasks sequentially and update every traceability/dependency reference." yes T010-50. Dependencies references updated.
+  "Keep tests before corresponding implementation, preserve eight distinct e2e files or justify consolidation, and keep complete SCALE, accessibility, responsive, persistence, and demo verification." yes.
+  "Add concise consolidation note in tasks.md explaining reduction and final count." yes.
+  "Review result for duplicate IDs, broken references, missing coverage, inconsistent task numbering, report final task count." audits done, final report count50.
+
+  Perhaps run final audit one more after no edits? Already done. Mark Todo done. Respond concise with summary modified files and verification. Mention no application code. Cite relevant lines current known from Grep. Tasks line positions changed known. Plan lines root etc current after added lines perhaps line120 vitest, tree e2e ~158. I can cite without exact? Instructions say cite code locations path:42. Use known tasks:15 consolidation maybe line15? I can get line numbers via Grep specific key for response references. Already tasks line64 etc. Consolidation line15 likely. Plan tree lines120 etc after update. Quickstart line80 etc. Spec line160. UI line49/59. Response can list:
+  - A1: `spec.md:79-80`, `contracts/ui-contract.md:49`, `:59`, `quickstart.md:68` CORE006 and `:105` DELETE005, tasks T034/T035 at `tasks.md:134-135`.
+  - C1/C2: `quickstart.md:80-81`, `tasks.md:156`, `:87`, FR014 trace `tasks.md:239?` need actual line numbers from Write maybe count. I can use Grep for `FR-014|Consolidation|vitest.config|core.spec` plan. Use one final Grep to get exact key lines, plus mark todo done in same response? Could do parallel Grep and Todo update? Mark audit done based on previous results independent. Then respond.
+
+• The audit passes: all 50 task IDs are unique and sequential, every reference resolves, all 29 requirements and every named quickstart case remain mapped, and the SCALE fixture checkpoint stays test-first. No stale `tracker.spec.ts`, old focus wording, or T051–T073 references remain.
+
+• Respond now. Concise but enough. Mention 50. List findings resolved. No tests run because docs only; audits instead. "No application code changed." Standard build/test not applicable absent app. Don't say tests pass. Perhaps respond:
+
+  "Completed documentation-only remediation. Final task count: 50."
+
+  - A1 exact focus rules in spec FR026, UI contract, quickstart CORE006 DELETE003/005; integrated UI/Chromium T034/T035.
+  - C1 demo both locales T040 and MONEY003.
+  - C2 all accepted AMOUNT roundtrip T021/MONEY004, SCALE T042-44 and FR014 mapping.
+  - I1 plan tree vitest fixtures eight e2e.
+  - Tasks consolidated 73→50, T001-T009 and checkpoint unchanged, test-first etc.
+
+  "Audit: 50 unique sequential IDs T001-T050; no stale refs/duplicates; FR001-29 and every named case covered; eight e2e retained; SCALE/a11y/responsive/persistence/demo/manual reviews retained."
+
+  Cite paths. Avoid excessive. Good.
+
+• Completed the documentation-only remediation. **Final task count: 50.** No application code was changed.
+
+  - **A1:** Added deterministic same-month edit and post-deletion focus rules to `specs/001-expense-tracker/spec.md:160` and `specs/001-expense-tracker/contracts/ui-contract.md:49`. Added CORE-006 and DELETE-005 quickstart cases, with integrated UI and Chromium coverage in `specs/001-expense-tracker/tasks.md:134`.
+  - **C1:** MONEY-003 and T040 now explicitly verify every demo October transaction and summary under both `en-US` and `de-DE`, with identical fixed en-US USD output (`specs/001-expense-tracker/tasks.md:156`).
+  - **C2:** MONEY-004 and T021 now round-trip every accepted AMOUNT input through persistence and inspect stored/reloaded integer-cent JSON values. SCALE fixture verification is mapped into FR-014 (`specs/001-expense-tracker/tasks.md:232`).
+  - **I1:** Aligned `plan.md` with `vitest.config.ts`, the test fixtures, and all eight actual Playwright suite filenames (`specs/001-expense-tracker/plan.md:120`).
+  - **Tasks:** Consolidated 73 tasks to 50, preserving T001–T009 and the early missing-App red checkpoint unchanged. The consolidation note is at `specs/001-expense-tracker/tasks.md:15`.
+
+  Audit results:
+
+  - Exactly 50 unique, sequential IDs: T001–T050.
+  - No broken or stale task references.
+  - FR-001–FR-029 and every named quickstart case remain covered.
+  - Tests remain before corresponding implementation.
+  - All eight distinct e2e files remain.
+  - SCALE, accessibility, responsive, persistence, demo, manual-review, and traceability requirements remain intact.
+
+To resume this session: kimi -r session_4553a948-9917-47a0-9d68-1e7ce0779680

@@ -1,0 +1,18 @@
+specify: 1.2.5
+Kimi Code: 2.3.0
+Node.js: v22.23.3
+npm: 10.9.9
+uv: uv 0.13.0 (4ecd0eff2 2026-10-09 aarch64-apple-darwin)
+Python (Spec Kit runtime): 3.12.15
+Hashnode CLI: 0.1.1
+Spec Kit Bug Triage Workflow extension: 1.0.1
+VS Code (evidence capture): 1.143.1
+React / ReactDOM: 19.3.1
+TypeScript: 5.9.3
+Vite / @vitejs/plugin-react: 8.3.5 / 6.1.2
+Vitest / jsdom: 4.1.12 / 29.1.1
+Playwright: 1.64.1
+Reference Chromium: Chrome for Testing 156.0.8078.4 (playwright chromium v1248)
+@axe-core/playwright: 4.14.0
+Integration: kimi
+Init command: specify init experiments/spec-kit-expense-tracker/app --integration kimi --script sh --non-interactive

@@ -1,0 +1,2406 @@
+kimi version 2.3.0
+• I need act on /skill:speckit-implement but no available skill listed matching. User explicitly asks slash skill perhaps file in project .kimi-code. Now inspect. Should execute only T021-T026 resume tasks. Should understand specs, repo. Multi-step, should use todos and perhaps no plan mode because user detailed specific instructions, and explicit implement. Should find skill if available? Tool Skill listing only built-ins no speckit. Can't invoke nonexistent; can look .kimi-code etc. Should not mention unless relevant. Now read tasks.md, constitution perhaps spec, plan. Glob.
+
+• I’ll resume the task list at T021, verify the required tests first, then implement only through T026 and run the targeted unit and Chromium checks.
+
+• Should read skill instructions directly since Skill unavailable listing. User invoked project skill, read. Also contract path nested not glob *. Should inspect.Should run pre-execution checks and checklists. Could do script + glob extensions/checklists + constitution, plan quickstart, e2e current, config. Should have no modifications outside scope. Ignore check .git exists? Probably. Read .gitignore. Perhaps test existing suite baseline. Before writing tests I should understand exact quickstart PERSIST RECOVERY rows. Grep known file search.{"FEATURE_DIR":"<project>/specs/001-expense-tracker","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md","tasks.md"]}
+Now read extensions and checklists. If unchecked skill says stop ask, but auto no AskUserQuestion; can plain text? User explicit resume execute indicates proceed anyway perhaps if checklist unchecked, requirement says ask before. But auto instruction do not AskUserQuestion only tool, can ask plain and stop would conflict task. Should see. M ../../campus-voices/.env.example
+ M ../../campus-voices/README.md
+ M ../../campus-voices/app/index.html
+ M ../../campus-voices/app/src/content.ts
+ M ../../campus-voices/app/src/main.ts
+ D ../../campus-voices/app/src/providers/dessa-provider.ts
+ D ../../campus-voices/app/src/providers/scripted-provider.ts
+ D ../../campus-voices/app/src/providers/voice-provider.ts
+ M ../../campus-voices/app/src/session.ts
+ M ../../campus-voices/app/src/styles.css
+ M ../../campus-voices/docs/hashnode-draft.md
+ M ../../campus-voices/docs/screenshots/01-local-prototype.png
+ M ../../campus-voices/docs/screenshots/02-seminar-session.png
+ M ../../campus-voices/docs/screenshots/03-private-feedback.png
+ M ../../campus-voices/docs/screenshots/06-local-data-controls.png
+ M ../../campus-voices/docs/setup-guide.md
+ M ../../campus-voices/eslint.config.js
+ M ../../campus-voices/infra/cloudflare-tunnel.md
+ M ../../campus-voices/package.json
+ M ../../campus-voices/playwright.config.ts
+ M ../../campus-voices/scripts/capture.mjs
+ M ../../campus-voices/scripts/verify-static.mjs
+ M ../../campus-voices/server/app.ts
+ D ../../campus-voices/server/feedback.ts
+ M ../../campus-voices/server/index.ts
+ D ../../campus-voices/tests/feedback.test.ts
+ D ../../campus-voices/tests/providers.test.ts
+ M ../../campus-voices/tests/scenario.spec.ts
+ D ../../campus-voices/tests/server.test.ts
+ M ../../campus-voices/tests/session.test.ts
+?? ../../../.DS_Store
+?? ../../.DS_Store
+?? ../../ai-agent-engineering-feedback-loops/
+?? ../../campus-voices/app/public/
+?? ../../campus-voices/app/src/audio/
+?? ../../campus-voices/app/src/conversation-api.ts
+?? ../../campus-voices/scripts/download-minicpm.py
+?? ../../campus-voices/scripts/install-minicpm.sh
+?? ../../campus-voices/scripts/start-minicpm.sh
+?? ../../campus-voices/scripts/verify-voice.mjs
+?? ../../campus-voices/server/conversation/
+?? ../../campus-voices/tests/fakes/
+?? ../../campus-voices/tests/fixtures/
+?? ../../campus-voices/tests/memory-audio-store.test.ts
+?? ../../campus-voices/tests/minicpm-integration.test.ts
+?? ../../campus-voices/tests/minicpm-provider.test.ts
+?? ../../campus-voices/tests/provider-boundary.test.ts
+?? ../../campus-voices/tests/wav.test.ts
+?? ../../campus-voices/tests/web-server.ts
+?? ../
+<repository>/.git
+Checklist pass. Should report status table per skill before continue, concise. No hooks. Now create tests T021-T023. Many tests comprehensive. I should carefully design API and tests. Can parallelize test authoring via agents? Agent tasks distinct T021 T022 T023; would be helpful substantial. But I need ensure consistent API design across tests. Could define contract to agents. Or write myself sequential? User wants test-first, not necessarily simultaneous. I can use subagents for independent test creation after precise interface. But subagent could modify tests only. Should not delegate understanding. I know spec and API not defined yet. I can design storage API and store/UI expected behavior. Could author tests myself with ~1000 lines? Time. I have token budget. Should be robust.
+
+  First baseline existing tests might now access localStorage across test renders causing persistence interference once implement. Tests currently render App with initialExpenses and no storage cleanup. If App defaults persistence enabled and initialExpenses tests expect in-memory only, I need preserve compatibility. I can design App initialExpenses prop means no persistence? Existing tests intended US1 without storage. T025 says integrate normal persistence; existing tests will need remain passing without changing? I can use optional storage dependency for tests and `initialExpenses` bypass? But production App uses localStorage. In test environment, rendering <App /> will now read jsdom localStorage. Fine, but no saving initialExpenses? Existing tests with initialExpenses expect render exactly those and add. Could treat `initialExpenses` as explicit initial collection with storage still loaded? Better maintain prop as store test injection: if provided, no load, perhaps still persistence on add? Tests no storage setup, but writes succeed to localStorage; cross-test leakage if no clear but each with explicit initial unaffected. Tests with <App /> in addExpense beforeEach could leak across tests due persisted prior adds. So tests need isolation setup globally localStorage.clear? But user says do not weaken assertions; adding cleanup okay, yet existing tests expected no storage access T020 "without storage access" could be regressed. Better App has `persistence` default true production; tests need injection? Existing <App /> would persist and leak. Could storage load initial state at module and cleanup resets? No. I can update src/test/setup.ts afterEach localStorage.clear but now test storage access, prior requirement only earlier phase not acceptance maybe fine. Yet T022 tests can inject. I should not modify existing tests except necessary. Better design App with default persistence enabled, and tests setup localStorage.clear beforeEach globally. Existing tests will still pass. That's legitimate integration adaptation. But sole localStorage boundary means test setup direct localStorage allowed tests. I can use global afterEach clear. Or App initialExpenses optional, useExpenseStore initializer loads if undefined. Test default no initial will load missing. Each test cleanup but localStorage retains; adding cleanup required. Could instead in test setup beforeEach localStorage.clear. No weakening.
+
+  Should inject StorageLike into App for UI failure tests and storage boundary tests. AppProps `storage?: StorageLike`, `initialExpenses?`. `useExpenseStore(initialExpenses?, storage = window.localStorage?)` danger default param accesses localStorage getter throwing. Sole boundary should call `loadExpenses()` which internally `globalThis.localStorage` try. Pass storage optional to load/save. If initialExpenses defined, should skip load and perhaps use normal ready state with supplied collection. For production, initial undefined. UI tests can render `<App storage={fake} />`.
+
+  Storage API:
+  ```
+  export const EXPENSES_STORAGE_KEY=...
+  export interface StorageLike { getItem(key:string): string|null; setItem(key:string,value:string):void}
+  export type LoadExpensesResult =
+   {status:'missing'} | {status:'valid'; expenses:Expense[]} | {status:'readable-malformed'; raw:string} | {status:'unreadable'; error:unknown}
+  export type SaveExpensesResult={status:'saved'}|{status:'write-failed'; error:unknown}
+  export function loadExpenses(storage?: StorageLike):...
+  export function saveExpenses(expenses: readonly Expense[], storage?:StorageLike):...
+  ```
+  Should strict envelope no extra keys? "strict version-1 envelope" could require exactly version and expenses, record validation perhaps currently allows extra record fields. Strict all-or-nothing domain validation not necessarily exact own keys but tests should include envelope shapes, invalid records. Could enforce envelope exact keys and record exact? Domain invariants not forbid extra fields. Strict envelope at least plain object nonarray version===1 expenses array. Tests likely expect invalid unknown fields? I can choose strict record keys too? It might reject legitimate future? version fixed. "strict version-1 envelope" could exact only. I'll enforce only version, expenses keys and record domain validation (current doesn't reject note blank; persisted note optional empty allowed? data model says omitted or empty blank normalized, persisted domain validation should perhaps note blank accepted? Existing tests domain cover invalid persisted records; read).
+
+• Both requirements checklists pass (49/49 items checked), and no implementation hooks are registered. The persistence and recovery contracts are clear; I’m now adding the storage, UI, and Chromium tests before implementation.
+
+• Now mark first done next in progress. Then write tests. Could delegate agents for T021/T022/T023 with contract. Should avoid agents implementing. Use coder since files. Should have exact API. They can create test files only. But coordinating App props and storage interface. Provide clear:
+  - StorageLike, loadExpenses/saveExpenses named.
+  - load result `kind` or status? Choose `status`.
+  - `saveExpenses(expenses, storage?)`.
+  - App `<App storage={storage}/>` and initialExpenses.
+  - UI labels/messages can tests regex not exact too implementation-flexible but strong.
+  - Dialog role name /replace saved information/i, buttons Start fresh, Save expense? Guarded add submit "Add expense" should open confirm first save, optimistic addition? Requirement "When guarded work is committed, confirmation ... first replacement save". The normal Add click in guarded state should update memory and open dialog or open dialog before commit? Data model: "first save of guarded work" and cancel retains work in memory. So on valid add while recovery required, update expenses immediately and open confirmation. Cancel leaves new work visible. Confirm saves. Good.
+  - start fresh button always visible only recovery.
+  - persistence status `role=alert name=Persistence status` for warning. Distinct readable/unreadable messages.
+  - `StatusMessage` tone warning addition.
+  - failed normal add retains memory warning associated attempted task, perhaps in Dashboard `Persistence status` alert.
+  - later success clears.
+  - native dialog focus etc.
+
+  Potential issue unit jsdom lacks dialog showModal. Tests can polyfill? Current jsdom 29 maybe supports? likely HTMLDialogElement showModal not implemented. I can add test setup polyfill in tests? Better component implementation fallback? Requirement use showModal real. Unit tests can stub methods globally. T022 test file beforeEach define `showModal` and close; but native jsdom may not focus automatically. ConfirmDialog implementation use refs focus cancel, and requester restoration. Polyfill simple sets open attr. E2E verifies real.
+
+  Storage failures injection: StorageLike can throw. Serialization failure needs circular collection but Expense[] typed. Boundary `saveExpenses` accepts readonly Expense[], tests cast circular as unknown as Expense[]. For UI serialization failure through valid expense impossible because all fields string/number noncircular. Should have injection of JSON.stringify spy to throw in unit UI; in Chromium `page.addInitScript` override JSON.stringify only for key? Can monkey patch to throw when value has version & expenses. That's real failure. Good.
+
+  Unreadable storage in browser: override Storage.prototype.getItem to throw for key, setItem count. Make sure load catches.
+
+  Storage default accessor: `getDefaultStorage` inside try `globalThis.localStorage`, catches unreadable. Save if access throws write-failed. `loadExpenses(storage?)` if supplied use directly; if not read globalThis.localStorage inside try.
+
+  Strict envelope `JSON.parse` can produce `__proto__` harmless. Validate own fields exactly? Could not need. Save should validate? T024 says strict all-or-nothing domain validation and JSON serialization, likely save may serialize only valid current collection. Tests can expect write-failed invalid collection without write. Good.
+
+  T021 should include PERSIST-008 etc at storage boundary, not UI. save returns fail no fallback and later full success. Storage writes count.
+
+  Could use agents in parallel. Should have precise prompt with task requirements and API contract. Agent contexts zero but include paths. Tell only create test file(s), run red targeted, report. They may need read existing fixtures. They should not modify setup. For UI tests, may be lengthy and design consistency. I can assign T021 storage and T023 e2e to agents; write T022 myself to control. But parallel Agent tool calls can run in foreground via multi_tool parallel; if I call agents both will return, no own work meanwhile. Could run background then work T022. That's appropriate clear benefit. Use two background agents. But automatic completion arrives later; I can work. Make sure agents don't edit other files. Agent instructions include tests must fail due missing module/behavior and no implementation. T023 create e2e/persistence.spec.ts and run npx playwright test e2e/persistence.spec.ts perhaps tests fail. T021 run vitest. They can do. Then I author T022. I'll update todos.Now author UI tests. Should be careful not to overdo. Two files recovery and persistenceStatus. I can create new files using Write. Perhaps test helpers duplicated. Design tests.
+
+  UI recovery tests:
+  - setup fake storage class and dialog mocks? I can include in each file helper. Use actual App with storage. `initialExpenses` not used.
+  - fake storage with raw property, reads/writes, throwOnGet/throwOnSet, failNextWrites perhaps.
+  - Because storage interface only getItem setItem. `createStorage(raw)` returns object and spies vi.fn.
+  - For valid saved values selected current month fixed 2026-10. Use beforeEach fake Date.
+  - mock HTMLDialogElement.prototype.showModal/close if absent; in jsdom `HTMLDialogElement` exists likely. Use vi.stubGlobal? Simplest in beforeEach:
+  ```
+  if (!HTMLDialogElement.prototype.showModal) { ... }
+  ```
+  But implementation can call cancelRef focus. `close()` dispatch? React onClose sets state. If component `onCancel` preventDefault + onCancel handler closes. I can define close removes open. showModal sets open. No after cleanup needed methods remain. TypeScript assignment okay.
+  - local storage unaffected because injected.
+
+  Test recovery:
+  1 PERSIST003/RECOVERY001 readable raw no writes load empty warning no transaction valid-looking, click Start fresh -> dialog visible cancel focused, cancel via click, no write raw same warning; reopen Escape using user.keyboard('{Escape}') -> jsdom polyfill won't native cancel event automatically. user.keyboard Escape on dialog doesn't fire cancel in jsdom. fireEvent.cancel(dialog) simulates native. Use fireEvent.cancel. Requester focus restored assertion.
+  2 RECOVERY002 confirm start fresh write exact empty, warning gone, ready empty, reload? persistenceStatus handles.
+  3 RECOVERY003 failure confirm no retry, no success, empty guarded warning. `writes=1`.
+  4 RECOVERY004 guarded add valid, dialog opens, item visible, cancel no write retains, Escape similarly second add perhaps same.
+  5 RECOVERY005 success full collection raw old replaced warning clear reload perhaps remount new App same storage.
+  6 RECOVERY006 failure types it.each storage set throw and JSON.stringify spy. Unit UI for access/quota/serial. Should restore spy.
+  7 RECOVERY007 unreadable cancel/failure/success no raw claim. Could combine.
+
+  Persistence status tests:
+  - PERSIST008 failed add retains warning and no durability claim, later success PERSIST013 saves all retained adds and clears, remount exact collection. Also PERSIST011 serialization and PERSIST012 mid-session access. This overlaps recovery. T022 asks failed-add/later success. I can make two tests.
+  - valid restore no duplication PERSIST002 perhaps T021 and e2e enough but UI test good.
+  - missing no warning PERSIST001.
+  - status ordinary unsaved warning vs recovery message distinct.
+  - failed replacement retention in recovery.
+
+  Should avoid overly massive tests. 12 tests across two files.
+
+  Store optimistic add + persistence state:
+  State design:
+  ```
+  type RecoveryState = {required:boolean; readable:'readable-malformed'|'unreadable'|null}
+  type PersistenceStatus = {kind:'recovery-readable'|'recovery-unreadable'|'unsaved'|'replacement-failed'; task:'add'|'start-fresh'|'replacement'} | null
+  type Confirmation = 'start-fresh'|'first-replacement'|null
+  ```
+  Store loads useState initializer once. `expenses` initial if provided else load valid or [].
+  For guarded add:
+  - create result, setExpenses next
+  - setConfirmation('first-replacement')
+  - status remains recovery
+  - no write until confirm.
+  For normal add:
+  - optimistic set and saveExpenses(next)
+  - if fail set unsaved status; if success clear unsaved only (no status). `persistenceState` ready.
+  StartFresh:
+  - requester handled dialog
+  - setConfirmation('start-fresh')
+  Confirm:
+  - target expenses [] or current
+  - save; success set expenses [] for fresh, recovery false, status null; failure retain, status replacement-failed and recovery remains
+  - close dialog regardless confirmed? Native confirm usually close after attempt. Requirement failed replacement warning visible; dialog can close. Yes.
+  Cancel:
+  - setConfirmation null only; memory unchanged warning.
+  Later mutation after failed replacement while still recovery opens replacement dialog; no ordinary write.
+  If normal unsaved status then later add success clears. Good.
+  - if saveExpenses unexpectedly returns write-failed, no throw.
+  - initialExpenses provided should mark ready and skip load. But still save to storage on add. Existing UI tests using default no injected storage will write, setup must clear. I'll add setup localStorage.clear afterEach perhaps beforeEach. However direct global localStorage access in setup isn't app boundary? Only source restriction. Fine.
+
+  App `persistenceStatus` and recovery UI:
+  Dashboard props optional status and onStartFresh. Existing direct Dashboard tests unaffected. Could place status in App above layout instead of Dashboard? Task explicitly wire through Dashboard, so pass. Render StatusMessage inside dashboard before summary with label "Persistence status", tone warning/error. Start fresh near warning.
+  Dialog App:
+  ```
+  <ConfirmDialog open={store.confirmation!==null} title... description... confirmLabel... onCancel store.cancelReplacement onConfirm store.confirmReplacement requesterRef?>
+  ```
+  Focus restoration requester: native dialog automatically restores focus to previously focused element on close, but jsdom no. Component capture `document.activeElement` on open and focus on cleanup/close. For first replacement, requester Add expense button. For start fresh Start fresh. On confirm failure/success, restoration to requester perhaps Start fresh disappears on success; need fallback? Contract requester focus restoration cancellation explicitly; on confirm not necessarily. Component restore if connected else Add expense perhaps. Tests cancellation only.
+  Native `onCancel={event.preventDefault(); onCancel()}` and `onClose`? If state closes by onCancel unmount, focus cleanup. cancel button calls onCancel. Confirm calls onConfirm. `useEffect` when open: capture active, showModal, focus cancel; return close if open and previous.focus. Ensure React Strict Mode not used. `dialog ref`.
+  StatusMessage tone 'warning', role alert for warning and error, icon ⚠ or !. no emoji instruction says no emoji in my response, code icon could use `!` to avoid. warning `!`.
+
+  Messages:
+  readable: "Saved information cannot currently be used because its contents are invalid. The visible collection is temporary. Replacing the saved information requires confirmation."
+  unreadable: "Saved information cannot currently be used because browser storage is unreadable. Its contents have not been inspected. The visible collection is temporary. Replacing saved information requires confirmation."
+  unsaved add: "Expense added, but the latest work is not durably saved. Your current changes remain only in memory." no "Expense added." success claim? It's not durability claim, okay. Existing ExpenseForm always says Expense added, fine. Persistence warning no durable success.
+  failed replacement: "Replacement failed. Current work remains only in temporary memory and has not been durably saved. Recovery is still required." no raw claim.
+
+  Dialog title "Replace saved information?" description varies:
+  start "This will irreversibly replace all existing saved information with an empty collection. The saved information cannot be recovered afterward."
+  first "This will irreversibly replace all existing saved information with the complete current in-memory collection. The replaced saved information cannot be recovered afterward."
+  Tests use regex.
+
+  I'll write the tests now.
+
+• The UI tests will exercise both replacement paths, no-write cancellation, failed-save retention, and warning clearance only after a later complete save.
+
+• Potential toHaveAccessibleDescription jest-dom supports. `expect(storage.setItem).toHaveBeenCalledTimes(failure ===...)` okay. `ReturnType<typeof vi.fn<...>>` Vitest generic syntax perhaps works? vi.fn<T extends Procedure> yes. FakeStorage interface extends StorageLike and redeclares getItem mock compatible. Good.
+
+  Now persistenceStatus tests.Issue PERSIST011 spy JSON.stringify before render, but load only parse so okay. createStorage before spy. good.
+
+  I'll run UI red now while agents.
+ RUN  v4.1.12 <project>
+
+ ❯ tests/ui/recovery.test.tsx (0 test)
+ ❯ tests/ui/persistenceStatus.test.tsx (4 tests | 3 failed) 334ms
+     ✓ PERSIST-001: missing data starts ready and empty without recovery or unsaved warnings 65ms
+     × PERSIST-008/013: failed add stays visibly unsaved and a later save persists all retained work before clearing the warning 103ms
+     × PERSIST-011: serialization failure retains optimistic work without a durable-success claim or fallback write 80ms
+     × PERSIST-012: a mid-session access exception retains changes and a subsequent failure leaves the warning visible 85ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/recovery.test.tsx [ tests/ui/recovery.test.tsx ]
+Error: Failed to resolve import "../../src/persistence/expenseStorage" from "tests/ui/recovery.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: <project>/tests/ui/recovery.test.tsx:5:55
+  3  |  import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+  4  |  import App from "../../src/App";
+  5  |  import { EXPENSES_STORAGE_KEY } from "../../src/persistence/expenseStorage";
+     |                                        ^
+  6  |  import { buildFixedLocalClock, buildValidExpense, buildVersion1Envelope } from "../fixtures/expenses";
+  7  |  var _jsxFileName = "<project>/tests/ui/recov...
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8803:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8800:14
+ ❯ resolveId node_modules/vite/dist/node/chunks/node.js:26594:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26693:23
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26666:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8582:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20155:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/persistenceStatus.test.tsx > ordinary persistence status > PERSIST-008/013: failed add stays visibly unsaved and a later save persists all retained work before clearing the warning
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  $27.50
+Received:
+  $2.00
+ ❯ tests/ui/persistenceStatus.test.tsx:62:52
+     60|
+     61|     await addExpense(user, '2.00', 'Retained after failure');
+     62|     expect(screen.getByLabelText('Monthly total')).toHaveTextContent('…
+       |                                                    ^
+     63|     const warning = screen.getByRole('alert', { name: 'Persistence sta…
+     64|     expect(warning).toHaveTextContent(/add expense/i);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/ui/persistenceStatus.test.tsx > ordinary persistence status > PERSIST-011: serialization failure retains optimistic work without a durable-success claim or fallback write
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  $29.50
+Received:
+  $4.00
+ ❯ tests/ui/persistenceStatus.test.tsx:98:52
+     96|
+     97|     await addExpense(user, '4.00', 'Serialization failure');
+     98|     expect(screen.getByLabelText('Monthly total')).toHaveTextContent('…
+       |                                                    ^
+     99|     expect(storage.setItem).not.toHaveBeenCalled();
+    100|     const warning = screen.getByRole('alert', { name: 'Persistence sta…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/ui/persistenceStatus.test.tsx > ordinary persistence status > PERSIST-012: a mid-session access exception retains changes and a subsequent failure leaves the warning visible
+TestingLibraryElementError: Unable to find an accessible element with the role "alert" and name "Persistence status"
+
+Here are the accessible roles:
+
+  banner:
+
+  Name "":
+  [36m<header[39m
+    [33mclass[39m=[32m"app-header"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"app-intro"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"eyebrow"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Personal Expense Tracker":
+  [36m<h1 />[39m
+
+  Name "Add expense":
+  [36m<h2[39m
+    [33mid[39m=[32m"add-expense-heading"[39m
+  [36m/>[39m
+
+  Name "Spending summary":
+  [36m<h2[39m
+    [33mid[39m=[32m"monthly-summary-heading"[39m
+  [36m/>[39m
+
+  Name "Transactions":
+  [36m<h2[39m
+    [33mid[39m=[32m"transactions-heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mclass[39m=[32m"app-layout"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Add expense":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"add-expense-heading"[39m
+    [33mclass[39m=[32m"panel expense-form-panel"[39m
+  [36m/>[39m
+
+  Name "Spending summary":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"monthly-summary-heading"[39m
+    [33mclass[39m=[32m"panel summary-panel"[39m
+  [36m/>[39m
+
+  Name "Transactions":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"transactions-heading"[39m
+    [33mclass[39m=[32m"transactions"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Amount (USD)":
+  [36m<input[39m
+    [33mautocomplete[39m=[32m"off"[39m
+    [33mid[39m=[32m"expense-amount"[39m
+    [33minputmode[39m=[32m"decimal"[39m
+    [33mname[39m=[32m"amount"[39m
+    [33mplaceholder[39m=[32m"0.00"[39m
+    [33mtype[39m=[32m"text"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Note (optional)":
+  [36m<textarea[39m
+    [33mid[39m=[32m"expense-note"[39m
+    [33mname[39m=[32m"note"[39m
+    [33mplaceholder[39m=[32m"What was this expense for?"[39m
+    [33mrows[39m=[32m"3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "Category":
+  [36m<select[39m
+    [33mid[39m=[32m"expense-category"[39m
+    [33mname[39m=[32m"category"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "food":
+  [36m<option[39m
+    [33mvalue[39m=[32m"food"[39m
+  [36m/>[39m
+
+  Name "transport":
+  [36m<option[39m
+    [33mvalue[39m=[32m"transport"[39m
+  [36m/>[39m
+
+  Name "housing":
+  [36m<option[39m
+    [33mvalue[39m=[32m"housing"[39m
+  [36m/>[39m
+
+  Name "entertainment":
+  [36m<option[39m
+    [33mvalue[39m=[32m"entertainment"[39m
+  [36m/>[39m
+
+  Name "other":
+  [36m<option[39m
+    [33mvalue[39m=[32m"other"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Add expense":
+  [36m<button[39m
+    [33mclass[39m=[32m"primary-button"[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "Expense status":
+  [36m<p[39m
+    [33maria-label[39m=[32m"Expense status"[39m
+    [33mclass[39m=[32m"status-message status-message--success"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  Name "Monthly total":
+  [36m<output[39m
+    [33maria-label[39m=[32m"Monthly total"[39m
+  [36m/>[39m
+
+  Name "Food total":
+  [36m<output[39m
+    [33maria-label[39m=[32m"Food total"[39m
+  [36m/>[39m
+
+  Name "Transport total":
+  [36m<output[39m
+    [33maria-label[39m=[32m"Transport total"[39m
+  [36m/>[39m
+
+  Name "Housing total":
+  [36m<output[39m
+    [33maria-label[39m=[32m"Housing total"[39m
+  [36m/>[39m
+
+  Name "Entertainment total":
+  [36m<output[39m
+    [33maria-label[39m=[32m"Entertainment total"[39m
+  [36m/>[39m
+
+  Name "Other total":
+  [36m<output[39m
+    [33maria-label[39m=[32m"Other total"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "Category totals":
+  [36m<ul[39m
+    [33maria-label[39m=[32m"Category totals"[39m
+    [33mclass[39m=[32m"category-totals"[39m
+  [36m/>[39m
+
+  Name "Transactions":
+  [36m<ul[39m
+    [33maria-labelledby[39m=[32m"transactions-heading"[39m
+    [33mclass[39m=[32m"transaction-list"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li[39m
+    [33mdata-expense-id[39m=[32m"expense-f695c463-c8e0-452f-ad76-222284ed534b"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app-shell"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<p[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"brand-mark"[39m
+          [36m>[39m
+            [0mPT[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"eyebrow"[39m
+          [36m>[39m
+            [0mPersonal finance, made simple[0m
+          [36m</p>[39m
+          [36m<h1>[39m
+            [0mPersonal Expense Tracker[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"app-intro"[39m
+          [36m>[39m
+            [0mCapture everyday spending and understand each month at a glance.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-layout"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33maria-labelledby[39m=[32m"add-expense-heading"[39m
+          [33mclass[39m=[32m"panel expense-form-panel"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"section-heading"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"eyebrow"[39m
+            [36m>[39m
+              [0mNew transaction[0m
+            [36m</p>[39m
+            [36m<h2[39m
+              [33mid[39m=[32m"add-expense-heading"[39m
+            [36m>[39m
+              [0mAdd expense[0m
+            [36m</h2>[39m
+            [36m<p>[39m
+              [0mRecord a purchase using its local calendar date.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<form[39m
+            [33mnovalidate[39m=[32m""[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"field"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mfor[39m=[32m"expense-amount"[39m
+              [36m>[39m
+                [0mAmount (USD)[0m
+              [36m</label>[39m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"off"[39m
+                [33mid[39m=[32m"expense-amount"[39m
+                [33minputmode[39m=[32m"decimal"[39m
+                [33mname[39m=[32m"amount"[39m
+                [33mplaceholder[39m=[32m"0.00"[39m
+                [33mtype[39m=[32m"text"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"field-row"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"field"[39m
+              [36m>[39m
+                [36m<label[39m
+                  [33mfor[39m=[32m"expense-category"[39m
+                [36m>[39m
+                  [0mCategory[0m
+                [36m</label>[39m
+                [36m<select[39m
+                  [33mid[39m=[32m"expense-category"[39m
+                  [33mname[39m=[32m"category"[39m
+                [36m>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"food"[39m
+                  [36m>[39m
+                    [0mfood[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"transport"[39m
+                  [36m>[39m
+                    [0mtransport[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"housing"[39m
+                  [36m>[39m
+                    [0mhousing[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"entertainment"[39m
+                  [36m>[39m
+                    [0mentertainment[0m
+                  [36m</option>[39m
+                  [36m<option[39m
+                    [33mvalue[39m=[32m"other"[39m
+                  [36m>[39m
+                    [0mother[0m
+                  [36m</option>[39m
+                [36m</select>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"field"[39m
+              [36m>[39m
+                [36m<label[39m
+                  [33mfor[39m=[32m"expense-date"[39m
+                [36m>[39m
+                  [0mDate[0m
+                [36m</label>[39m
+                [36m<input[39m
+                  [33mid[39m=[32m"expense-date"[39m
+                  [33mname[39m=[32m"date"[39m
+                  [33mtype[39m=[32m"date"[39m
+                  [33mvalue[39m=[32m"2026-10-15"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"field"[39m
+            [36m>[39m
+              [36m<label[39m
+                [33mfor[39m=[32m"expense-note"[39m
+              [36m>[39m
+                [0mNote (optional)[0m
+              [36m</label>[39m
+              [36m<textarea[39m
+                [33mid[39m=[32m"expense-note"[39m
+                [33mname[39m=[32m"note"[39m
+                [33mplaceholder[39m=[32m"What was this expense for?"[39m
+                [33mrows[39m=[32m"3"[39m
+              [36m/>[39m
+            [36m</div>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"primary-button"[39m
+              [33mtype[39m=[32m"submit"[39m
+            [36m>[39m
+              [0mAdd expense[0m
+            [36m</button>[39m
+            [36m<p[39m
+              [33maria-label[39m=[32m"Expense status"[39m
+              [33mclass[39m=[32m"status-message status-message--success"[39m
+              [33mrole[39m=[32m"status"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"status-message__icon"[39m
+              [36m>[39m
+                [0m✓[0m
+              [36m</span>[39m
+              [0mExpense added.[0m
+            [36m</p>[39m
+          [36m</form>[39m
+        [36m</section>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"dashboard"[39m
+        [36m>[39m
+          [36m<section[39m
+            [33maria-labelledby[39m=[32m"monthly-summary-heading"[39m
+            [33mclass[39m=[32m"panel summary-panel"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"dashboard-topline"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"section-heading"[39m
+              [36m>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"eyebrow"[39m
+                [36m>[39m
+                  [0mMonthly overview[0m
+                [36m</p>[39m
+                [36m<h2[39m
+                  [33mid[39m=[32m"monthly-summary-heading"[39m
+                [36m>[39m
+                  [0mSpending summary[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"field month-field"[39m
+              [36m>[39m
+                [36m<label[39m
+                  [33mfor[39m=[32m"selected-month"[39m
+                [36m>[39m
+                  [0mMonth[0m
+                [36m</label>[39m
+                [36m<input[39m
+                  [33mid[39m=[32m"selected-month"[39m
+                  [33mname[39m=[32m"month"[39m
+                  [33mtype[39m=[32m"month"[39m
+                  [33mvalue[39m=[32m"2026-10"[39m
+                [36m/>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"monthly-total"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0mTotal spending[0m
+              [36m</span>[39m
+              [36m<output[39m
+                [33maria-label[39m=[32m"Monthly total"[39m
+              [36m>[39m
+                [0m$1.25[0m
+              [36m</output>[39m
+            [36m</div>[39m
+            [36m<ul[39m
+              [33maria-label[39m=[32m"Category totals"[39m
+              [33mclass[39m=[32m"category-totals"[39m
+            [36m>[39m
+              [36m<li>[39m
+                [36m<span>[39m
+                  [0mFood[0m
+                [36m</span>[39m
+                [36m<output[39m
+                  [33maria-label[39m=[32m"Food total"[39m
+                [36m>[39m
+                  [0m$1.25[0m
+                [36m</output>[39m
+              [36m</li>[39m
+              [36m<li>[39m
+                [36m<span>[39m
+                  [0mTransport[0m
+                [36m</span>[39m
+                [36m<output[39m
+                  [33maria-label[39m=[32m"Transport total"[39m
+                [36m>[39m
+                  [0m$0.00[0m
+                [36m</output>[39m
+              [36m</li>[39m
+              [36m<li>[39m
+                [36m<span>[39m
+                  [0mHousing[0m
+                [36m</span>[39m
+                [36m<output[39m
+                  [33maria-label[39m=[32m"Housing total"[39m
+                [36m>[39m
+                  [0m$0.00[0m
+                [36m</output>[39m
+              [36m</li>[39m
+              [36m<li>[39m
+                [36m<span>[39m
+                  [0mEntertainment[0m
+                [36m</span>[39m
+                [36m<output[39m
+                  [33maria-label[39m=[32m"Entertainment total"[39m
+                [36m>[39m
+                  [0m$0.00[0m
+                [36m</output>[39m
+              [36m</li>[39m
+              [36m<li>[39m
+                [36m<span>[39m
+                  [0mOther[0m
+                [36m</span>[39m
+                [36m<output[39m
+                  [33maria-label[39m=[32m"Other total"[39m
+                [36m>[39m
+                  [0m$0.00[0m
+                [36m</output>[39m
+              [36m</li>[39m
+            [36m</ul>[39m
+          [36m</section>[39m
+          [36m<section[39m
+            [33mclass[39m=[32m"panel transactions-panel"[39m
+          [36m>[39m
+            [36m<section[39m
+              [33maria-labelledby[39m=[32m"transactions-heading"[39m
+              [33mclass[39m=[32m"transactions"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"section-heading section-heading--row"[39m
+              [36m>[39m
+                [36m<div>[39m
+                  [36m<p[39m
+                    [33mclass[39m=[32m"eyebrow"[39m
+                  [36m>[39m
+                    [0mActivity[0m
+                  [36m</p>[39m
+                  [36m<h2[39m
+                    [33mid[39m=[32m"transactions-heading"[39m
+                  [36m>[39m
+                    [0mTransactions[0m
+                  [36m</h2>[39m
+                [36m</div>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"transaction-count"[39m
+                [36m>[39m
+                  [0m1[0m
+                  [0m [0m
+                  [0mitem[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<ul[39m
+                [33maria-labelledby[39m=[32m"transactions-heading"[39m
+                [33mclass[39m=[32m"transaction-list"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mdata-expense-id[39m=[32m"expense-f695c463-c8e0-452f-ad76-222284ed534b"[39m
+                [36m>[39m
+                  [36m<article[39m
+                    [33mclass[39m=[32m"transaction"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"transaction__details"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+                      [36m>[39m
+                        [0mfood[0m
+                      [36m</span>[39m
+                      [36m<time[39m
+                        [33mdatetime[39m=[32m"2026-10-15"[39m
+                      [36m>[39m
+                        [0m2026-10-15[0m
+                      [36m</time>[39m
+                    [36m</div>[39m
+                    [36m<strong[39m
+                      [33mclass[39m=[32m"transaction__amount"[39m
+                    [36m>[39m
+                      [0m$1.25[0m
+                    [36m</strong>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"transaction-note"[39m
+                    [36m>[39m
+                      [0mFirst failure[0m
+                    [36m</p>[39m
+                  [36m</article>[39m
+                [36m</li>[39m
+              [36m</ul>[39m
+            [36m</section>[39m
+          [36m</section>[39m
+        [36m</div>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/ui/persistenceStatus.test.tsx:112:28
+    110|
+    111|     await addExpense(user, '1.25', 'First failure');
+    112|     const warning = screen.getByRole('alert', { name: 'Persistence sta…
+       |                            ^
+    113|     expect(warning).toHaveTextContent(/not durably saved/i);
+    114|     await addExpense(user, '2.25', 'Second failure');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 1 passed (4)
+   Start at  22:26:36
+   Duration  776ms (transform 46ms, setup 109ms, import 71ms, tests 334ms, environment 503ms)
+
+Red confirmed. T022 tests have type issue storage.raw null cast ugly but works. Agent tasks ongoing. I can implement T024 now only after all tests written? Test-first ordering says T021-T023 all tests before corresponding implementation. Should wait until agents finish before implementation. I can review test own for type issues with `npx tsc` currently missing module anyway. Could plan. I should not wait idly perhaps inspect localStorage usage ensure sole boundary Grep.Should wait for agents but can perhaps use TaskOutput snapshot? Instructions rely automatic. I can work on test setup polyfill? Not implementation until tests all. Could run existing unit baseline perhaps not needed. Could inspect e2e runtime chromium installed. `npx playwright --version` no. Better wait via WaitFor only when no other work, now yes. Use WaitFor timeout 90.Waiting 1s / 1m 30s · 2 background tasks still running
+Waiting 2s / 1m 30s · 2 background tasks still running
+Waiting 3s / 1m 30s · 2 background tasks still running
+Waiting 4s / 1m 30s · 2 background tasks still running
+Waiting 5s / 1m 30s · 2 background tasks still running
+Waiting 6s / 1m 30s · 2 background tasks still running
+Waiting 7s / 1m 30s · 2 background tasks still running
+Waiting 8s / 1m 30s · 2 background tasks still running
+Waiting 9s / 1m 30s · 2 background tasks still running
+Waiting 10s / 1m 30s · 2 background tasks still running
+Waiting 11s / 1m 30s · 2 background tasks still running
+Waiting 12s / 1m 30s · 2 background tasks still running
+Waiting 13s / 1m 30s · 2 background tasks still running
+Waiting 14s / 1m 30s · 2 background tasks still running
+Waiting 15s / 1m 30s · 2 background tasks still running
+Waiting 16s / 1m 30s · 2 background tasks still running
+Waiting 17s / 1m 30s · 2 background tasks still running
+Waiting 18s / 1m 30s · 2 background tasks still running
+Waiting 19s / 1m 30s · 2 background tasks still running
+Waiting 20s / 1m 30s · 2 background tasks still running
+Waiting 21s / 1m 30s · 2 background tasks still running
+Waiting 22s / 1m 30s · 2 background tasks still running
+Waiting 23s / 1m 30s · 2 background tasks still running
+Waiting 24s / 1m 30s · 2 background tasks still running
+Waiting 25s / 1m 30s · 2 background tasks still running
+Waiting 26s / 1m 30s · 2 background tasks still running
+Waiting 27s / 1m 30s · 2 background tasks still running
+Waiting 28s / 1m 30s · 2 background tasks still running
+Waiting 29s / 1m 30s · 2 background tasks still running
+Waiting 30s / 1m 30s · 2 background tasks still running
+Waiting 31s / 1m 30s · 2 background tasks still running
+Waiting 32s / 1m 30s · 2 background tasks still running
+Waiting 33s / 1m 30s · 2 background tasks still running
+Waiting 34s / 1m 30s · 2 background tasks still running
+Waiting 35s / 1m 30s · 2 background tasks still running
+Waiting 36s / 1m 30s · 2 background tasks still running
+Waiting 37s / 1m 30s · 2 background tasks still running
+Waiting 38s / 1m 30s · 2 background tasks still running
+Waiting 39s / 1m 30s · 2 background tasks still running
+Waiting 40s / 1m 30s · 2 background tasks still running
+Waiting 41s / 1m 30s · 2 background tasks still running
+Waiting 42s / 1m 30s · 2 background tasks still running
+Waiting 43s / 1m 30s · 2 background tasks still running
+Waiting 44s / 1m 30s · 2 background tasks still running
+Waiting 45s / 1m 30s · 2 background tasks still running
+Waiting 46s / 1m 30s · 2 background tasks still running
+Waiting 47s / 1m 30s · 2 background tasks still running
+Waiting 48s / 1m 30s · 2 background tasks still running
+Waiting 49s / 1m 30s · 2 background tasks still running
+Waiting 50s / 1m 30s · 2 background tasks still running
+Waiting 51s / 1m 30s · 2 background tasks still running
+Waiting 52s / 1m 30s · 2 background tasks still running
+Waiting 53s / 1m 30s · 2 background tasks still running
+Waiting 54s / 1m 30s · 2 background tasks still running
+Waiting 55s / 1m 30s · 2 background tasks still running
+Waiting 56s / 1m 30s · 2 background tasks still running
+Waiting 57s / 1m 30s · 2 background tasks still running
+Waiting 58s / 1m 30s · 2 background tasks still running
+Waiting 59s / 1m 30s · 2 background tasks still running
+Waiting 1m / 1m 30s · 2 background tasks still running
+Waiting 1m 01s / 1m 30s · 2 background tasks still running
+Waiting 1m 02s / 1m 30s · 2 background tasks still running
+Waiting 1m 03s / 1m 30s · 2 background tasks still running
+Waiting 1m 04s / 1m 30s · 2 background tasks still running
+Waiting 1m 05s / 1m 30s · 2 background tasks still running
+Waiting 1m 06s / 1m 30s · 2 background tasks still running
+Waiting 1m 07s / 1m 30s · 2 background tasks still running
+Waiting 1m 08s / 1m 30s · 2 background tasks still running
+Waiting 1m 09s / 1m 30s · 2 background tasks still running
+Waiting 1m 10s / 1m 30s · 2 background tasks still running
+Waiting 1m 11s / 1m 30s · 2 background tasks still running
+Waiting 1m 12s / 1m 30s · 2 background tasks still running
+Waiting 1m 13s / 1m 30s · 2 background tasks still running
+Waiting 1m 14s / 1m 30s · 2 background tasks still running
+Waiting 1m 15s / 1m 30s · 2 background tasks still running
+Waiting 1m 16s / 1m 30s · 2 background tasks still running
+Waiting 1m 17s / 1m 30s · 2 background tasks still running
+Waiting 1m 18s / 1m 30s · 2 background tasks still running
+Waiting 1m 19s / 1m 30s · 2 background tasks still running
+Waiting 1m 20s / 1m 30s · 2 background tasks still running
+Waiting 1m 21s / 1m 30s · 2 background tasks still running
+Waiting 1m 22s / 1m 30s · 2 background tasks still running
+Waiting 1m 23s / 1m 30s · 2 background tasks still running
+Waiting 1m 24s / 1m 30s · 2 background tasks still running
+Waiting 1m 25s / 1m 30s · 2 background tasks still running
+Waiting 1m 26s / 1m 30s · 2 background tasks still running
+Waiting 1m 27s / 1m 30s · 2 background tasks still running
+Waiting 1m 28s / 1m 30s · 2 background tasks still running
+Waiting 1m 29s / 1m 30s · 2 background tasks still running
+Odd wall time 279 despite wait 90, tasks 4.5 min. They may be running tests e2e many failing with timeouts 30 sec each => long. Could inspect tasks output nonblocking to see progress (allowed act).Could read created test files while agent working? "Once running leave scope do not redo searches/reads in parallel." Avoid. Could implement storage after T021 file perhaps not finished violates test-first. Should wait. But no need user progress perhaps after ~5min. I can do design and prepare code mentally. I can add global setup localStorage clearing only after tests all; not now.
+
+  Wait again 90 permissible no other work.
+
+• The recovery and persistence-status tests are now red for the intended missing behavior. The storage and Chromium suites are still being authored; implementation will start after their red checks are confirmed.Waiting 1s / 1m 30s · 2 background tasks still running
+Waiting 2s / 1m 30s · 2 background tasks still running
+Waiting 3s / 1m 30s · 2 background tasks still running
+Waiting 4s / 1m 30s · 2 background tasks still running
+Waiting 5s / 1m 30s · 2 background tasks still running
+Waiting 6s / 1m 30s · 2 background tasks still running
+Waiting 7s / 1m 30s · 2 background tasks still running
+Waiting 8s / 1m 30s · 2 background tasks still running
+Waiting 9s / 1m 30s · 2 background tasks still running
+Waiting 10s / 1m 30s · 2 background tasks still running
+Waiting 11s / 1m 30s · 2 background tasks still running
+Waiting 12s / 1m 30s · 2 background tasks still running
+Waiting 13s / 1m 30s · 2 background tasks still running
+Waiting 14s / 1m 30s · 2 background tasks still running
+Waiting 15s / 1m 30s · 2 background tasks still running
+Waiting 16s / 1m 30s · 2 background tasks still running
+Waiting 17s / 1m 30s · 2 background tasks still running
+Waiting 18s / 1m 30s · 2 background tasks still running
+Waiting 19s / 1m 30s · 2 background tasks still running
+Waiting 20s / 1m 30s · 2 background tasks still running
+Waiting 21s / 1m 30s · 2 background tasks still running
+Waiting 22s / 1m 30s · 2 background tasks still running
+Waiting 23s / 1m 30s · 2 background tasks still running
+Waiting 24s / 1m 30s · 2 background tasks still running
+Waiting 25s / 1m 30s · 2 background tasks still running
+Waiting 26s / 1m 30s · 2 background tasks still running
+Waiting 27s / 1m 30s · 2 background tasks still running
+
+
+• Now T021 done can implement T024 while T023 ongoing? Test-first corresponding storage done. User says test-first ordering for storage recovery UI and Chromium scenarios. Chromium implementation App before e2e red would violate. I can implement pure storage T024 now since T021 red. Do so. Should read tests agent produced before implementation, okay agent done.Implement storage with save cyclic object: if I validate collection with `validateExpenseCollection`, cyclic extra self allowed, then JSON.stringify throws. If I enforce exact record keys save would return write-failed with Error not TypeError causing test fail. So no strict record extra key rejection. Envelope strict exact? Tests not extra. Can just check object, version 1, collection. No extra check to avoid assumptions. Save should not validate before serialization because cyclic test needs TypeError. JSON.stringify envelope, then set. Domain validation only load. `storage` optional default. Catch access and serialization same write-failed. Use `unknown` error.
+
+  Potential JSON.stringify returns undefined? Envelope object always returns string unless toJSON malicious via expense object returns undefined? Root envelope plain no toJSON, nested toJSON can return values, still root string. Good.
+
+  Write new file.Run T021 tests green.
+
+• T021’s red checkpoint is confirmed. I’ve added the isolated storage adapter and am validating its strict load classifications and failure results before wiring state.
+ RUN  v4.1.12 <project>
+
+ ✓ tests/persistence/expenseStorage.write.test.ts (13 tests) 5ms
+ ✓ tests/persistence/expenseStorage.load.test.ts (19 tests) 4ms
+
+ Test Files  2 passed (2)
+      Tests  32 passed (32)
+   Start at  22:30:04
+   Duration  380ms (transform 45ms, setup 106ms, import 49ms, tests 9ms, environment 474ms)
+
+
+
+• Perhaps agent e2e still running due massive test failure. Check snapshot.Could be still running 20 e2e failures each 30 sec ~10min. Should not wait. Test-first ordering for state T025 T022 already red, can implement state and UI T026 before T023 red? User explicitly "Preserve test-first ordering for storage, recovery UI, and Chromium scenarios." Means all implementation including UI should wait for e2e red. But T026 has UI tests already red, yet Chromium scenarios also correspond. Strict test-first requires T023 tests written and confirmed red before T026. T025 store could implement before T023? "Chromium scenarios" tests before corresponding implementation. Better wait to modify store/App. Could run tsc on storage? `npx tsc --noEmit` fails missing App storage prop expected but only tests. I know.
+
+  Can review source and plan code further. Perhaps write ConfirmDialog only after T023 red. No useful independent work except storage done. I can run existing domain tests regression storage no impact. Could run full unit now will fail expected UI but storage pass. Not useful. I can wait not via WaitFor repeated warning. Could return control to user? Task incomplete and background will notify in later turn; but user expects execution. If end turn progress, automatic notification will come new turn and continue? Yes background tasks completion later. But likely agent soon. Could use Bash unrelated `npm run build` will fail due test type errors App prop. Not needed.
+
+  Perhaps use time to improve test PERSIST011 redundant spy no harm. Could ensure test suite compile after future. No changes necessary.
+
+  Perhaps inspect task output eventually after some time by running Bash unit full? This will take 1 sec. Agent running ~6min. I can execute T021 plus existing domain tests already. Could run storage with default localStorage access failure unit not tested default; e2e covers.
+
+  Could start store implementation T025 now based on recovery UI tests (already red) while browser tests agent pending. Does this violate Chromium test-first? Store implementation corresponding to both; yes likely. Avoid.
+
+  I could send user progress and end turn, but goal explicit complete tasks; ending with pending background okay system auto new turn. However desired not stop until done. Tool WaitFor warning says do something useful or end turn. Ending turn progress not response? I can give a progress update, then await notification. But the user asked then stop only after T026, ending early would be poor. Yet automatic agent will continue. Better perhaps no response and just call TaskOutput after some time not wait. Should not busy poll. Could run baseline `npx vitest run tests/domain tests/ui/addExpense...` verifies no regressions from storage. This is useful.
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/dates.test.ts (31 tests) 3ms
+ ✓ tests/domain/money.test.ts (34 tests) 4ms
+ ✓ tests/domain/expense.test.ts (22 tests) 4ms
+ ✓ tests/ui/app.smoke.test.tsx (1 test) 60ms
+ ✓ tests/domain/dashboard.test.ts (4 tests) 86ms
+ ✓ tests/ui/monthlyDashboard.test.tsx (4 tests) 186ms
+ ✓ tests/ui/addExpense.test.tsx (30 tests) 3122ms
+
+ Test Files  7 passed (7)
+      Tests  126 passed (126)
+   Start at  22:30:52
+   Duration  3.67s (transform 227ms, setup 535ms, import 267ms, tests 3.47s, environment 2.47s)
+
+Still no notification. Could read agent file? Scope no. Could TaskOutput now perhaps done.I might need stop agent if e2e red takes too long? Not allowed abandon and finish manually. Could message agent via resume only after completion. Can't. Continue useful storage test default perhaps write extra tests T021 for default unavailable? Not required but no need.
+
+  I can implement state with confidence while e2e file already likely authored and test running red. Test-first ordering means tests written before implementation and currently running against missing behavior. Although not confirmed final red yet, they are running. Could proceed after check file exists? Agent scope no read. But likely. The instruction says run tests and confirm meaningful failures before proceeding. Should wait.
+
+  Perhaps agent has test timeout global 30* many tests 2 projects? Prompt desktop only 16 tests 8min. 434s ~7min. Soon.
+
+  I can inspect process `ps` not agent scope? Could see playwright. Not necessary.
+
+  WaitFor prohibited repeated unless explicit; user did ask execute not wait. Could end turn with progress update, automatic notification will resume. But response would say not complete. I can simply say "Storage tests pass; Chromium red suite still running. I'll continue when it finishes." Then background notification later. This is appropriate async. But task asked execute only T021-T026 then stop; not stop, just progress. Use response? Then new notification. However this environment expects turn ends. I can do that. Yet desired complete work in one turn when possible. 7min already. I'd rather wait via Bash sleep? Tool instructions no busy waiting; not allowed route around. End turn.
+
+• Progress so far:
+
+  - T021 storage tests were written and confirmed red, then the storage boundary was implemented.
+  - All 32 storage tests now pass.
+  - T022 recovery and persistence-status UI tests were written and confirmed red.
+  - All 126 existing domain and US1 UI regression tests still pass.
+  - The T023 Chromium suite is still being authored and run against the current incomplete app.
+
+  I’ll continue with T025–T026 once the Chromium red checkpoint finishes.
+
+• Now continue. Read output and e2e test.Important e2e unreadable warning regex forbids inspect, my unit expects "not been inspected" contradicts e2e contract? UI contract says no raw-inspection claim; saying not inspected is okay semantically, but e2e explicitly forbids inspect. Should adhere tests no weaken. Must adjust implementation message to satisfy both: unit expects /not been inspected/ while e2e forbids inspect. Contradiction. I can modify my own T022 test before implementation? Test-first test conflict discovered, not weaken failure assertion, change to stronger aligned no inspect words. User says don't weaken failure-path assertions. I can update unit test to not require phrase not inspected, instead assert no /raw|...inspect/ like e2e. That's modifying test after red, but resolving contradictory expectation not weakening (actually stricter no terms). Should do. Since e2e test normative says no assertion or message implies raw inspection, negative "not inspected" not implies inspected but regex chooses no claim. I should align unit to e2e. Read target before edit required I have read content from Write not Read? Edit requires Read before every; should Read specific. I'll do later now.
+
+  Also openTracker raw options uses options.raw ?? null, cannot seed raw null vs missing same okay. Seed writes count reset after seed so good. On reload probe writeFailure resets null, PERSIST008 reload okay. Unreadable remains. Native dialog tests focus cycle. Should component native correct.
+
+  E2e PERSIST003 malformed string `{"expenses":[ broken Café\n` JSON parse fails.
+
+  Should mark tests task done implementation in progress. Then edit unit contradiction.
+
+• The Chromium red checkpoint is confirmed: 1 missing-data scenario passes and 20 persistence/recovery scenarios fail for the missing behavior. I’m now wiring optimistic store transitions and the native recovery dialog.
+
+• Now implement store. Perhaps read current file (already earlier but stale unchanged). Mandatory Read before Edit. I can complete replacement Write allowed if new contents little continuity? Existing store 58 lines new 180, can Write complete replacement but must read before overwriting. Already read earlier, valid but better new Read along App etc. I'll use Write complete replacement since substantial. For App same. ConfirmDialog new Write. Dashboard incremental Edit after read. StatusMessage Edit after read. styles Edit append via Edit old end.
+
+  Design store precise types:
+  ```
+  export type PersistenceFeedback =
+   {kind:'recovery-readable'|'recovery-unreadable'; operation:'recovery'|'replacement-failed'}?
+  ```
+  Should message derivation perhaps store returns message string simpler.
+  `PersistenceStatus {message:string}`.
+  Initialize:
+  ```
+  interface Initialization {expenses, recovery, warning}
+  function initialize(initialExpenses, storage) {
+   if initialExpenses !== undefined -> ready clones, no load
+   const loaded=loadExpenses(storage)
+   switch...
+  }
+  const [initial] = useState(()=>initialize...)
+  ```
+  `useState` initializer calls load once. `storage` optional passed. ExactOptionalPropertyTypes: function options.
+  `const [recovery, setRecovery] = useState<RecoveryKind|null>(initial.recovery)`.
+  `const [feedback, setFeedback] = useState<PersistenceFeedback|null>(initial.feedback)`
+  Feedback kinds `'recovery-readable'|'recovery-unreadable'|'unsaved-add'|'replacement-failed-readable'|'replacement-failed-unreadable'` or simpler status `{type:'recovery'|'unsaved'|'replacement-failed'; recovery:...}`. App derive using `store.recovery` and `store.persistenceError`:
+  ```
+  type PersistenceIssue = 'unsaved-add'|'replacement-failed'|null
+  ```
+  On init recovery non-null issue null. Dashboard if recovery or issue. message:
+  if issue === 'unsaved-add': "Add expense: latest work is not durably saved..."
+  if replacement-failed: "Replacement failed... Recovery is still required..."
+  else recovery readable/unreadable.
+  Store return `recovery`, `persistenceIssue`.
+  Confirmation state `ReplacementKind|null`.
+
+  Add normal:
+  ```
+  const result=create...
+  if ok:
+   const next=[...expenses, result.expense]
+   setExpenses(next)
+   if recovery {setConfirmation('first-replacement');}
+   else {const save=saveExpenses(next,storage); setPersistenceIssue(saved?null:'unsaved-add')}
+  ```
+  When recovery after previous failed replacement, adding opens confirmation and should issue perhaps clear replacement-failed while dialog? On failed replacement warning must remain. If user adds again, setPersistenceIssue(null) would show base recovery; okay warning not clear completely. But "clear warnings only after durable success" says warning clearance only after complete durable save; changing failed replacement to base recovery is not clearing recovery but clears write failure before success, arguably violation. Keep issue until success. On guarded add don't alter issue. On normal add success clears issue; fail sets unsaved. If issue replacement-failed cannot happen normal (recovery true), fine.
+  Confirm:
+  ```
+  const next = confirmation==='start-fresh'?[]:expenses
+  const result=save
+  if saved {if start fresh setExpenses([]); setRecovery(null); setPersistenceIssue(null)}
+  else setPersistenceIssue('replacement-failed')
+  setConfirmation(null)
+  ```
+  Start fresh when guarded work exists discards in-memory on successful confirm only. Cancel retains.
+  Request start fresh set confirmation only.
+  Cancel set null.
+  Later successful replacement complete includes all.
+  InitialExpenses skip load and recovery null. Existing tests default `<App />` loads actual localStorage. Should test isolation as noted. E2E open seeds before App.
+
+  Storage access sole source only adapter. Store no direct.
+
+  App props `storage?: StorageLike`; passing to hook with exact optional `useExpenseStore(initialExpenses, storage)` okay parameter optional. Existing `<App initialExpenses=...>` no load. Existing `<App />` tests share localStorage; global setup clear beforeEach. Could instead default App prop `initialExpenses` tests leak. Should modify setup with `beforeEach(() => localStorage.clear())`. This is test infrastructure change not T021-T026 listed but necessary regression. Could avoid by store default in test env? `import.meta.env.MODE === 'test'` skip persistence default? That would make UI tests with injected storage work and existing tests no persistence; production unaffected. But hidden branch test-specific bad. Better clear storage. Existing tests may run parallel files separate jsdom env so each file localStorage isolated? Vitest each file env isolated, within addExpense each test same environment. Clear beforeEach. Add to setup. This is acceptable.
+
+  ConfirmDialog implementation:
+  Props open, title, description, confirmLabel, onCancel, onConfirm.
+  Use id via useId for title/desc. `dialogRef`, cancelRef, requesterRef. `useEffect([open])`:
+  ```
+  if (!open) return
+  const dialog=...
+  requesterRef.current = document.activeElement as HTMLElement
+  if
+  (!dialog.open) dialog.showModal()
+  cancelRef.current?.focus()
+  return () => {
+   if (dialog.open) dialog.close()
+   const requester = ...
+   if (requester?.isConnected) requester.focus()
+  }
+  ```
+  Issue effect cleanup runs when `open` changes false, but render dialog condition `if (!open) return null` means component same mounted with open prop false, effect cleanup after DOM removed. dialog.close on disconnected okay, focus requester. Native Escape event `onCancel` preventDefault onCancel sets open false. Focus restore. Cancel click same. Confirm click onConfirm state updates and effect cleanup restore.
+  If dialog `onClose` not handled, native close through other methods not needed. Escape onCancel handled.
+  Native focus containment browser. jsdom polyfill no containment tests only e2e.
+  `aria-modal` native implicit no need.
+  `autoFocus` cancel plus effect focus.
+  Buttons type button. dialog classname.
+
+  App includes ConfirmDialog after main. Dashboard status. Status messages no success durable claim.
+
+  Dashboard props:
+  ```
+  recovery?: 'readable-malformed'|'unreadable'|null
+  persistenceIssue?: ...
+  onStartFresh?:()=>void
+  ```
+  Exact optional passing perhaps always values.
+  Could simplify single `persistenceStatus?: {recovery...; issue...}` but types import from store into component creates state dependency okay. Better define exported `PersistenceState` in store, Dashboard imports type. Yet components shouldn't state? Fine. Use props `persistenceStatus: PersistenceStatus | null`, where status includes `recovery`, `issue`. Store memo returns status or null. App pass. Dashboard displays.
+  Define in store:
+  ```
+  export interface PersistenceStatus {
+   recovery: RecoveryKind | null;
+   issue: PersistenceIssue;
+  }
+  ```
+  But if both null don't render. App `const persistenceStatus = store.recovery || store.persistenceIssue ? {...}:null` each render.
+  Could put message derivation helper in Dashboard. Fine.
+
+  Dashboard warning alert text with status. Start fresh button.
+  Readable message includes saved information, temporary, confirm.
+  Unreadable message must not use inspect etc:
+  "Saved information cannot currently be used because browser storage is unreadable. The visible collection is temporary. Replacing saved information requires confirmation."
+  No forbidden regex. Great.
+  Replacement failed message: "Replacement failed; current work has not been durably saved. Saved information still cannot currently be used, the visible collection is temporary, and replacement requires confirmation." includes saved info temp confirm and no unreadable forbidden terms. E2e expectWriteWarning regex "not (?:durably )?saved" matches "not been durably saved"? Regex expects not + space optional durably + saved; "not been" doesn't match. My unit expects /not been durably saved/ but e2e expects /not durably saved|could not save.../. Should include both phrases: "Replacement failed; current work is not durably saved and has not been durably saved." Redundant. Better adjust unit to /not durably saved/ consistent not weaken. Current unit several expects /not been durably saved/ for replacement. E2E primary. I can write message "Replacement failed; current work is not durably saved. Recovery is still required: saved information cannot currently be used, the visible collection is temporary, and replacement requires confirmation." Unit /not been durably saved/ fails. Should modify my unit expectations to /not durably saved/ (strengthens consistency). Not failure assertion weakening. Or phrase "current work is not durably saved; it has not been durably saved" unnatural. Change tests. Two occurrences. Also persistenceStatus unsaved unit expects /not durably saved/ good.
+
+  E2e unreadable failed warning uses same replacement message no forbidden inspect etc. good.
+
+  E2e `expectNoPersistenceSuccess` Expense form "Expense added." no forbidden. good.
+
+  E2e `expectRecoveryWarning` after failed also message includes temporary confirm. good.
+
+  PERSIST008 reload: write failure probe resets on reload null, valid durable restored. good.
+
+  Critical native dialog focus cycle: two buttons Cancel then Confirm in DOM. On open cancel focused. Shift+Tab native wraps to Confirm, Tab wraps Cancel. Good.
+
+  App form status always "Expense added" even guarded cancel, okay.
+
+  App storage injection type exported. Should test TypeScript fixtures Expense type distinct from domain structural okay.
+
+  I'll read files then write/edit.
+
+• One test expectation used wording that conflicted with the Chromium prohibition on unreadable-data inspection claims; I aligned it with the stricter browser assertion without weakening the no-write checks.
+
+• Only one not been expectation. Edit it.Now Write store.Write ConfirmDialog new.Now write App substantial.Dashboard modify with imports types, props, helper message, render status section. Could Write full replacement? 110 lines, substantial but continuity high so Edit mandatory. Should have one Edit only same file with multiple modifications in old_string perhaps entire file replacement via Edit (allowed exact replacement entire) but better single Edit entire file? It's incremental change, use Edit old entire content new entire content. I have read. Do that.StatusMessage Edit.Should read again before second edit same file.Edit icon and role same call one replacement block.Test setup add beforeEach clear. Read done. One Edit.Styles add warning, panel button margin, dialog. Should Read end known earlier but must Read before Edit current unchanged earlier valid perhaps read specific.One edit insert warning and classes near status.Now run UI tests and tsc perhaps.
+
+• The store now retains optimistic adds on failure, guards malformed or unreadable data until confirmation, and saves the complete retained collection on later success. The reusable native dialog is wired with Cancel focus, Escape handling, and requester focus restoration.
+ RUN  v4.1.12 <project>
+
+ ✓ tests/ui/persistenceStatus.test.tsx (4 tests) 439ms
+ ❯ tests/ui/recovery.test.tsx (9 tests | 3 failed) 473ms
+     × PERSIST-003/RECOVERY-001: readable malformed data is not written by Cancel or Escape 113ms
+     ✓ RECOVERY-002: confirmed start fresh writes exactly an empty version-1 envelope 27ms
+     ✓ RECOVERY-003: failed start fresh retains guarded empty memory and never retries automatically 27ms
+     × RECOVERY-004: cancelling the first replacement retains guarded added work without writing 78ms
+     ✓ RECOVERY-005: confirmed first replacement saves the complete current collection and clears recovery 70ms
+     ✓ RECOVERY-006: quota failure retains current guarded work without success or retry 38ms
+     ✓ RECOVERY-006: serialization failure retains current guarded work without success or retry 41ms
+     ✓ PERSIST-007/RECOVERY-007: unreadable storage follows cancellation, failure, and success without inspection claims 74ms
+     × PERSIST-002: restores valid records exactly once without altering their values 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/recovery.test.tsx > guarded recovery replacements > PERSIST-003/RECOVERY-001: readable malformed data is not written by Cancel or Escape
+TypeError: fireEvent.cancel is not a function
+ ❯ tests/ui/recovery.test.tsx:93:15
+     91|
+     92|     await user.click(startFresh);
+     93|     fireEvent.cancel(expectDialog());
+       |               ^
+     94|     expect(storage.raw).toBe(raw);
+     95|     expect(storage.setItem).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/ui/recovery.test.tsx > guarded recovery replacements > RECOVERY-004: cancelling the first replacement retains guarded added work without writing
+TypeError: fireEvent.cancel is not a function
+ ❯ tests/ui/recovery.test.tsx:149:15
+    147|
+    148|     await addExpense(user, '2.00');
+    149|     fireEvent.cancel(expectDialog());
+       |               ^
+    150|     expect(storage.raw).toBe(raw);
+    151|     expect(storage.setItem).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/ui/recovery.test.tsx > guarded recovery replacements > PERSIST-002: restores valid records exactly once without altering their values
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  $100,000,000.00
+Received:
+  $1,000,000,000.00
+ ❯ tests/ui/recovery.test.tsx:241:52
+    239|
+    240|     expect(storage.getItem).toHaveBeenCalledTimes(1);
+    241|     expect(screen.getByLabelText('Monthly total')).toHaveTextContent('…
+       |                                                    ^
+    242|     const items = within(screen.getByRole('list', { name: 'Transaction…
+    243|     expect(items).toHaveLength(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  3 failed | 10 passed (13)
+   Start at  22:38:05
+   Duration  888ms (transform 92ms, setup 109ms, import 133ms, tests 912ms, environment 466ms)
+
+tests/ui/persistenceStatus.test.tsx(9,9): error TS7022: 'storage' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+tests/ui/persistenceStatus.test.tsx(12,20): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+tests/ui/recovery.test.tsx(93,15): error TS2339: Property 'cancel' does not exist on type 'FireFunction & FireObject'.
+tests/ui/recovery.test.tsx(149,15): error TS2339: Property 'cancel' does not exist on type 'FireFunction & FireObject'.
+
+
+• I'll fix test errors, amount expected arithmetic wrong 99,999,999,999 cents = 999,999,999.99 + .01 = 1,000,000,000.00 yes implementation correct test wrong. Fix to $1,000,000,000.00. fireEvent.cancel not defined use fireEvent(dialog, new Event('cancel',{cancelable:true})). Could helper cancelDialog. Simple replace all `fireEvent.cancel(expectDialog())` with `fireEvent(expectDialog(), new Event('cancel', { cancelable: true }))`. Test issue not weakening. persistenceStatus storage type annotate interface. Could use `const storage: {raw:string; failWrites:boolean; getItem: ReturnType...; setItem...} = {...}` but raw null test cast. Simpler `const storage = { ... } as {raw:string;...}` no self inference? Assertion still self? Better define:
+  ```
+  const storage: StorageLike & {raw:string;failWrites:boolean; getItem: ReturnType<typeof vi.fn<()=>string>>; setItem...} = { ...}
+  ```
+  getItem mock no args type, StorageLike requires key arg but function fewer args compatible. vi.fn generic. Reuse pattern from recovery which compiled. `getItem: ReturnType<typeof vi.fn<(key:string)=>string|null>>` but raw string and later null cast. fine. setItem typed. Then satisfies not needed. Do.
+
+  Read test files before edits.
+
+• The first implementation run passed 10 of 13 new UI tests. The remaining failures are test-harness issues (jsdom’s cancel event typing and an incorrect expected total), not behavior changes; I’m correcting those while preserving the assertions.
+
+• Can Edit recovery replace_all fireEvent.cancel then separate total edit needs re-read between same file. Could one Edit use entire span? Not contiguous. I can use replace_all one call then read then second. Parallel edit persistence and recovery first.Read recovery line then edit total.Run UI + tsc again.
+ RUN  v4.1.12 <project>
+
+ ✓ tests/ui/persistenceStatus.test.tsx (4 tests) 445ms
+ ❯ tests/ui/recovery.test.tsx (9 tests | 1 failed) 490ms
+     ✓ PERSIST-003/RECOVERY-001: readable malformed data is not written by Cancel or Escape 115ms
+     ✓ RECOVERY-002: confirmed start fresh writes exactly an empty version-1 envelope 26ms
+     ✓ RECOVERY-003: failed start fresh retains guarded empty memory and never retries automatically 28ms
+     ✓ RECOVERY-004: cancelling the first replacement retains guarded added work without writing 83ms
+     ✓ RECOVERY-005: confirmed first replacement saves the complete current collection and clears recovery 70ms
+     ✓ RECOVERY-006: quota failure retains current guarded work without success or retry 43ms
+     ✓ RECOVERY-006: serialization failure retains current guarded work without success or retry 42ms
+     ✓ PERSIST-007/RECOVERY-007: unreadable storage follows cancellation, failure, and success without inspection claims 76ms
+     × PERSIST-002: restores valid records exactly once without altering their values 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/recovery.test.tsx > guarded recovery replacements > PERSIST-002: restores valid records exactly once without altering their values
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  exact note
+Received:
+  food2026-10-15$0.01 exact note
+ ❯ tests/ui/recovery.test.tsx:245:22
+    243|     expect(items).toHaveLength(2);
+    244|     expect(items[0]).toHaveAttribute('data-expense-id', 'two');
+    245|     expect(items[1]).toHaveTextContent('  exact note ');
+       |                      ^
+    246|     expect(screen.queryByRole('alert', { name: 'Persistence status' })…
+    247|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 12 passed (13)
+   Start at  22:39:20
+   Duration  904ms (transform 91ms, setup 106ms, import 130ms, tests 935ms, environment 474ms)
+
+Text content normalizes? toHaveTextContent string uses normalized whitespace, expected with spaces fails. Existing tests use items.some textContent includes exact. For this test can query `.transaction-note` textContent exact property. Stronger exact. Change `expect(items[1]?.querySelector('.transaction-note')?.textContent).toBe('  exact note ')`. Should Read before edit.Run UI green and E2E desktop. E2E may take ~? now passing quickly 21* perhaps 20 sec. Also full unit perhaps after. First targeted UI + e2e in parallel independent.
+ RUN  v4.1.12 <project>
+
+ ✓ tests/ui/persistenceStatus.test.tsx (4 tests) 437ms
+ ✓ tests/ui/recovery.test.tsx (9 tests) 484ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  22:39:51
+   Duration  901ms (transform 90ms, setup 106ms, import 127ms, tests 921ms, environment 487ms)
+
+[WebServer] (node:61212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 21 tests using 9 workers
+
+(node:61218) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61215) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61214) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61217) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61213) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61221) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61219) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61220) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › e2e/persistence.spec.ts:236:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (541ms)
+  ✓   2 [desktop-chromium] › e2e/persistence.spec.ts:247:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (671ms)
+  ✓   5 [desktop-chromium] › e2e/persistence.spec.ts:358:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (700ms)
+  ✓  10 [desktop-chromium] › e2e/persistence.spec.ts:379:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (325ms)
+  ✓  11 [desktop-chromium] › e2e/persistence.spec.ts:395:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (403ms)
+  ✓  12 [desktop-chromium] › e2e/persistence.spec.ts:414:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (455ms)
+  ✘   8 [desktop-chromium] › e2e/persistence.spec.ts:327:1 › PERSIST-006: duplicate IDs reject the complete collection (5.8s)
+  ✘   6 [desktop-chromium] › e2e/persistence.spec.ts:342:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (5.8s)
+  ✘   3 [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (5.8s)
+  ✘   4 [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (5.8s)
+  ✘   9 [desktop-chromium] › e2e/persistence.spec.ts:311:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (5.8s)
+  ✘   7 [desktop-chromium] › e2e/persistence.spec.ts:273:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (5.8s)
+(node:61292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61291) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61294) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61293) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61295) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  13 [desktop-chromium] › e2e/persistence.spec.ts:451:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (5.7s)
+  ✘  14 [desktop-chromium] › e2e/persistence.spec.ts:470:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (5.6s)
+  ✘  15 [desktop-chromium] › e2e/persistence.spec.ts:493:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (5.6s)
+  ✘  17 [desktop-chromium] › e2e/persistence.spec.ts:510:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (5.7s)
+  ✘  20 [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (5.7s)
+  ✘  18 [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (5.7s)
+  ✘  16 [desktop-chromium] › e2e/persistence.spec.ts:534:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (5.7s)
+  ✘  19 [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (5.7s)
+  ✘  21 [desktop-chromium] › e2e/persistence.spec.ts:594:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (5.7s)
+
+
+  1) [desktop-chromium] › e2e/persistence.spec.ts:273:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:284:30
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-003-ma-11d3e-n-preserves-exact-raw-bytes-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-PERSIST-003-ma-11d3e-n-preserves-exact-raw-bytes-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-003-ma-11d3e-n-preserves-exact-raw-bytes-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-PERSIST-003-ma-11d3e-n-preserves-exact-raw-bytes-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:304:24
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-004-un-1690f-ng-recovery-without-a-write-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-PERSIST-004-un-1690f-ng-recovery-without-a-write-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-004-un-1690f-ng-recovery-without-a-write-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-PERSIST-004-un-1690f-ng-recovery-without-a-write-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:304:24
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-004-in-ae291-ng-recovery-without-a-write-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-PERSIST-004-in-ae291-ng-recovery-without-a-write-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-004-in-ae291-ng-recovery-without-a-write-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-PERSIST-004-in-ae291-ng-recovery-without-a-write-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [desktop-chromium] › e2e/persistence.spec.ts:311:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:321:22
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-005-on-dea0b--otherwise-valid-collection-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-PERSIST-005-on-dea0b--otherwise-valid-collection-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-005-on-dea0b--otherwise-valid-collection-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-PERSIST-005-on-dea0b--otherwise-valid-collection-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [desktop-chromium] › e2e/persistence.spec.ts:327:1 › PERSIST-006: duplicate IDs reject the complete collection
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:336:22
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-006-du-f80f0-ect-the-complete-collection-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-PERSIST-006-du-f80f0-ect-the-complete-collection-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-006-du-f80f0-ect-the-complete-collection-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-PERSIST-006-du-f80f0-ect-the-complete-collection-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [desktop-chromium] › e2e/persistence.spec.ts:342:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:350:30
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-007-un-45035-efore-or-after-cancellation-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-PERSIST-007-un-45035-efore-or-after-cancellation-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-PERSIST-007-un-45035-efore-or-after-cancellation-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-PERSIST-007-un-45035-efore-or-after-cancellation-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [desktop-chromium] › e2e/persistence.spec.ts:451:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:458:32
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-001-s-1f726-d-memory-and-exact-raw-data-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-001-s-1f726-d-memory-and-exact-raw-data-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-001-s-1f726-d-memory-and-exact-raw-data-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-001-s-1f726-d-memory-and-exact-raw-data-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [desktop-chromium] › e2e/persistence.spec.ts:470:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:475:31
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-002-c-d52b3-nvelope-and-clears-recovery-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-002-c-d52b3-nvelope-and-clears-recovery-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-002-c-d52b3-nvelope-and-clears-recovery-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-002-c-d52b3-nvelope-and-clears-recovery-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [desktop-chromium] › e2e/persistence.spec.ts:493:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at <project>/e2e/persistence.spec.ts:499:23
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [desktop-chromium] › e2e/persistence.spec.ts:510:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at expectGuardedAddDialog (<project>/e2e/persistence.spec.ts:225:18)
+        at <project>/e2e/persistence.spec.ts:515:16
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-004-g-74103-el-and-Escape-with-no-write-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-004-g-74103-el-and-Escape-with-no-write-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-004-g-74103-el-and-Escape-with-no-write-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-004-g-74103-el-and-Escape-with-no-write-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [desktop-chromium] › e2e/persistence.spec.ts:534:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at expectGuardedAddDialog (<project>/e2e/persistence.spec.ts:225:18)
+        at <project>/e2e/persistence.spec.ts:539:21
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-005-c-40bd7-d-collection-and-reloads-it-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-005-c-40bd7-d-collection-and-reloads-it-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-005-c-40bd7-d-collection-and-reloads-it-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-005-c-40bd7-d-collection-and-reloads-it-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at expectGuardedAddDialog (<project>/e2e/persistence.spec.ts:225:18)
+        at <project>/e2e/persistence.spec.ts:577:25
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-006-s-5bd2d--and-recovery-without-retry-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-006-s-5bd2d--and-recovery-without-retry-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-006-s-5bd2d--and-recovery-without-retry-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-006-s-5bd2d--and-recovery-without-retry-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at expectGuardedAddDialog (<project>/e2e/persistence.spec.ts:225:18)
+        at <project>/e2e/persistence.spec.ts:577:25
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-006-q-81a6e--and-recovery-without-retry-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-006-q-81a6e--and-recovery-without-retry-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-006-q-81a6e--and-recovery-without-retry-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-006-q-81a6e--and-recovery-without-retry-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: access failure retains guarded work and recovery without retry
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at expectGuardedAddDialog (<project>/e2e/persistence.spec.ts:225:18)
+        at <project>/e2e/persistence.spec.ts:577:25
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-006-a-81d13--and-recovery-without-retry-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-006-a-81d13--and-recovery-without-retry-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-006-a-81d13--and-recovery-without-retry-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-006-a-81d13--and-recovery-without-retry-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [desktop-chromium] › e2e/persistence.spec.ts:594:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /replace saved information/i }).getByRole('button', { name: 'Confirm replacement', exact: true })
+        14 × locator resolved to <button type="button" class="danger-button">Confirm replacement</button>
+           - unexpected value "inactive"
+
+
+      215 |   await expect(cancel).toBeFocused();
+      216 |   await cancel.press('Shift+Tab');
+    > 217 |   await expect(confirm).toBeFocused();
+          |                         ^
+      218 |   await confirm.press('Tab');
+      219 |   await expect(cancel).toBeFocused();
+      220 |   return { dialog, cancel, confirm };
+        at expectReplacementDialog (<project>/e2e/persistence.spec.ts:217:25)
+        at expectGuardedAddDialog (<project>/e2e/persistence.spec.ts:225:18)
+        at <project>/e2e/persistence.spec.ts:599:16
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15 failed
+    [desktop-chromium] › e2e/persistence.spec.ts:273:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes
+    [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write
+    [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write
+    [desktop-chromium] › e2e/persistence.spec.ts:311:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection
+    [desktop-chromium] › e2e/persistence.spec.ts:327:1 › PERSIST-006: duplicate IDs reject the complete collection
+    [desktop-chromium] › e2e/persistence.spec.ts:342:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation
+    [desktop-chromium] › e2e/persistence.spec.ts:451:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data
+    [desktop-chromium] › e2e/persistence.spec.ts:470:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery
+    [desktop-chromium] › e2e/persistence.spec.ts:493:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries
+    [desktop-chromium] › e2e/persistence.spec.ts:510:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write
+    [desktop-chromium] › e2e/persistence.spec.ts:534:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it
+    [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry
+    [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry
+    [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: access failure retains guarded work and recovery without retry
+    [desktop-chromium] › e2e/persistence.spec.ts:594:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation
+  6 passed (12.8s)
+Native dialog focus containment weird: native browser should wrap, but cancel Shift+Tab perhaps native dialog browser focuses dialog itself or browser chrome, not confirm. Native `<dialog>` focus trapping behavior usually Tab from last to first, Shift+Tab first to last but Chromium may set focus dialog? In Playwright, pressing Shift+Tab on first can move to dialog (which is focusable?) Native dialog itself can be focused. To satisfy test, add explicit keydown trap while still native dialog. Contract "native containment" allows managing keydown to contain. Should implement keydown on dialog for Tab:
+  - get focusable buttons (only two). if Shift+Tab && active===cancel first -> prevent default, last.focus.
+  - if !shift && active===last -> prevent default first.focus.
+  No other focusables. General query `button:not([disabled]), [href], input...` but two. Could use cancelRef and confirmRef. Add confirmRef, onKeyDown:
+  ```
+  if key Tab:
+   const first=cancelRef.current, last=confirmRef.current
+   if shift && active===first {prevent;last.focus}
+   else if !shift && active===last...
+  ```
+  Native containment remains showModal. This is standard explicit trap to guarantee reference. Add `confirmRef`.
+  Should Read ConfirmDialog before Edit.
+
+• All 13 new UI tests and TypeScript now pass. Chromium exposed a real keyboard-containment defect at the dialog’s first/last controls, so I’m adding explicit Tab wrapping inside the native modal rather than changing the browser assertions.
+
+• One Edit entire snippets? Should multiple noncontiguous but can replace entire file content with Edit old all new all. Or use one replacement from refs through return entire. Do entire file Edit.Run desktop e2e.[WebServer] (node:61413) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 21 tests using 9 workers
+
+(node:61422) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61417) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61421) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61418) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61419) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61416) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61414) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [desktop-chromium] › e2e/persistence.spec.ts:236:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (548ms)
+  ✓   6 [desktop-chromium] › e2e/persistence.spec.ts:327:1 › PERSIST-006: duplicate IDs reject the complete collection (657ms)
+  ✓   7 [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (659ms)
+  ✓   8 [desktop-chromium] › e2e/persistence.spec.ts:297:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (671ms)
+  ✓   3 [desktop-chromium] › e2e/persistence.spec.ts:311:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (685ms)
+  ✓   5 [desktop-chromium] › e2e/persistence.spec.ts:273:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (716ms)
+  ✓   1 [desktop-chromium] › e2e/persistence.spec.ts:358:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (708ms)
+  ✓   2 [desktop-chromium] › e2e/persistence.spec.ts:247:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (730ms)
+  ✓   4 [desktop-chromium] › e2e/persistence.spec.ts:342:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (745ms)
+  ✓  10 [desktop-chromium] › e2e/persistence.spec.ts:379:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (469ms)
+  ✓  11 [desktop-chromium] › e2e/persistence.spec.ts:395:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (582ms)
+  ✓  12 [desktop-chromium] › e2e/persistence.spec.ts:414:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (644ms)
+  ✓  13 [desktop-chromium] › e2e/persistence.spec.ts:451:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (658ms)
+  ✓  14 [desktop-chromium] › e2e/persistence.spec.ts:470:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (677ms)
+  ✓  16 [desktop-chromium] › e2e/persistence.spec.ts:510:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (656ms)
+  ✓  18 [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (717ms)
+  ✓  17 [desktop-chromium] › e2e/persistence.spec.ts:534:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (800ms)
+  ✓  19 [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (564ms)
+  ✓  20 [desktop-chromium] › e2e/persistence.spec.ts:573:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (503ms)
+  ✘  21 [desktop-chromium] › e2e/persistence.spec.ts:594:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (632ms)
+  ✘  15 [desktop-chromium] › e2e/persistence.spec.ts:493:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (5.7s)
+
+
+  1) [desktop-chromium] › e2e/persistence.spec.ts:493:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: getByRole('status', { name: 'Expense status' })
+    Expected pattern: not /saved successfully|successfully saved|replacement complete|started fresh/i
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "not toContainText" getByRole('status', { name: 'Expense status' }) with timeout 5000ms
+      - waiting for getByRole('status', { name: 'Expense status' })
+
+
+      202 |
+      203 | async function expectNoPersistenceSuccess(page: Page) {
+    > 204 |   await expect(page.getByRole('status', { name: 'Expense status' })).not.toContainText(
+          |                                                                          ^
+      205 |     /saved successfully|successfully saved|replacement complete|started fresh/i,
+      206 |   );
+      207 | }
+        at expectNoPersistenceSuccess (<project>/e2e/persistence.spec.ts:204:74)
+        at <project>/e2e/persistence.spec.ts:503:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-003-f-0be64-never-automatically-retries-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop-chromium] › e2e/persistence.spec.ts:594:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      224 |   await expect(transactions(page).filter({ hasText: note })).toHaveCount(1);
+      225 |   const dialog = await expectReplacementDialog(page);
+    > 226 |   expect((await readProbe(page)).writes).toBe(0);
+          |                                          ^
+      227 |   return dialog;
+      228 | }
+      229 |
+        at expectGuardedAddDialog (<project>/e2e/persistence.spec.ts:226:42)
+        at <project>/e2e/persistence.spec.ts:619:12
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/persistence-RECOVERY-007-u-02975-after-explicit-confirmation-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop-chromium] › e2e/persistence.spec.ts:493:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries
+    [desktop-chromium] › e2e/persistence.spec.ts:594:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation
+  19 passed (7.3s)
+Two failures: one test bug `expectNoPersistenceSuccess` no status for start fresh. Should test assertion allow absent. Must fix test not implementation fake status. This is test harness error. Change to `const status=...; if (await status.count()) expect...`. Does not weaken no success claim, absent is acceptable. Second helper expects writes 0 every guarded add but at third unreadable after previous failure writes=1. Test helper should accept expectedWrites param or assert no new writes relative. At line 619 should expect 1. Modify helper signature `expectedWrites=0`, and call third with 1. Strengthens correct no pre-confirm writes. Not weakening. Should read e2e relevant segments before edit. Could one Edit with helper and call separate requires re-read. Use one Edit perhaps old helper block new and then read third. Do.
+
+• Nineteen of 21 desktop Chromium scenarios now pass. The remaining two failures are incorrect test expectations: one requires a success-status element to exist when none should, and the other resets its write-count expectation despite an earlier confirmed failed write. I’m correcting those checks without relaxing their behavior requirements.
+
+• Single edit first block with both helper modifications.Read the call site, then edit.Run desktop e2e.[WebServer] (node:61582) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 21 tests using 9 workers
+
+(node:61583) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61585) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61591) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61586) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61590) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61587) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61589) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [desktop-chromium] › e2e/persistence.spec.ts:239:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (518ms)
+  ✓   5 [desktop-chromium] › e2e/persistence.spec.ts:314:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (705ms)
+  ✓   4 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (671ms)
+  ✓   9 [desktop-chromium] › e2e/persistence.spec.ts:345:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (693ms)
+  ✓   6 [desktop-chromium] › e2e/persistence.spec.ts:330:1 › PERSIST-006: duplicate IDs reject the complete collection (711ms)
+  ✓   8 [desktop-chromium] › e2e/persistence.spec.ts:250:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (711ms)
+  ✓   1 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (729ms)
+  ✓   3 [desktop-chromium] › e2e/persistence.spec.ts:276:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (744ms)
+  ✓   7 [desktop-chromium] › e2e/persistence.spec.ts:361:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (750ms)
+  ✓  10 [desktop-chromium] › e2e/persistence.spec.ts:382:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (443ms)
+  ✓  11 [desktop-chromium] › e2e/persistence.spec.ts:398:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (564ms)
+  ✓  12 [desktop-chromium] › e2e/persistence.spec.ts:417:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (675ms)
+  ✓  13 [desktop-chromium] › e2e/persistence.spec.ts:454:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (669ms)
+  ✓  15 [desktop-chromium] › e2e/persistence.spec.ts:496:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (692ms)
+  ✓  16 [desktop-chromium] › e2e/persistence.spec.ts:513:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (704ms)
+  ✓  14 [desktop-chromium] › e2e/persistence.spec.ts:473:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (705ms)
+  ✓  18 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (734ms)
+  ✓  19 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (592ms)
+  ✓  17 [desktop-chromium] › e2e/persistence.spec.ts:537:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (829ms)
+  ✓  20 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (513ms)
+  ✓  21 [desktop-chromium] › e2e/persistence.spec.ts:597:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (655ms)
+
+  21 passed (2.9s)
+Now implementation done. Should mark todo done next verification in progress. Then run relevant unit and Chromium checks including both desktop/mobile T023 and prior core regression. Full unit and build perhaps user relevant unit and Chromium. Task checkpoint complete story and prior. Run npm run test:unit, npm run build, npx playwright test e2e/persistence.spec.ts e2e/core.spec.ts (both projects). Standard build must pass. Could run unit and build sequential due standard completion not T050 but can parallel independent? Build and unit can parallel but CPU. E2e independent but vite dev. Use multi parallel three. Full e2e currently only core+persistence files so `npm run test:e2e` runs all 58? Core 8*2=16 plus 21*2=42 total 58. Use npm run test:e2e simpler. User asked relevant, full e2e equals relevant all existing. Run unit, build, e2e parallel perhaps resource heavy but okay. Better unit+build first then e2e. Also inspect localStorage sole boundary via Grep done before but now source store no direct. Should run again in verification. Tasks mark only after pass.
+
+  Todo update.
+
+• All 21 desktop Chromium persistence/recovery scenarios now pass. Implementation is complete; I’m running the full unit suite, production build, and both desktop and mobile Chromium regression checks before marking T021–T026.
+
+
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/dates.test.ts (31 tests) 3ms
+ ✓ tests/domain/money.test.ts (34 tests) 4ms
+ ✓ tests/persistence/expenseStorage.write.test.ts (13 tests) 7ms
+ ✓ tests/persistence/expenseStorage.load.test.ts (19 tests) 6ms
+ ✓ tests/domain/expense.test.ts (22 tests) 5ms
+ ✓ tests/ui/app.smoke.test.tsx (1 test) 67ms
+ ✓ tests/domain/dashboard.test.ts (4 tests) 89ms
+ ✓ tests/ui/monthlyDashboard.test.tsx (4 tests) 214ms
+ ✓ tests/ui/persistenceStatus.test.tsx (4 tests) 469ms
+ ✓ tests/ui/recovery.test.tsx (9 tests) 513ms
+ ✓ tests/ui/addExpense.test.tsx (30 tests) 3079ms
+
+ Test Files  11 passed (11)
+      Tests  171 passed (171)
+   Start at  22:42:46
+   Duration  3.81s (transform 249ms, setup 1.03s, import 510ms, tests 4.46s, environment 5.44s)
+
+
+> personal-expense-tracker@0.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 27 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.47 kB │ gzip:  0.28 kB
+dist/assets/index-D-DllL1a.css    6.75 kB │ gzip:  2.28 kB
+dist/assets/index-C2kvXw6X.js   234.16 kB │ gzip: 73.12 kB
+
+✓ built in 54ms
+• Now e2e both.
+> personal-expense-tracker@0.0.0 test:e2e
+> playwright test
+
+[WebServer] (node:61774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 58 tests using 9 workers
+
+(node:61779) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61777) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61781) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61783) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61778) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61782) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [desktop-chromium] › e2e/persistence.spec.ts:239:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (582ms)
+  ✓   5 [desktop-chromium] › e2e/core.spec.ts:142:1 › responsive baseline: controls meet 24px targets without horizontal reflow (600ms)
+  ✓   9 [desktop-chromium] › e2e/core.spec.ts:120:1 › DATE-003/004: future expense remains isolated until its local month is selected (646ms)
+  ✓   8 [desktop-chromium] › e2e/core.spec.ts:48:1 › CORE-001/004 and MONEY-001: add by keyboard and show exact zero/nonzero totals (662ms)
+  ✓   6 [desktop-chromium] › e2e/core.spec.ts:100:1 › DATE-002: leap-day acceptance and impossible-date rejection (697ms)
+  ✓   1 [desktop-chromium] › e2e/core.spec.ts:136:3 › de-DE browser locale › MONEY-001/003: output is identical under de-DE (745ms)
+  ✓   2 [desktop-chromium] › e2e/core.spec.ts:129:1 › MONEY-002/003: exact fixed en-US USD transaction and summary output (759ms)
+  ✓   3 [desktop-chromium] › e2e/core.spec.ts:82:1 › CORE-001 and DATE-001/004: local first/last-day membership and month selection (791ms)
+  ✓   4 [desktop-chromium] › e2e/core.spec.ts:69:1 › CORE-002/003: fixed local current month and all five categories (794ms)
+  ✓  11 [desktop-chromium] › e2e/persistence.spec.ts:276:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (543ms)
+  ✓  12 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (509ms)
+  ✓  10 [desktop-chromium] › e2e/persistence.spec.ts:250:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (573ms)
+  ✓  13 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (500ms)
+  ✓  14 [desktop-chromium] › e2e/persistence.spec.ts:314:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (499ms)
+  ✓  15 [desktop-chromium] › e2e/persistence.spec.ts:330:1 › PERSIST-006: duplicate IDs reject the complete collection (491ms)
+  ✓  18 [desktop-chromium] › e2e/persistence.spec.ts:382:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (446ms)
+  ✓  16 [desktop-chromium] › e2e/persistence.spec.ts:345:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (555ms)
+  ✓  17 [desktop-chromium] › e2e/persistence.spec.ts:361:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (595ms)
+  ✓  19 [desktop-chromium] › e2e/persistence.spec.ts:398:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (612ms)
+  ✓  21 [desktop-chromium] › e2e/persistence.spec.ts:454:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (651ms)
+  ✓  20 [desktop-chromium] › e2e/persistence.spec.ts:417:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (688ms)
+  ✓  23 [desktop-chromium] › e2e/persistence.spec.ts:496:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (646ms)
+  ✓  22 [desktop-chromium] › e2e/persistence.spec.ts:473:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (691ms)
+  ✓  24 [desktop-chromium] › e2e/persistence.spec.ts:513:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (643ms)
+  ✓  26 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (660ms)
+  ✓  27 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (618ms)
+  ✓  25 [desktop-chromium] › e2e/persistence.spec.ts:537:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (789ms)
+(node:61869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61871) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61870) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61873) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61874) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:61875) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  28 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (547ms)
+(node:61901) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  29 [desktop-chromium] › e2e/persistence.spec.ts:597:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (892ms)
+  ✓  30 [mobile-chromium] › e2e/core.spec.ts:48:1 › CORE-001/004 and MONEY-001: add by keyboard and show exact zero/nonzero totals (480ms)
+  ✓  33 [mobile-chromium] › e2e/core.spec.ts:100:1 › DATE-002: leap-day acceptance and impossible-date rejection (537ms)
+  ✓  34 [mobile-chromium] › e2e/core.spec.ts:120:1 › DATE-003/004: future expense remains isolated until its local month is selected (427ms)
+  ✓  32 [mobile-chromium] › e2e/core.spec.ts:69:1 › CORE-002/003: fixed local current month and all five categories (607ms)
+  ✓  31 [mobile-chromium] › e2e/core.spec.ts:82:1 › CORE-001 and DATE-001/004: local first/last-day membership and month selection (617ms)
+(node:61913) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  35 [mobile-chromium] › e2e/core.spec.ts:129:1 › MONEY-002/003: exact fixed en-US USD transaction and summary output (591ms)
+  ✓  36 [mobile-chromium] › e2e/core.spec.ts:136:3 › de-DE browser locale › MONEY-001/003: output is identical under de-DE (595ms)
+  ✓  38 [mobile-chromium] › e2e/persistence.spec.ts:250:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (479ms)
+  ✓  37 [mobile-chromium] › e2e/core.spec.ts:142:1 › responsive baseline: controls meet 24px targets without horizontal reflow (402ms)
+  ✓  40 [mobile-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (527ms)
+  ✓  41 [mobile-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (470ms)
+  ✓  39 [mobile-chromium] › e2e/persistence.spec.ts:276:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (561ms)
+  ✓  42 [mobile-chromium] › e2e/persistence.spec.ts:314:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (490ms)
+  ✓  44 [mobile-chromium] › e2e/persistence.spec.ts:330:1 › PERSIST-006: duplicate IDs reject the complete collection (507ms)
+  ✓  45 [mobile-chromium] › e2e/persistence.spec.ts:345:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (507ms)
+  ✓  43 [mobile-chromium] › e2e/persistence.spec.ts:239:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (371ms)
+  ✓  47 [mobile-chromium] › e2e/persistence.spec.ts:382:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (415ms)
+  ✓  46 [mobile-chromium] › e2e/persistence.spec.ts:361:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (534ms)
+  ✓  48 [mobile-chromium] › e2e/persistence.spec.ts:398:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (534ms)
+  ✓  49 [mobile-chromium] › e2e/persistence.spec.ts:417:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (618ms)
+  ✓  50 [mobile-chromium] › e2e/persistence.spec.ts:454:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (610ms)
+  ✓  51 [mobile-chromium] › e2e/persistence.spec.ts:473:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (615ms)
+  ✓  52 [mobile-chromium] › e2e/persistence.spec.ts:496:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (578ms)
+  ✓  53 [mobile-chromium] › e2e/persistence.spec.ts:513:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (579ms)
+  ✓  55 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (575ms)
+  ✓  54 [mobile-chromium] › e2e/persistence.spec.ts:537:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (684ms)
+  ✓  56 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (555ms)
+  ✓  57 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (505ms)
+  ✓  58 [mobile-chromium] › e2e/persistence.spec.ts:597:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (632ms)
+
+  58 passed (5.5s)
+All pass. I'll mark tasks only T021-T026 [X]. Read lines 85-96 then single Edit replace all block. Also final review changed files, no out-of-scope editing etc. `git status --short -- .` shows all app untracked because whole app untracked from parent, not helpful. Could use tasks Grep after. Should mandatory post hooks already read hooks {} no after. No need reread? Skill says check after; extensions exists read earlier hooks {}. Good.
+
+  I'll mark verification done tasks in progress.
+
+• Verification is green: 171 unit tests, the production build, and all 58 desktop/mobile Chromium tests pass. I’m marking only T021–T026 complete and leaving every later-story task untouched.
+
+• Edit block only markers could replace exact six lines in one old block.Should verify tasks only markers T021-26 and later untouched. Grep T02 etc. Also perhaps git diff -- app? Whole untracked no diff. Use Grep task markers. Then todo done.Todo done.Should respond concise summary tests. Mention tasks completed, files, behavior. No editing deletion etc started. Hooks none. Build/test pass. Should not mention subagents. Include task file line. "Stopped after T026; T027 onward unchanged." Should mention unit 171, e2e 58, build. Test-first red confirmed. Perhaps no need details of red. Respond with two headings? Light. Ensure no claims full WCAG. Good.
+
+• Completed and marked **T021–T026** `[X]` in `specs/001-expense-tracker/tasks.md:87-95`.
+
+  Implemented:
+
+  - Sole localStorage boundary with strict all-or-nothing validation and integer-cent persistence.
+  - Guarded malformed/unreadable recovery with no pre-confirmation writes.
+  - Optimistic in-memory adds, visible unsaved warnings, and later complete-collection saves.
+  - Start-fresh and first-replacement confirmations with failure retention.
+  - Accessible native dialog with Cancel initial focus, Tab containment, Escape handling, and focus restoration.
+  - Persistence, recovery UI, and Chromium tests with failure-path assertions intact.
+
+  Verification passed:
+
+  - `npm run test:unit` — **171 tests**
+  - `npm run build`
+  - `npm run test:e2e` — **58 desktop/mobile Chromium tests**
+
+  Stopped after T026. Editing, deletion, filtering, demo work, and all later task markers remain untouched.
+
+To resume this session: kimi -r session_d0865d55-b252-4e5d-a7bd-bbdd237b48c5

@@ -1,0 +1,31 @@
+
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/money.test.ts (34 tests) 5ms
+ ✓ tests/domain/dates.test.ts (31 tests) 4ms
+ ✓ tests/domain/dashboard.list.test.ts (11 tests) 5ms
+ ✓ tests/domain/expense.test.ts (22 tests) 5ms
+ ✓ tests/persistence/expenseStorage.write.test.ts (13 tests) 8ms
+ ✓ tests/persistence/expenseStorage.load.test.ts (19 tests) 6ms
+ ✓ tests/domain/demoData.test.ts (14 tests) 4ms
+ ✓ tests/fixtures/scaleData.test.ts (2 tests) 22ms
+ ✓ tests/domain/dashboard.test.ts (4 tests) 106ms
+ ✓ tests/ui/monthlyDashboard.test.tsx (5 tests) 287ms
+ ✓ tests/ui/deleteExpense.test.tsx (6 tests) 336ms
+ ✓ tests/ui/app.smoke.test.tsx (1 test) 67ms
+ ✓ tests/ui/persistenceStatus.test.tsx (4 tests) 582ms
+ ✓ tests/ui/transactionPreferences.test.tsx (10 tests) 636ms
+ ✓ tests/ui/recovery.test.tsx (9 tests) 649ms
+ ✓ tests/ui/demoMode.test.tsx (12 tests) 652ms
+     ✓ supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory  333ms
+ ✓ tests/ui/editExpense.test.tsx (33 tests) 2892ms
+ ✓ tests/ui/addExpense.test.tsx (30 tests) 3095ms
+
+ Test Files  18 passed (18)
+      Tests  260 passed (260)
+   Start at  01:15:42
+   Duration  4.15s (transform 653ms, setup 2.34s, import 1.33s, tests 9.36s, environment 12.41s)

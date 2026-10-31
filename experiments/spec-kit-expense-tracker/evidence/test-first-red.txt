@@ -1,0 +1,36 @@
+
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.12 <project>
+
+ ❯ tests/ui/app.smoke.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/app.smoke.test.tsx [ tests/ui/app.smoke.test.tsx ]
+Error: Failed to resolve import "../../src/App" from "tests/ui/app.smoke.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: <project>/tests/ui/app.smoke.test.tsx:3:16
+  1  |  import { render, screen } from "@testing-library/react";
+  2  |  import { describe, expect, it } from "vitest";
+  3  |  import App from "../../src/App";
+     |                   ^
+  4  |  var _jsxFileName = "<project>/tests/ui/app.s...
+  5  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8803:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8800:14
+ ❯ resolveId node_modules/vite/dist/node/chunks/node.js:26594:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26693:23
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26666:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8582:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20155:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  21:57:34
+   Duration  337ms (transform 8ms, setup 51ms, import 0ms, tests 0ms, environment 208ms)

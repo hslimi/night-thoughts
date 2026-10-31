@@ -1,0 +1,7 @@
+PASS: 10-desktop-dashboard.png is a genuine 1440x900 application viewport.
+PASS: 11-expense-creation.png is a genuine 1440x900 application viewport.
+PASS: 12-category-filtering.png is a genuine 1440x900 application viewport.
+PASS: 13-invalid-amount-validation.png is a genuine 1440x900 application viewport.
+PASS: 14-deletion-confirmation.png is a genuine 1440x900 application viewport.
+PASS: 15-mobile-dashboard.png is a genuine 390x844 application viewport.
+Captured six states using six fresh Playwright contexts. Browser console errors: 0.

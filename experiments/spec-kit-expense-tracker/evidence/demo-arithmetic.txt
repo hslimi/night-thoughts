@@ -1,0 +1,8 @@
+Independent integer-cent check of the clarified demo baseline
+total: 173265 cents = $1,732.65
+food: 12275 cents = $122.75
+transport: 5090 cents = $50.90
+housing: 145000 cents = $1,450.00
+entertainment: 2400 cents = $24.00
+other: 8500 cents = $85.00
+newest-first: demo-008,demo-007,demo-006,demo-005,demo-004,demo-003,demo-002,demo-001

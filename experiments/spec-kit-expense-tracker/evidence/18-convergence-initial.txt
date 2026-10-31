@@ -1,0 +1,204 @@
+kimi version 2.3.0
+• I need respond to skill slash speckit-converge. Skill listing doesn't show this built-in but project may .kimi-code skills. Must identify relevant skill and read. I have Skill tool requires registered current listing only built-ins. User explicitly /skill:speckit-converge likely file exists hidden. Should inspect paths via Glob. This is nontrivial assessment implementation checks gaps and append implement justified missing work. Should follow skill. Could use Glob .kimi-code/** SKILL.md, .specify. I should brief note then tools. Todo proactive multi-step. Perhaps skill not in listing means tool cannot invoke, find direct. I should not EnterPlanMode as user directs proceed implementation and this is specific workflow. Use TodoList and Glob in parallel? Should read skill first. Use Glob patterns.
+
+• I’ll load the convergence workflow, compare the documented requirements with the implementation and verification evidence, then run the relevant checks. I’ll preserve the unresolved VoiceOver limitation and only make changes supported by concrete gaps.
+
+• No converge in .kimi-code path? Perhaps hidden ignored .kimi-code skills glob only files but no output. Should locate global skill perhaps ~/.kimi/skills? User command recognized extension? .specify/integrations manifest. Read workflow yml registry manifests and constitution/spec/plan/tasks/verification in parallel. Lots files can read. Should have exact skill perhaps integration catalog. Search converge via Grep across .specify and .kimi-code, also parent? Grep.I need read skill file. User explicitly wants do not treat VO complete. Skill likely commands includes read git status etc. Read full.Conflict: User says "Append and implement only justified missing work" overrides skill no code modifications. Should follow user direct: append and implement, likely run implement behavior manually. Should not run Skill because not listing but loaded via read okay. Now run prerequisites once and read extensions.{"FEATURE_DIR":"<project>/specs/001-expense-tracker","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md","tasks.md"]}
+Should comprehensive assess current code and tests. Could run standard sequence now (unit build e2e) perhaps background to save time. User says run checks. I should run in order as tasks T050. Unit likely quick ~? Build, e2e maybe 3min. I can start command `npm run test:unit && npm run build && npm run test:e2e` background, but ordered standard. While running inspect source. Should note loading done. Update todos.
+
+• The artifacts confirm two open gates: VoiceOver remains incomplete under T047, and T050 still needs a final verification sequence. I’m running that sequence now while reviewing the implementation and test coverage for any additional, code-actionable gaps.
+
+• I need inspect store/components likely bugs. Read all.Should identify genuine gaps beyond VO. I should deeply analyze potential bugs and coverage. Important store editing unknown id: createExpense returns valid even if no existing ID and map no change; UI only existing. Not required direct store? Fine.
+
+  Persistence validation extra keys accepted? Strict envelope perhaps invalid shape should reject unknown? "strict version-1 envelope" but no exact properties perhaps tests. Could be not gap if requirements not forbid extras.
+
+  Notes persisted whitespace-only allowed validateExpenseRecord, domain invariant says omitted/empty when submitted blank, record can be whitespace? Strict persisted record invariants perhaps tests expected invalid note? T011 says "blank/whitespace note omission... rejection invalid persisted". Could be persisted whitespace note should invalid? Data model record note omitted or empty when submitted blank, otherwise exact. A note "" is allowed? Table optional omitted or empty. Whitespace-only persisted should arguably invalid because canonical? Not explicit invalid records require? likely not.
+
+  Currency format uses cents/100 floats display only allowed? Exact representation calculations integer, formatting conversion explicitly. Maximum 99999999999/100 = 999999999.99 not exact binary but Intl rounding output correct. Fine.
+
+  Date year 0000 accepted HTML perhaps local date supports YYYY; spec no range. Fine.
+
+  Storage malformed input raw undefined? JSON.stringify envelope always string unless toJSON weird on expenses? Expense plain but caller could pass toJSON. saveExpenses shallow copies preserves toJSON? Spread ignores prototype and nonenumerable; user data safe. Tests injection. Fine.
+
+  Demo no storage. main pageshow listener not storage.
+
+  Accessibility potential duplicate labels edit/delete all same but context perhaps each article unlabelled, VO hard to distinguish. Requirement "identify expense by formatted..." only dialog. Buttons generic names arguably WCAG labels in context can derive li text, okay.
+
+  Critical bug confirmation focus restoration race: ConfirmDialog effect cleanup when open false triggers focus requester. For deletion, App confirmDeletion sets deletion null and setFocusRequest next edit. Effect cleanup order vs App focus effect? React effects cleanup then setup in tree order? ConfirmDialog rendered after main. App useEffect runs after commit, child effect cleanup? Should test covers. Fine.
+
+  Replacement guarded add: user submits valid, persistMutation sets expenses and replacement dialog. ExpenseForm sets added status "Expense added." even before replacement confirmed; spec no persistence success claims demo, normal could say added to memory. Cancellation keeps work, form reset. Fine. If edit guarded, App set edit status success and closes, dialog appears. cancellation work remains. Good. Start fresh available in normal ready? requestStartFresh button only recovery. Good. Failure replacement remains recovery and persistenceIssue. Starting new normal mutation in recovery after replacement-failed triggers first-replacement. Good. Ordinary failed mutation after unsaved warning later edit? Save complete. Fine. Add missing normal initial in-memory tests bypass storage intentionally. Cross-month add selected unchanged. Add from empty action "for this month" focuses amount but does not set form date to selected month. Requirement says action to add expense, focus first meaningful control. Doesn't require prefill selected date. okay. Month input onChange can empty invalid month, summarizeMonth throws causing app crash. HTML month input can be cleared by keyboard, producing ''. Requirements dates missing invalid for expense, month control selection perhaps any valid month. User clearing month is possible core flow; robustness perhaps should not crash. Tests perhaps not. Is it genuine requirement? A labeled month control selects any local YYYY-MM. It doesn't explicitly require invalid month handling, but no crash obvious quality. Could be append fix if reproduce. Should avoid speculative additions. I can test manually or code reasoning enough. But user says only justified missing work. Could identify as contradiction of UI behavior perhaps month selection core flow should not crash. However scope doesn't say handling invalid selectedMonth. Native input with required? no. Clear month control sends ''. React controlled becomes empty then store summary throw. This is actual defect. Should see existing tests coverage for month invalid? Grep.
+
+• The core module boundaries and required behaviors are present. I’m checking edge paths that broad suites can miss—especially mutable native controls and dialog/focus transitions—before deciding whether any new implementation task is justified.
+
+• Tests complete fast. Should read output log. Could Read tail 100 lines. Also continue review other tests perhaps entire e2e not necessary if passing but assess coverage. Should decide if invalid month is justified. User explicitly asks genuine gaps and only missing work. I can reproduce with a Playwright one-off script or add failing test first per tasks test-first. Should not immediately modify until findings summary. Skill step 6 before appending anything output summary. I can identify more gaps through actual exploratory checks. Perhaps open issue VoiceOver task already exists unchecked; do not append duplicate. T050 also exists. New code defects if any append T051 etc and implement. I can report open limitations. Should run manual VO? User says do not treat complete, no need attempt. I cannot reliable audible evidence via tools. So remains open and convergence outcome tasks_appended? Existing open tasks count as findings? Skill says include every existing task regardless checkbox and if gaps produce finding. T047 missing VoiceOver -> finding partial, critical? Constitution accessibility MUST, completion zero known violations but unverified isn't violation. Gap missing review high perhaps constitution principle II violation? Not code violates, missing evidence. Severity HIGH. T050 partial due final sequence now run; but VO remains blocks gate. T047 already task exists; Step 7 append each remaining work as new task? "Include every existing task ... produce Finding only gap." "append each piece remaining work as new traceable task" but no duplicates? Existing open tasks already track work, should not append duplicate? Skill literal could append VoiceOver task again? It says determine existing tasks unmet ... append each piece remaining work new. But user "Append and implement only justified missing work" and VO can't implement. I should not append duplicate open tasks. Could outcome not converged due open existing task; tasks_appended only if code defect. Should see likely expected convergence exercise perhaps intentionally bug hidden. I should inspect app for bug tasks not tested. Month clear is likely real. Other gaps: record validation accepts unknown note line break etc fine. Store createExpense editing nonexistent returns success perhaps not user reachable.
+
+  Potential issue focus deletion after write failure: same behavior. Dialog Cancel requester active element captured useEffect after opening. Active requester may lose focus due React rendering? Deletion state only adds dialog, requester remains active. good.
+
+  Potential issue two ConfirmDialog components same title IDs unique. When one closes and another opens simultaneous (e.g. deletion while recovery impossible because behind modal). no.
+
+  ExpenseForm heading id stays add-expense-heading even edit but labelShould unit/build lines earlier. Read first 30 perhaps.Could run exploratory browser test with node Playwright script no files. Should have actual month clear crash. I can invoke node -e with chromium and webserver? Current e2e webserver stopped. Could use `npm run dev -- --host 127...` background plus node script. Or add unit failing test first then run. Test-first mandatory if implement. Before finding, a temporary `node --input-type=module -e` starts vite? Could run `npx vite --host 127.0.0.1` background, then script. I can use Bash compound start server in background within shell, trap kill, node script. Tool fresh shell but one call works: `npm run dev -- --host 127.0.0.1 > /tmp... & server=$!; trap 'kill $server' EXIT; ...` writing outside cwd? avoid outside. Could use output to `test-results/exploratory-vite.log` existing path, then remove? no need unsolicited. Simpler add test in existing monthlyDashboard test and run red as test-first. But findings summary before file writes says no file writes yet; test write is file write (skill only append allowed, user overrides implement). Should present finding summary before appending; to verify bug I can run node inline using Vite server.
+
+  Perhaps inspect application with browser manually through JS. Should have no tool browser. Playwright installed. Bash command uses node import chromium, starts `npm run dev` background. It modifies test-results perhaps no. I can run `npm run dev -- --host 127.0.0.1 > /dev/null 2>&1 & server_pid=$!; trap ...; for... curl; node --input...`. Bash direct curl allowed network local? yes. Use `npx vite`? npm. Browser page.goto normal, page clock optional not needed. getByLabel('Month').fill('') then wait, capture pageerror and body. Should be actual. Also perhaps test editing expense note? no.
+
+  Other potential significant issue: normal state lost on browser back/forward same doc? main pageshow reload only persisted; spec says history entry fresh. Tests pass. Fine.
+
+  Unsafe totals with 90k records slows 11 sec but performance requirement scale only 1000, fine.
+
+  SC001 not measured user study excluded post-launch metric. no task.
+
+  T047 manual keyboard-only says open because VO portion, other manual complete. T050 can update evidence final sequence but can't check task due VO. User says "Append and implement only justified missing work" could update verification with actual rerun even skill says only write tasks but user asked assess verification evidence and implement, likely allowed documentation update? Direct user didn't explicitly say update verification but final result evidence should be recorded? T050 requires record final sequence. I can update verification.md (not spec/plan) despite skill says only write tasks conflict with user "implement" but documentation update not implementation maybe user direct asks append and implement only, could be justified to record actual checks. Should not overwrite open limitation. If no code gaps, only append? Existing open T047/T050 means not converged. Could simply no tasks appended and update verification T050 remains open. But user expects perhaps find and fix hidden bug. Should thorough.
+
+  I'll reproduce month clear.
+
+• The full standard sequence is green: 259 unit tests, the production build, and 165 Chromium tests passed, with the one documented mobile zoom duplicate skipped. I’m now validating a suspected unhandled month-input path in the real browser rather than inferring a defect from code alone.{"errors":["Expected a valid local month"],"month":null,"headingCount":0}
+
+
+• I found crash. Now findings summary before writes per skill. Perhaps there are other genuine gaps. I should inspect remaining code test scope perhaps enough. I can now state one code gap plus open existing VO. Severity high FR011/US1 AC2? Month control clear crash core P1, violates baseline month selection but only invalid input edge. Gap partial HIGH FR-011 UI contract month selection and Constitution II? Accessible forms invalid? Month input no error. Could call contradicts because application unmounts, but partial best. T051 fix handle empty month without crashing preserve last valid selection, add test. Should define desired behavior from spec not explicit: a month control selects YYYY-MM, if cleared invalid should not crash. Minimal ignore invalid values in `onMonthChange` store setSelectedMonth? Native controlled input if ignore invalid means cannot clear field (immediate revert), okay acceptable. Better validate in Dashboard `onChange={(event) => { if (isMonth(event.target.value)) onMonthChange(...) }}` but this separation business rules domain. Or store callback guard using isMonth. Existing setSelectedMonth exposed raw setState. Change to callback `selectMonth` guard, ensures no invalid summary. The controlled input won't allow clearing to type but month selector typically picker and fill full. Tests use fill valid works. Could alternatively local draft month state with error but not required and unrequested. Minimal guard in store is appropriate. Add regression tests in monthlyDashboard.test.tsx fireEvent.change empty and assert no crash selected month remains and totals unchanged. Test first run red. Append task before implementation per user. Should output Convergence Findings now with metrics. Requirements/acceptance checked counts: 29 FR + 10 SC? exclude SC001 post-launch. User stories acceptance scenarios counts: US1 6, US2 7, US3 7, US4 4, US5 4 =28. Edge cases 10? spec lines 118-129 =12? Count 118,119,120,121,122,123,124,125,126,127,128,129 =12. Plan decisions perhaps 20? I can give counts approximate exact internally. Skill says summary metrics requirements/acceptance criteria checked. Could say "29 FRs, 9 buildable SCs, 28 story acceptance scenarios, and 12 edge cases" =78. Plan decisions checked perhaps architecture/persistence/demo/accessibility/performance/test scope etc 10. Constitution 6. Findings by gap: 1 partial; severity 1 high. VoiceOver existing open limitation not new finding? Could list separate F2 missing HIGH T047/FR025/SC007. If finding, then append task duplicates? Could say no new task because T047 already open. T050 existing open too. Convergence Findings table F1 partial high FR011, F2 missing high T047 FR025 SC007. Metrics 1 partial 1 missing. Actionable findings: F1 new task, F2 already tracked no duplicate. Outcome tasks_appended not converged. User asks append implement only justified missing work, VoiceOver cannot implement via code. I'll note "Existing open limitations (not duplicated): VoiceOver review T047 remains incomplete; T050 remains open pending that gate." F2 not new task.
+
+  Before append, Todo update assessment done, checks done, implement in progress. Should read tasks tail before edit (I read full but requirement before every Edit, recent okay but must read target before every Edit yes already read but many steps; safer Read tail). I need findings summary then Edit tasks append. Skill says only write tasks append. User says implement. I'll append phase 9 T051. Could use Edit at end replacing last lines with plus new section. Must not Write append? Tool Write append allowed but existing incremental changes must Edit mandatory. Use Edit after Read tail. Could present summary now and next tool Read+Todo.
+
+• ## Convergence Findings
+
+  | ID | Gap Type | Severity | Source | Evidence | Remaining Work |
+  |---|---|---|---|---|---|
+  | F1 | partial | HIGH | FR-011; US1/AC2 | Clearing the native Month control in Chromium throws `Expected a valid local month` and unmounts the application. | Preserve the last valid month on invalid/empty selection and add regression coverage. |
+  | F2 | missing | HIGH | T047; FR-025; SC-007 | `verification.md` explicitly records no reliable VoiceOver evidence. | Complete the existing manual VoiceOver review; do not duplicate or close T047. |
+
+  Checked 29 functional requirements, 9 buildable success criteria, 28 story acceptance scenarios, 12 edge cases, the plan’s architecture and verification decisions, and all 6 constitution principles. No other code gaps were substantiated. T050 also remains open because the accessibility gate is incomplete.
+
+  I’ll append one new task for F1, implement it test-first, and rerun the affected and full checks.
+
+• Now Edit tasks append.Now add test first. I can insert after first test. Test uses render App boundaryRecords, expect initial 2026-10; fireEvent.change month empty -> currently throws. Use `it('FR-011: preserves...` requirement case IDs quickstart? Could label CORE-002 perhaps FR-011. Existing conventions case IDs. "CORE-002: ignores an empty month selection without crashing..." Good. Assertions selected month remains, totals, transactions. This directly meaningful. Should Edit.Run single test red.
+ RUN  v4.1.12 <project>
+
+ ❯ tests/ui/monthlyDashboard.test.tsx (5 tests | 1 failed) 203ms
+     ✓ DATE-001/004: shows only selected-month transactions and exact totals 73ms
+     × CORE-002: preserves the last valid month when the native control is cleared 10ms
+     ✓ DATE-002: includes leap day and rejects an impossible date with associated focus 76ms
+     ✓ DATE-003: keeps selected month unchanged after adding a future expense 38ms
+     ✓ OVERFLOW-001: announces calculation errors instead of unsafe numeric totals 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/monthlyDashboard.test.tsx > monthly dashboard > CORE-002: preserves the last valid month when the native control is cleared
+Error: Expected a valid local month
+ ❯ summarizeMonth src/domain/dashboard.ts:56:11
+     54| ): MonthlySummary {
+     55|   if (!isMonth(month)) {
+     56|     throw new Error('Expected a valid local month');
+       |           ^
+     57|   }
+     58|   const monthExpenses = expenses.filter(
+ ❯ src/state/useExpenseStore.ts:197:11
+ ❯ updateMemo node_modules/react-dom/cjs/react-dom-client.development.js:9179:19
+ ❯ Object.useMemo node_modules/react-dom/cjs/react-dom-client.development.js:29154:18
+ ❯ process.env.NODE_ENV.exports.useMemo node_modules/react/cjs/react.development.js:1297:34
+ ❯ useExpenseStore src/state/useExpenseStore.ts:196:19
+ ❯ App src/App.tsx:26:17
+ ❯ Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:28571:20
+ ❯ renderWithHooks node_modules/react-dom/cjs/react-dom-client.development.js:8030:22
+ ❯ updateFunctionComponent node_modules/react-dom/cjs/react-dom-client.development.js:10569:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  00:15:24
+   Duration  733ms (transform 41ms, setup 75ms, import 66ms, tests 203ms, environment 332ms)
+
+Now implementation. Should read store before edit, lines 1-10 and 85-95, 205. Could one Read relevant entire perhaps already but mandatory before every Edit current unchanged since read yes but use fresh targeted. Then edit import isMonth and selectMonth callback. Options simplest:
+  `import { getCurrentLocalMonth, isMonth, type MonthString } ...`
+  `const selectMonth = useCallback((month: MonthString) => { if (isMonth(month)) setSelectedMonth(month); }, []);`
+  Type MonthString is alias string so empty assign accepted. Return setSelectedMonth: selectMonth. This guards all. Could avoid callback and pass inline in App? Store better.
+  Add after state declarations perhaps near summary. `const selectMonth = useCallback...` after preferences.
+  This doesn't announce invalid month or error; spec not require. Preserves controlled last valid. Good.
+
+  Should test invalid arbitrary not just empty? Task says empty or invalid; native month input only yields empty or normalized valid. Unit test only empty adequate browser-reproduced. Could test `fireEvent.change value 'not-a-month'` jsdom may set empty because input type month sanitized. same path. Fine.
+
+  Edit store.
+
+• The new regression test fails with the same uncaught exception seen in Chromium, confirming the task is justified. I’ll guard month selection at the store boundary so invalid control values cannot reach summary calculation.
+
+• Can single Edit replacing import and block in one old_string? Edit exact replacement one occurrence. Should have same file one Edit only consecutive prohibited unless read again. I can replace broad from import through state? Better two changes in one Edit using old_string from line 7 to 102 large, not desirable but okay. Or first edit import then read then second edit. That's fine. Use Edit import then Read then Edit block+return perhaps two locations again. Could define wrapper named setSelectedMonth shadow state? Rename state setter to updateSelectedMonth then define function same name, requires two locations only but one large block perhaps. Easier don't import isMonth; use `summarizeMonth`? Could guard with regex inline in Dashboard? Should have one location if in App: `onMonthChange={(month) => { if (isMonth(month)) store.setSelectedMonth(month); }}` import isMonth adds second. Could import full dates? no.
+
+  Single Edit replace import line and rest huge no. Use sequential read each. Fine.Now Read relevant after edit.Should have one Edit could replace from transactionPreferences through return setSelectedMonth? Too huge. I can avoid new callback by change returned property to inline guard: `setSelectedMonth: (month: MonthString) => { if (isMonth(month)) { setSelectedMonth(month); } },` creates new function each render but okay, no useCallback needed. However interface setter typed Dispatch<SetStateAction> previously allowed function updater though only App passes string; change could affect external tests? Store only internal, no direct. Better callback stable but requires two edits. I can make one Edit block at return only. Inline simple and negligible. Fit code around useCallback style? They use useCallback extensively. Better stable callback. Two edits with read between allowed. Add callback now after prefs.Now read return then edit.Now run single test green.
+ RUN  v4.1.12 <project>
+
+ ✓ tests/ui/monthlyDashboard.test.tsx (5 tests) 207ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  00:16:48
+   Duration  573ms (transform 41ms, setup 45ms, import 56ms, tests 207ms, environment 210ms)
+
+Should verify real browser same original scenario after fix. Also full standard sequence after change. Could run browser first or full e2e includes new test only unit no e2e regression. User original scenario work end-to-end, rerun exact exploratory script after fix. Then full sequence. Could do browser script and standard full sequence perhaps independent? Both start servers port conflict if parallel no. Run exact exploratory now. Then standard background and update docs? Should have task T051 mark [X] only after full check and browser. verification update actual counts now 260 unit. Add Convergence follow-up section? User says append and implement only justified missing work, documentation verification can be updated to reflect final evidence. Must not mark T050 complete. Could update counts 259->260, e2e same 165. Add row convergence regression passed perhaps manual table. Remaining gate update T051 complete. T050 wording "after bug-fix verification" now satisfied except VO. Record final zero known? Can't claim. I can update Verification top "Verified..." same date. Add automated row "Convergence month-input regression" unit and production Chromium pass. Existing T047/T050 remain open. T051 mark done. Perhaps tasks T051 append-only never rewrite? Skill says never rewrite existing task including prior convergence; but user says implement appended task. Marking checkbox is modification existing task but implement workflow normally does. User direct says append and implement so okay to check T051. Could leave unchecked even implemented? No, actual task should be complete. I can mark after verification.
+
+  Run real browser.
+
+• The focused regression now passes. I’m repeating the original Chromium scenario, then I’ll rerun the complete unit/build/end-to-end sequence on the corrected implementation.{"errors":[],"before":"2026-11","after":"2026-11","monthlyTotal":"$0.00","headingCount":1}
+
+
+• Good. Full sequence background.While running, review docs comments no comment changes. Now update verification but wait results. I can inspect tasks tail and verification for edit later. Perhaps ensure git diff? Skill says no git. Do not use git. Could read final files contract to ensure. Should have no more work. Could check extension after at end already hooks {}. Perhaps test full build passing notification soon. I can use time to plan response. Should outcome `tasks_appended`, 1 task phase 9, implemented T051, no open code findings; overall not converged because VO and T050 open. User asked actual convergence result without overriding open limitations. So respond "Convergence outcome: tasks_appended; implementation gaps closed, feature not fully converged/complete because VoiceOver not done and T047/T050 open." Could use skill exact outcome. Do not say ✅ Converged. Include checks counts 260, build, 165+1 skip, browser clear no error. Note no VO claim. T051 marked complete. Verification updated counts and row.
+
+  Should update docs after tests complete. I can read verification now (already full) but must fresh before Edit. I can await notification naturally likely 40s; need tool call perhaps read tasks tail and verification in parallel.I can edit verification now counts unit not yet final but previous full 259 + focused new = could wait. Better wait notification. Perhaps background 37s, elapsed enough after reads ~? Notifications delivered at next turn perhaps now none. Could use TaskOutput only if need output before automatic, but guideline no wait. I can work on adding documentation row only after full. I could mark T051 after focused+real browser even full pending, but wait. Perhaps run no extra. Use TaskOutput nonblocking acceptable if deliberate progress check need output to update docs; automatic likely soon. But "Do not wait on task just launched" I've done other work. Now can TaskOutput.Still running near done. I can wait automatic by doing docs partial? Unit/build done, e2e likely soon. Should have no need for rush. Could update verification unit count and add row after response but if edit now then another edit later requires read. Fine wait perhaps use Read output after notification. Since no other work, WaitFor allowed now "only when really no other work and next step cannot proceed". Yes next docs depends on final. Use WaitFor task id timeout 20.Now mark task T051 X and verification update. Two files independent edits can parallel. Read both just before tests, files unchanged, acceptable "Read target before every Edit" yes read. For tasks change [ ] to [X]. For verification one Edit can replace whole relevant content? Should have 3 changes: unit count, add row, FR011 evidence, remaining gate T050/T051. Multiple edits same file require read between. Could do one Edit with entire file old and new? That's complete replacement but Edit incremental required. I can replace larger block from table line 9 to 15 for first two changes. Then read and second edit FR011 and remaining maybe two distant. Could leave FR011 existing CORE002 enough; no need update. Add T051 remaining line requires third. I can instead do only table block update and remaining gate with two edits/read. Unit count and add row one block. Remaining gate update one block. Good.
+
+  Verification wording:
+  row `Convergence month-input regression (T051) | Cleared Month preserved ... no page errors; focused test failed before fix and passes after`.
+  Remaining gate:
+  - T050 remains open because VoiceOver... The final automated sequence was rerun after T051 and passed; this does not complete accessibility gate.
+  - T051 complete: ...
+  Order T047 T048 T049 T050 T051. Original T050 says "until final full sequence is rerun after bug-fix verification and accessibility limitation either resolved or explicitly retained in final report." User says explicitly retained final report, could that allow T050 complete even VO open? But line 28 T050 cannot claim complete accessibility gate. Task T050 requires final zero-known-AA gate, manual review incomplete, so remains open regardless. Update accordingly.
+
+  Task mark [X] okay. Use parallel Edit tasks + verification table.
+
+• The corrected implementation passed the complete sequence again: 260 unit tests, the build, and 165 Chromium tests. I’m recording T051 as complete and updating the evidence without changing the VoiceOver or T050 status.
+
+• Should read verification remaining before Edit.Edit.Should have final check docs, no tests needed after docs. Extension after hooks read at beginning hooks {} counts both no hooks. Should have final outcome before hooks (none). Todo mark implement done report in progress then respond done? Instruction before response ensure list matches. Could set all done now since report about to write. Perhaps read exact line numbers for code/test/tasks/verification for final citations. I have store selectMonth line 103, test line 46 new, tasks T051 line278, verification rows now 9 etc. Should read test around new to get exact line 46. Already known inserted shifts. Could use Read with lines 38-65 and verification top/tail, tasks tail in parallel. This is final external contract inspect. Also no need git. Could run no tests. Use Read and Todo update.Now respond with actual convergence. No need next action recommend implement since task done; skill on tasks_appended says recommend implement and follow-up converge, but user asked implement so I did. Could recommend complete VO then rerun T050/final convergence. Mention SC001 unmeasured perhaps open limitation from verification, user says actual result no overriding open limitations. Include SC001 and other browsers? Most important VoiceOver. Could mention "SC-001 also remains unmeasured; non-Chromium browsers unverified" perhaps concise. User asked assess against spec, so actual convergence should include these pre-existing limitations. Don't overdo.
+
+  Structure:
+  **Outcome: `tasks_appended`, not fully converged.**
+  One justified implementation gap found/fixed; existing manual gates still open.
+
+  - Finding: clearing Month crashed app with uncaught... Added Phase9 T051 tasks...
+  - Fix: guard isMonth store at line103, test line46. Regression red before/green after. Real Chromium preserved month no errors.
+  - Evidence verification.md updated.
+
+  Checks list.
+  Open:
+  - T047 VoiceOver not completed, no screen reader verification claimed.
+  - T050 open; automated green not substitute.
+  - SC001 no first-time user study; other browsers unverified (optional).
+  "No other code gaps substantiated across 29 FRs etc." Counts summary perhaps include 29 FR/9 buildable SC/28 scenarios/12 edge/6 principles. Good.
+
+  Should I say "not fully converged" vs skill outcome tasks_appended but after implementation could code converged. User asks actual convergence result. "Code convergence achieved for assessed implementation scope; overall feature not converged due open manual accessibility gate." This nuanced. Skill outcome `tasks_appended`. Start with that and explicit not complete. No checkmark emoji. Good.
+
+  No hooks. Respond about 250 words.
+
+• ## Convergence outcome: `tasks_appended` — overall completion remains blocked
+
+  One justified implementation gap was found and fixed. No other code gaps were substantiated across 29 functional requirements, 9 buildable success criteria, 28 acceptance scenarios, 12 edge cases, and all six constitution principles.
+
+  - **Gap:** Clearing the native Month control caused `Expected a valid local month` and unmounted the application.
+  - **Task:** Added and completed T051 under Phase 9 in `specs/001-expense-tracker/tasks.md:276`.
+  - **Fix:** Invalid or empty month values now preserve the last valid selection at `src/state/useExpenseStore.ts:103`.
+  - **Regression coverage:** Added at `tests/ui/monthlyDashboard.test.tsx:46`. It failed with the original exception before the fix and passes afterward.
+  - **Browser verification:** Repeating the original Chromium scenario preserved the selected month and dashboard with no page errors.
+  - **Evidence:** Updated `specs/001-expense-tracker/verification.md:9` without changing the open accessibility findings.
+
+  Final verification:
+
+  - `npm run test:unit`: **260 passed**
+  - `npm run build`: **passed**
+  - `npm run test:e2e`: **165 passed, 1 intentionally skipped**
+  - Automated WCAG scans: **zero reported violations in covered states**
+
+  **Open limitations remain unchanged:**
+
+  - **T047 remains open:** VoiceOver review is not complete, and no screen-reader verification is claimed.
+  - **T050 remains open:** Passing automated checks does not satisfy the missing manual accessibility evidence.
+  - SC-001 remains unmeasured because no first-time-user study was conducted; non-Chromium browsers remain unverified.
+
+  The assessed implementation gaps are closed, but the feature cannot yet be reported as fully converged or complete.
+
+To resume this session: kimi -r session_1979c0aa-b303-4a4b-ab6b-ec93faa9d28c

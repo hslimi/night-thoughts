@@ -1,0 +1,534 @@
+kimi version 2.3.0
+• I need act on slash skill speckit-tasks. Not listed in available skills? Only built-ins. User explicitly command /skill:speckit-tasks likely repository skill in .kimi-code? Should inspect. I need understand task generate tasks.md from specs. Must use Skill tool if listing matches but speckit not in current listing. Perhaps .kimi-code commands scripts. Should explore files. This is nontrivial document generation not code implementation. I should use tools read. Perhaps .specify templates and spec files. User says use test-first implementation etc. Likely generate tasks.md only. Should find speckit-tasks skill. Glob files.
+
+• I’ll load the feature artifacts and task-generation guidance, then produce a test-first task breakdown that preserves the quickstart’s traceability and deterministic fixtures.
+
+• I found skill but not registered listing. User slash explicit so read skill. Perhaps can call Skill though not listing? Tool says invoke registered current listing only. Not available. Read directly appropriate. Parallel read skill, spec plan data quickstart contract template constitution perhaps tasks setup script. Should have full contents lengths. Use Read all parallel.Should pre-hook extensions.yml read before setup. I already generated not yet. Read extensions.yml then run setup-tasks.{"FEATURE_DIR":"<project>/specs/001-expense-tracker","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md"],"TASKS_TEMPLATE":"<project>/.specify/templates/tasks-template.md","TASKS_TEMPLATE_CONTENT":"---\n\ndescription: \"Task list template for feature implementation\"\n---\n\n# Tasks: [FEATURE NAME]\n\n**Input**: Design documents from `/specs/[###-feature-name]/`\n\n**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/\n\n**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.\n\n**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.\n\n## Format: `[ID] [P?] [Story] Description`\n\n- **[P]**: Can run in parallel (different files, no dependencies)\n- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)\n- Include exact file paths in descriptions\n\n## Path Conventions\n\n- **Single project**: `src/`, `tests/` at repository root\n- **Web app**: `backend/src/`, `frontend/src/`\n- **Mobile**: `api/src/`, `ios/src/` or `android/src/`\n- Paths shown below assume single project - adjust based on plan.md structure\n\n<!--\n  ============================================================================\n  IMPORTANT: The tasks below are SAMPLE TASKS for illustration purposes only.\n\n  The /skill:speckit-tasks command MUST replace these with actual tasks based on:\n  - User stories from spec.md (with their priorities P1, P2, P3...)\n  - Feature requirements from plan.md\n  - Entities from data-model.md\n  - Endpoints from contracts/\n\n  Tasks MUST be organized by user story so each story can be:\n  - Implemented independently\n  - Tested independently\n  - Delivered as an MVP increment\n\n  DO NOT keep these sample tasks in the generated tasks.md file.\n  ============================================================================\n-->\n\n## Phase 1: Setup (Shared Infrastructure)\n\n**Purpose**: Project initialization and basic structure\n\n- [ ] T001 Create project structure per implementation plan\n- [ ] T002 Initialize [language] project with [framework] dependencies\n- [ ] T003 [P] Configure linting and formatting tools\n\n---\n\n## Phase 2: Foundational (Blocking Prerequisites)\n\n**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented\n\n**⚠️ CRITICAL**: No user story work can begin until this phase is complete\n\nExamples of foundational tasks (adjust based on your project):\n\n- [ ] T004 Setup database schema and migrations framework\n- [ ] T005 [P] Implement authentication/authorization framework\n- [ ] T006 [P] Setup API routing and middleware structure\n- [ ] T007 Create base models/entities that all stories depend on\n- [ ] T008 Configure error handling and logging infrastructure\n- [ ] T009 Setup environment configuration management\n\n**Checkpoint**: Foundation ready - user story implementation can now begin in parallel\n\n---\n\n## Phase 3: User Story 1 - [Title] (Priority: P1) 🎯 MVP\n\n**Goal**: [Brief description of what this story delivers]\n\n**Independent Test**: [How to verify this story works on its own]\n\n### Tests for User Story 1 (OPTIONAL - only if tests requested) ⚠️\n\n> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**\n\n- [ ] T010 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py\n- [ ] T011 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py\n\n### Implementation for User Story 1\n\n- [ ] T012 [P] [US1] Create [Entity1] model in src/models/[entity1].py\n- [ ] T013 [P] [US1] Create [Entity2] model in src/models/[entity2].py\n- [ ] T014 [US1] Implement [Service] in src/services/[service].py (depends on T012, T013)\n- [ ] T015 [US1] Implement [endpoint/feature] in src/[location]/[file].py\n- [ ] T016 [US1] Add validation and error handling\n- [ ] T017 [US1] Add logging for user story 1 operations\n\n**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently\n\n---\n\n## Phase 4: User Story 2 - [Title] (Priority: P2)\n\n**Goal**: [Brief description of what this story delivers]\n\n**Independent Test**: [How to verify this story works on its own]\n\n### Tests for User Story 2 (OPTIONAL - only if tests requested) ⚠️\n\n- [ ] T018 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py\n- [ ] T019 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py\n\n### Implementation for User Story 2\n\n- [ ] T020 [P] [US2] Create [Entity] model in src/models/[entity].py\n- [ ] T021 [US2] Implement [Service] in src/services/[service].py\n- [ ] T022 [US2] Implement [endpoint/feature] in src/[location]/[file].py\n- [ ] T023 [US2] Integrate with User Story 1 components (if needed)\n\n**Checkpoint**: At this point, User Stories 1 AND 2 should both work independently\n\n---\n\n## Phase 5: User Story 3 - [Title] (Priority: P3)\n\n**Goal**: [Brief description of what this story delivers]\n\n**Independent Test**: [How to verify this story works on its own]\n\n### Tests for User Story 3 (OPTIONAL - only if tests requested) ⚠️\n\n- [ ] T024 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py\n- [ ] T025 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py\n\n### Implementation for User Story 3\n\n- [ ] T026 [P] [US3] Create [Entity] model in src/models/[entity].py\n- [ ] T027 [US3] Implement [Service] in src/services/[service].py\n- [ ] T028 [US3] Implement [endpoint/feature] in src/[location]/[file].py\n\n**Checkpoint**: All user stories should now be independently functional\n\n---\n\n[Add more user story phases as needed, following the same pattern]\n\n---\n\n## Phase N: Polish & Cross-Cutting Concerns\n\n**Purpose**: Improvements that affect multiple user stories\n\n- [ ] TXXX [P] Documentation updates in docs/\n- [ ] TXXX Code cleanup and refactoring\n- [ ] TXXX Performance optimization across all stories\n- [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/\n- [ ] TXXX Security hardening\n- [ ] TXXX Run quickstart.md validation\n\n---\n\n## Dependencies & Execution Order\n\n### Phase Dependencies\n\n- **Setup (Phase 1)**: No dependencies - can start immediately\n- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories\n- **User Stories (Phase 3+)**: All depend on Foundational phase completion\n  - User stories can then proceed in parallel (if staffed)\n  - Or sequentially in priority order (P1 → P2 → P3)\n- **Polish (Final Phase)**: Depends on all desired user stories being complete\n\n### User Story Dependencies\n\n- **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories\n- **User Story 2 (P2)**: Can start after Foundational (Phase 2) - May integrate with US1 but should be independently testable\n- **User Story 3 (P3)**: Can start after Foundational (Phase 2) - May integrate with US1/US2 but should be independently testable\n\n### Within Each User Story\n\n- Tests (if included) MUST be written and FAIL before implementation\n- Models before services\n- Services before endpoints\n- Core implementation before integration\n- Story complete before moving to next priority\n\n### Parallel Opportunities\n\n- All Setup tasks marked [P] can run in parallel\n- All Foundational tasks marked [P] can run in parallel (within Phase 2)\n- Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)\n- All tests for a user story marked [P] can run in parallel\n- Models within a story marked [P] can run in parallel\n- Different user stories can be worked on in parallel by different team members\n\n---\n\n## Parallel Example: User Story 1\n\n```bash\n# Launch all tests for User Story 1 together (if tests requested):\nTask: \"Contract test for [endpoint] in tests/contract/test_[name].py\"\nTask: \"Integration test for [user journey] in tests/integration/test_[name].py\"\n\n# Launch all models for User Story 1 together:\nTask: \"Create [Entity1] model in src/models/[entity1].py\"\nTask: \"Create [Entity2] model in src/models/[entity2].py\"\n```\n\n---\n\n## Implementation Strategy\n\n### MVP First (User Story 1 Only)\n\n1. Complete Phase 1: Setup\n2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)\n3. Complete Phase 3: User Story 1\n4. **STOP and VALIDATE**: Test User Story 1 independently\n5. Deploy/demo if ready\n\n### Incremental Delivery\n\n1. Complete Setup + Foundational → Foundation ready\n2. Add User Story 1 → Test independently → Deploy/Demo (MVP!)\n3. Add User Story 2 → Test independently → Deploy/Demo\n4. Add User Story 3 → Test independently → Deploy/Demo\n5. Each story adds value without breaking previous stories\n\n### Parallel Team Strategy\n\nWith multiple developers:\n\n1. Team completes Setup + Foundational together\n2. Once Foundational is done:\n   - Developer A: User Story 1\n   - Developer B: User Story 2\n   - Developer C: User Story 3\n3. Stories complete and integrate independently\n\n---\n\n## Notes\n\n- [P] tasks = different files, no dependencies\n- [Story] label maps task to specific user story for traceability\n- Each user story should be independently completable and testable\n- Verify tests fail before implementing\n- Commit after each task or logical group\n- Stop at any checkpoint to validate story independently\n- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence\n"}
+I need generate tasks.md thorough. Should plan internally. No EnterPlan needed document only. Todo list multi-step beneficial. Make sure test-first and early failing checkpoint after setup before app source. I need define tasks perhaps 80-100. Should not overdo but meaningful domain persistence UI tasks before corresponding implementation. Requirements traceability quickstart preserved. Deterministic demo/scale fixtures tasks. Playwright browser verification responsive review no screenshot tasks. I'll create actionable dependency-ordered by story. Should think architecture and story organization while respecting independent. Foundational includes project/test setup and failing test checkpoint. Test first domain tasks US1 etc.
+
+  Perhaps check existing tasks.md not exist (glob confirms). Write full file. But before need design task list. I should produce ~80 tasks maybe 90. User expects tasks not implementation. I need not run tests as no app. Validate format script. Should total count per story. I should be precise IDs sequential.
+
+  I can create 100 tasks? Thorough but not excessive. Each specific enough. Should include exact constraints verbatim field constraints. Should have every task path. No comments irrelevant.
+
+  I need organize:
+  Phase 1 setup:
+  T001 create Vite React TS package with deps scripts in package.json
+  T002 configure TS/Vite in tsconfig.json, vite.config.ts (one task path two? exact)
+  T003 configure Vitest jsdom scripts/setup test maybe config files
+  T004 Playwright config install? package scripts and playwright config
+  T005 create semantic HTML shell and test dirs? Application source? early runnable failing checkpoint before app source. Setup index.html and dirs no app source. T006 add initial failing smoke test tests/ui/app.smoke.test.tsx that renders App from src/App.tsx? Import missing yields failing test. But "early runnable failing-test checkpoint after project/test setup and before application source implementation." Task create failing smoke test importing App and expects heading. Then T006 checkpoint run npm run test:unit and confirm fails due missing App; capture baseline. All tasks strict. A checkpoint isn't task? Could be **Checkpoint** after task. User explicitly include early runnable failing-test checkpoint. Do that as bold checkpoint after T006. Make sure test setup before application source. Foundational starts after checkpoint. Perhaps T007 create shared domain types? But that is application source, tests before corresponding implementation. Domain tests for US1 first. Foundational perhaps no application source besides test setup. I can have phase 2 with shared test fixture builders only? Shared infrastructure tasks can include domain types only after tests? Better all domain implementation mapped US1, foundational has accessibility/test fixture conventions only and test first red baseline. Phase 2 may T007 create reusable test factories in tests/fixtures/expenses.ts including valid records, malformed envelopes? Fixtures aren't application source. T008 define verification case registry traceability in tests/fixtures/verificationCases.ts with IDs mapped? But implementation test fixtures. Could be final. I need early checkpoint after setup and before source; Phase 2 checkpoint enough.
+
+  Story 1 US1 add/review:
+  tests:
+  T008 domain money tests AMOUNT all MONEY etc tests/domain/money.test.ts
+  T009 domain expense validation categories notes tests/domain/expense.test.ts
+  T010 domain dates DATE tests/domain/dates.test.ts
+  T011 dashboard totals/date/month/overflow tests/domain/dashboard.test.ts
+  T012 UI add/dashboard validation focus announcements tests/ui/addExpense.test.tsx
+  T013 UI month summary future etc tests/ui/monthlyDashboard.test.tsx
+  T014 browser core add/month boundaries fixed locale/timezone Playwright e2e/core.spec.ts
+  Should have all written before implementation. Could run test failure checkpoint per story after tests. Then implementation:
+  T015 domain types expense.ts (Expense, category etc) with constraints exact.
+  T016 money.ts parse/format
+  T017 dates.ts
+  T018 dashboard.ts summary, safe integer (filter/sort later? only summary now)
+  T019 state/useExpenseStore normal in-memory add/month selection no persistence? Since US2 later adds storage. This is architecture challenge if US2 adds storage to same store. Good.
+  T020 ExpenseForm add accessible
+  T021 Dashboard summary/month
+  T022 TransactionList base list
+  T023 StatusMessage
+  T024 App main styles integrate
+  T025 responsive base styles? styles same file. UI test then polish accessibility. Add Playwright verify after implementation? Tests written earlier and run checkpoint. Story checkpoint includes all tests pass.
+  But tests domain overflow UI? T011 includes pure overflow and T013 UI errors.
+  US1 acceptance doesn't include deletion confirmation but MONEY-003 includes deletion later. Fine.
+  US1 test tasks before implementation and red. Good.
+
+  US2 persistence:
+  Tests first:
+  T026 persistence load classification tests/persistence/expenseStorage.load.test.ts P
+  T027 persistence save failures tests/persistence/expenseStorage.write.test.ts P
+  T028 UI recovery/replacement tests/ui/recovery.test.tsx P
+  T029 UI unsaved warning tests/ui/persistenceStatus.test.tsx P
+  T030 Playwright PERSIST and RECOVERY all e2e/persistence.spec.ts P
+  Implementation:
+  T031 expenseStorage adapter schema, key, read/write result
+  T032 store integrate hydration normal missing valid etc guarded
+  T033 store ordinary mutations persist complete collection, retain work/warnings (add only currently; edit/delete later; tests could fail unimplemented until later? I can write general mutation hooks tests perhaps add now, extension US3).
+  T034 store replacement protocol start fresh/first save etc.
+  T035 ConfirmDialog shared native dialog (needed replacement now and deletion later)
+  T036 StatusMessage recovery warnings? Same file as T023 conflict if edit same file but sequential no P.
+  T037 Dashboard recovery actions perhaps App integration
+  T038 App integrate
+  Checkpoint. US2 independent? It builds on US1 though priority same. Fine dependencies.
+
+  US3 edit/delete:
+  Tests:
+  T039 domain edit invariants tests/domain/expense.test.ts? same file as US1 modification but tasks phases sequential. Better new tests/ui/editExpense.test.tsx and tests/ui/deleteExpense.test.tsx, tests/persistence? Delete failure e2e.
+  T039 UI edit CORE-005 AMOUNT both add/edit tests/ui/editExpense.test.tsx
+  T040 UI deletion DELETE tests/ui/deleteExpense.test.tsx
+  T041 e2e edit/delete/delete failure native dialog e2e/edit-delete.spec.ts
+  T042 perhaps domain edit service not needed pure helper? state only. No persistence test task before corresponding implementation? Persistence implementation extension save edit/delete should test in tests/persistence/expenseStorage.write.test.ts generic already. UI enough.
+  Implementation:
+  T042 store edit with same validation, invalid original unchanged, cross month focus semantics partly form/app
+  T043 ExpenseForm edit mode shared validation focus etc
+  T044 store delete with durable save failure
+  T045 ConfirmDialog deletion content perhaps generic already; no need implementation new? Extend component deletion presentation and safe focus.
+  T046 TransactionList edit/delete actions/focus
+  T047 App integrate edit/delete flow
+  T048 Dashboard recalculation/focus etc perhaps store covers.
+  Checkpoint.
+
+  US4 filter/sort:
+  tests:
+  T048 domain dashboard filter/sort tests/domain/dashboard.list.test.ts
+  T049 UI filter/sort empty tests/ui/transactionPreferences.test.tsx
+  T050 e2e filter sort empty focus e2e/transaction-list.spec.ts
+  impl:
+  T051 dashboard pure filter/sort
+  T052 store prefs ephemeral
+  T053 TransactionList controls empty states and focus
+  T054 Dashboard integration summaries unfiltered
+  T055 styles for controls? base responsive later. Perhaps not.
+  Checkpoint.
+
+  US5 demo:
+  Tests:
+  T055 demo fixture test exact baseline tests/domain/demoData.test.ts
+  T056 demo mode activation/state reset tests/ui/demoMode.test.tsx
+  T057 Playwright DEMO all e2e/demo.spec.ts
+  T058 deterministic scale fixture test tests/fixtures/scaleData.test.ts perhaps this is cross-cutting not US5? User preserve deterministic demo/scale fixtures. SCALE belongs polish cross cutting. Could setup scale fixture foundational or final tests first. Better final performance phase test task then implementation fixture then e2e test? Test-first: scale fixture tests then fixture implementation then e2e verification. Demo fixture US5.
+  Implementation:
+  T058 demoData exact records
+  T059 mode parsing perhaps domain/demoMode? Plan only demoData; App could parse. Keep src/demo/demoData.ts exports baseline and isDemoMode perhaps appropriate.
+  T060 store branch demo before storage, fresh state no listeners
+  T061 App demo label and fresh mode navigation initialization
+  T062 persistence no op? Do not create separate no-op storage if could read. Store no persistence effects.
+  Checkpoint.
+
+  Final polish:
+  Should have accessibility automated tooling dependency not yet specified library. Plan says automated WCAG checks but dependency not named. Common @axe-core/playwright but cannot assume library? I am generating tasks and can include dependency setup as plan testing dependencies. I can use @axe-core/playwright because genuinely needed. User didn't forbid dependencies. Task T063 add accessibility checks e2e/accessibility.spec.ts before corresponding styles fixes? Tests-first final test task then fixes. But implementation already done, tests after violates test-first for cross-cutting? Accessibility tests should be written early with UI tests? Could include each story tests accessibility assertions. Final comprehensive A11Y test task can be after since verification new. User asks meaningful tests before corresponding implementation. Base styles accessibility implementation already before full tests, but story tests can include. I should embed A11Y requirements in UI tests and implement from start. Final audits can be later.
+
+  Final:
+  T063 Create deterministic SCALE generator tests/fixtures/scaleData.ts? Test-first requires test before implementation: T063 test generator in tests/fixtures/scaleData.test.ts; T064 implement generator. But no app behavior corresponding. T065 add Playwright scale performance test e2e/scale.spec.ts before optimizing. T066 optimize identified bottlenecks src/domain/dashboard.ts and src/state/useExpenseStore.ts while exact outputs.
+  T067 Add automated WCAG 2.2 AA Playwright checks all states e2e/accessibility.spec.ts and configure @axe-core/playwright in package.json? Could T001 include all testing deps incl axe. Fine.
+  T068 Add Playwright responsive checks fixed desktop/mobile 320, 200% zoom/text etc e2e/responsive.spec.ts. No screenshots. Tests before polish fixes.
+  T069 Fix all accessibility issues in components etc.
+  T070 Fix responsive styles in src/styles.css.
+  T071 Manual keyboard/VoiceOver review record results? "file path" required, task can say record results in specs/.../verification.md. But user says don't create report/scaffolding files unless asked applies to actual task execution? I'm generating tasks and plan calls record results quickstart. Task can use specs/.../verification.md. Quickstart says record evidence. Good.
+  T072 manual responsive review at desktop/mobile etc record results same file. User specifically include responsive review. No screenshots.
+  T073 persistence recovery review record by cases.
+  T074 traceability audit create specs/.../verification.md mapping all FRs to case and automated/manual result, preserve quickstart matrix. Could combine with T071 but dependencies.
+  T075 run npm test unit build e2e full sequence, record results package? Task path quickstart? exact file path description can mention commands and verification file.
+  T076 final defect fixes and rerun affected checks with files? broad but actionable.
+  Should have no browser screenshot tasks. Explicit note evidence separate VS Code no tasks.
+
+  Perhaps task count 76. Make sure all tasks strict with file paths. Checkpoint tasks as test execution tasks? All checkbox lines need format; don't use checkboxes outside task list to ease count. Non-task notes no checkboxes.
+
+  Could include requirement-to-task traceability table separate? User says preserve requirement-to-verification traceability. I can refer each test task case IDs and add matrix at bottom mapping FR to tasks and quickstart. Best include complete table FR-001..FR-029 with task IDs. This ensures traceability. Requirement-to-verification from quickstart already there; tasks should preserve not replace. Add "Traceability: test tasks name quickstart cases; final audit records results against quickstart matrix". Perhaps complete table in tasks.md mapping requirements to test tasks. Good. Should count per story US1 18? I'll map carefully and exact IDs.
+
+  I'll design final list more polished around 80 tasks with setup 7, foundation 2? Should early failing checkpoint phase 1. Foundational shared fixtures 2 tasks and checkpoint. Then stories.
+
+  I'll enumerate concretely:
+
+  Phase1:
+  T001 Initialize package.json with React, TS, Vite, Vitest/jsdom RTL user-event jest-dom Playwright @axe-core/playwright and scripts dev/build/test:unit/test:e2e.
+  T002 [P] Configure TS and Vite with path? tsconfig.json vite.config.ts
+  T003 [P] Configure Vitest jsdom setup in vitest.config.ts and src/test/setup.ts (Vite config can include test config instead no vitest config plan doesn't list but okay). T002 and T003 different files except vite config no conflict. Fine.
+  T004 [P] Configure Playwright Chromium webServer desktop/mobile projects? playwright.config.ts
+  T005 [P] Create document shell index.html and directories? path index.html only, no app source.
+  T006 Add failing application smoke test in tests/ui/app.smoke.test.tsx imports App and requires heading; currently module absent.
+  T007 Run npm install and npm run test:unit to prove runnable red; record expected failure perhaps package-lock.json path. Task description "Install locked dependencies in package-lock.json and run ...". Exact file path package-lock. Tests fail due missing App. Checkpoint.
+
+  Phase2:
+  T008 [P] Add reusable expense/envelope builders and fixed clock helpers in tests/fixtures/expenses.ts (shared fixtures).
+  T009 [P] Add case-ID outcome recorder perhaps tests/fixtures/verification.ts used by tests to record ID precondition input actual. Could be overengineering but quickstart says each automated case records ID etc. Useful. "Add helpers that label each automated assertion with quickstart case ID, precondition, input, actual outcome in tests/fixtures/verification.ts". This is test infra.
+  T010 Run failing smoke and confirm shared fixtures don't introduce app source? redundant. Phase 2 checkpoint no task needed.
+  Could foundational include no application source; all stories depend setup.
+
+  US1:
+  T011 [P] money tests
+  T012 [P] expense validation tests
+  T013 [P] dates tests
+  T014 [P] dashboard tests
+  T015 [P] add form UI tests
+  T016 [P] dashboard UI tests
+  T017 [P] core e2e tests
+  T018 Run US1 test suites confirm meaningful failures tests? Task path specs? "Run ... and record red baseline in specs/.../verification.md" But early checkpoint after setup already. Test-first each story doesn't require a separate task to run red but helpful. This adds verification file before app source. Could simply bold note "Write T011–T017 first and confirm each fails for missing behavior before T018". No task run. Implementation starts T018.
+  T018 [US1] Define domain types etc src/domain/expense.ts
+  T019 money
+  T020 dates
+  T021 dashboard summary
+  T022 state in memory add/current month (persistence later)
+  T023 ExpenseForm add
+  T024 Dashboard summaries/month
+  T025 TransactionList base
+  T026 StatusMessage
+  T027 App main integration? src/App.tsx and src/main.tsx (two files) task can include both but [P] no. T028 styles. Total 18 US1 T011-T028 inclusive =18. Checkpoint all US1 tests green. But smoke test passes after App.
+
+  Potential T011 tests MONEY-003 deletion and demo values before those exist? Avoid say MONEY-001/002/004 and fixed formatting primitive that will later be reused in deletion/demo; MONEY-003 final cross flow. T014 OVERFLOW-001 pure only. T016 includes unsafe UI. T017 CORE/DATE and MONEY locale browser. Good.
+  T015 AMOUNT all add and CORE-001/003/004 perhaps edit later in US3.
+  T018 types and expense record validation? Persisted record validation used US2. Include draft/category/note and record invariant. Test T012 includes persisted record validation CORE-003. Good.
+  T021 aggregate error.
+  T022 normal initial month local, add stable id, selected month unchanged. ID stable uniqueness crypto? Not specified. Fine.
+  T024 dashboard list uses T025.
+  T026 StatusMessage generic used form errors? Error component perhaps inline.
+  T028 CSS accessible baseline 24px, responsive. Good.
+
+  US2 T029-T039 perhaps 11:
+  T029 load persistence test P
+  T030 write failures test P
+  T031 recovery UI test P
+  T032 persistence status UI test P
+  T033 browser PERSIST/RECOVERY test P
+  impl:
+  T034 adapter
+  T035 store normal load
+  T036 store ordinary save failure/later success
+  T037 store recovery replacement
+  T038 ConfirmDialog replacement generic
+  T039 App/StatusMessage/Dashboard integrate recovery status (multiple files) exact paths all.
+  11 tasks. US2 persistence failed edit/delete not implemented yet but adapter generic test can simulate save collections, UI tests only add now. T030 PERSIST-008/011/012/013 add, PERSIST-009/010 pending US3 but can test adapter generic not UI. Better T030 includes adapter behavior PERSIST-008/011/012 and generic later success; T033 full PERSIST includes edit/delete before US3 would fail and can't be green US2. So T033 only PERSIST-001–008,011–013 and RECOVERY, leaving 009/010 US3. Fine. T036 ordinary add now later extended. T029 covers 001-007 adapter. T031 UI recovery. T032 failed add and later success. Good.
+  T039 paths App, Dashboard, StatusMessage perhaps one integration task.
+
+  US3 T040-T047 =8:
+  T040 edit UI tests (AMOUNT all edit CORE-005)
+  T041 delete UI tests (DELETE001-003 + MONEY-003 deletion locale perhaps browser)
+  T042 browser edit/delete PERSIST009/010 DELETE004 and native focus
+  T043 store edit (same validation)
+  T044 ExpenseForm edit
+  T045 store delete failure
+  T046 ConfirmDialog deletion and TransactionList actions/focus perhaps two files; separate:
+  T046 ConfirmDialog deletion content
+  T047 TransactionList edit/delete controls/focus
+  T048 App integrate edit/delete and cross-month focus. 9 tasks T040-T048. Good.
+  Could T043 store depends T018 etc.
+  US3 tests first.
+
+  US4 T049-T055 =7:
+  T049 domain list tests
+  T050 UI prefs/empty tests
+  T051 browser filter sort tests
+  T052 dashboard filter/sort implementation
+  T053 store ephemeral prefs
+  T054 TransactionList controls/empty action focus
+  T055 Dashboard integrate unfiltered summaries. 7.
+
+  US5 T056-T062 =7:
+  T056 demo fixture unit test
+  T057 demo activation/store UI tests
+  T058 e2e DEMO001-007 all storage instrumentation
+  T059 demoData exact fixture and parser
+  T060 store demo branch before storage no listeners, interactions memory/reset
+  T061 App demo label fresh state
+  T062 main/App navigation history? Same files but separate. Could combine T061 fresh init plus label. Should have 6? Add T062 styles demo label? Not needed. Perhaps T062 Playwright run DEMO and verify zero counts; but tests task already. Checkpoint enough. So US5 6 tasks T056-T061. Implementation parser perhaps separate file src/demo/demoMode.ts not in plan. Avoid new module unnecessary. demoData can export isDemoMode.
+  T060 storage no listeners.
+  T061 App label and entry initialization in src/App.tsx, src/main.tsx.
+
+  Final T062-T072 =11:
+  T062 scale generator test
+  T063 scale fixture implementation
+  T064 scale Playwright test
+  T065 accessibility automated Playwright test
+  T066 responsive Playwright test
+  T067 performance optimize based on scale
+  T068 accessibility corrections
+  T069 responsive corrections
+  T070 manual keyboard/VoiceOver review
+  T071 manual responsive/recovery review perhaps combine two mandated reviews in one task but huge. Separate:
+  T071 responsive manual
+  T072 persistence recovery manual
+  T073 requirement traceability audit verification.md
+  T074 full verification sequence and defect rerun
+  =13 final T062-T074. Total 74. Counts Setup 7 Foundation2 US1 18 US2 11 US3 9 US4 7 US5 6 final13 =73? 7+2=9 +18=27 +11=38 +9=47 +7=54 +6=60 +13=73. Wait IDs: final starts T062 after US5 ends T061, final T062-T074 13, total 74? Arithmetic discrepancy: US1 T011-T028 inclusive 18 yes start after 9 ends 27? 9+18=27 but T028 is 28. Why because phase initial T001-T009 9, next T010? I set US1 starts T011 erroneously leaves T010 not assigned. Foundational T008 T009, then US1 should T010-T027 18. Yes shift all after. I'll recalc clean.
+
+  Setup T001-T007.
+  Foundation T008-T009.
+  US1 T010-T027 (18).
+  US2 T028-T038 (11).
+  US3 T039-T047 (9).
+  US4 T048-T054 (7).
+  US5 T055-T060 (6).
+  Final T061-T073 (13).
+  Total 73. Great.
+
+  Map detailed IDs:
+  US1:
+  T010 money tests
+  T011 expense tests
+  T012 dates tests
+  T013 dashboard tests
+  T014 add UI
+  T015 dashboard UI
+  T016 core e2e
+  T017 types expense
+  T018 money impl
+  T019 dates impl
+  T020 dashboard impl
+  T021 store in memory
+  T022 ExpenseForm
+  T023 Dashboard
+  T024 TransactionList
+  T025 StatusMessage
+  T026 App/main
+  T027 styles
+
+  US2:
+  T028 load tests
+  T029 write tests
+  T030 recovery UI
+  T031 persistence status UI
+  T032 persistence e2e
+  T033 adapter
+  T034 store load
+  T035 store ordinary saves
+  T036 store replacement
+  T037 ConfirmDialog
+  T038 integrate App/Dashboard/Status
+
+  US3:
+  T039 edit UI
+  T040 delete UI
+  T041 edit/delete e2e
+  T042 store edit
+  T043 ExpenseForm edit
+  T044 store delete
+  T045 ConfirmDialog delete
+  T046 TransactionList actions
+  T047 App integration
+
+  US4:
+  T048 domain list
+  T049 UI prefs
+  T050 e2e list
+  T051 dashboard list impl
+  T052 store prefs
+  T053 TransactionList controls
+  T054 Dashboard integrate
+
+  US5:
+  T055 demo data test
+  T056 demo UI store test
+  T057 demo e2e
+  T058 demoData
+  T059 store demo
+  T060 App/main demo init label
+
+  Final:
+  T061 scale fixture test
+  T062 scale fixture
+  T063 scale e2e
+  T064 accessibility e2e
+  T065 responsive e2e
+  T066 perf optimize
+  T067 accessibility corrections
+  T068 responsive corrections
+  T069 manual keyboard VoiceOver
+  T070 manual responsive
+  T071 manual recovery
+  T072 traceability audit
+  T073 full verification sequence
+
+  Should test-first for performance implementation T063 before T066. Accessibility test T064 after implementation but UI tests included accessibility from beginning. Fine. Responsive T065 after base CSS but this is final audit, not corresponding new feature. Could move Playwright responsive test tasks into setup before source? User just include Playwright browser verification responsive review. Good.
+
+  Perhaps tests domain/persistence/UI before corresponding implementation for US2 etc yes.
+
+  Deterministic scale fixture "generate exactly..." task quote all formulas verbatim to preserve. T062 description can be long but precise. Include expected 100 records per month Jan-Oct and 200 category. T061 tests assert formulas and independent summaries.
+  Demo exact values T058 task quote all 10 records, totals order, selected month. Long but required deterministic. Good.
+
+  Traceability table FR to quickstart cases and tasks. Use test IDs:
+  FR001 CORE001 DEMO003 -> T014,T016,T057
+  FR002 CORE003 -> T011,T014
+  FR003 AMOUNT A11Y -> T010,T014,T039,T064,T069
+  FR004 DATE -> T012,T015,T016
+  FR005 CORE004 -> T011,T014,T039
+  FR006 AMOUNT add/edit -> T014,T039
+  FR007 CORE005 AMOUNT -> T039,T041
+  FR008 DELETE001-003 -> T040,T041
+  FR009 DELETE001 MONEY003 -> T040,T041,T064
+  FR010 DELETE002-004 PERSIST010 -> T040,T041
+  FR011 CORE002 DATE001 -> T012,T015,T016
+  FR012 CORE001/003 DEMO002 -> T013,T015,T055,T057
+  FR013 CORE005 DATE -> T012,T013,T039,T041
+  FR014 amounts etc -> T010,T013,T015,T016,T040,T055,T057,T064
+  FR015 SCALE002 DELETE003 -> T041,T063
+  FR016 FILTER -> T048-T050
+  FR017 FILTER/SORT -> T048-T050
+  FR018 SORT/DEMO002 -> T048-T050,T055,T057
+  FR019 FILTER/SORT -> T048-T050
+  FR020 PERSIST002 SCALE001 -> T028,T032,T063
+  FR021 PERSIST001-007 -> T028,T030,T032
+  FR022 RECOVERY -> T030,T032,T064,T069,T071
+  FR023 PERSIST008-013 DELETE004 -> T029,T031,T032,T041
+  FR024 EMPTY/FILTER -> T049,T050,T064,T069
+  FR025 A11Y -> T014,T015,T030,T031,T039,T040,T049,T056,T057,T064,T065,T067-T071
+  FR026 DELETE/RECOVERY -> T030,T032,T040,T041,T064,T069
+  FR027 DEMO001/004 -> T056,T057
+  FR028 DEMO002/003 -> T055-T057
+  FR029 DEMO003/005/006/007 -> T056,T057
+
+  SC mapping not needed requirement-to-verification FR all. Quickstart traceability preserved via table perhaps repeat case IDs. Could simply include table FR | Quickstart coverage | Task(s). 29 rows, okay. Tasks doc length ~350 lines.
+
+  Dependencies section:
+  Phase setup -> early red -> foundation -> US1. US2 depends US1 because persistence of add/dashboard. US3 depends US1+US2 (editing/deletion + durability). US4 depends US1 (can technically parallel with US2/US3 after US1, but integration shared files sequential recommended). US5 depends US1-US4 because demo all interactions and isolation from persistence US2. Priority sequential P1 US1 & US2 then P2 US3 then P3 US4 & US5 but US5 depends US4 for full interactions. Mention US4 and US5 can test/fixture work parallel but full US5 after US4.
+  MVP typically US1 only but P1 persistence important. Suggested MVP US1, first production complete P1 includes US2. Fine.
+  Parallel examples per user story required. Could provide one section with bullets per story listing task IDs groups. No need separate headings huge. Skill says create parallel execution examples per story. I can have "Parallel execution examples" with US1: T010–T016 test files can parallel; T017–T020 domain modules? T017 expense and T018 money have dependencies? money may import types from expense; design could money standalone. But [P] markers only tests and setup. Implementation T018/T019/T020 could be [P] if different files no dependencies incomplete? dashboard depends expense types T017 so not fully independent until T017. I can mark T018/T019 [P] after T017, T020 depends T017. T022 form depends domain, T023 dashboard depends domain, T024 list depends domain; different files and can parallel after store? Presentational components don't need store implementation if typed props. Could mark T022-T025 [P], but all may need component types not existing. Fine once domain done. Yet execution order task IDs sequential doesn't prevent parallel. More [P] opportunities. Should keep markers accurate.
+
+  US2 tests T028-T032 [P]. Implementation T033 then T034-T036 same file sequential not P. T037 ConfirmDialog can be [P] with store after adapter? independent file. T038 integrates.
+  US3 tests T039-T041 [P]. T042 and T043 different files could parallel after tests, but form depends domain existing not store; mark T043 [P] perhaps T042 not P due same? [P] indicates can run with others. Could mark both T042 [P] and T043 [P]. T044 same store after T042. T045/T046 different components [P] after store. T047 integration.
+  US4 tests parallel. T051 domain then T052 store/T053 component perhaps parallel after T051? T053 needs pure list behavior but can implement against typed props. Mark T052 [P], T053 [P].
+  US5 tests parallel. T058 then T059 and T060? T060 depends store demo so sequential. No implementation P.
+  Final T061 test then T062 fixture then T063-T065 e2e files can [P]. T067 accessibility corrections many files vs T068 styles could conflict if styles included T067? Keep T067 components only, T068 CSS only parallel possible but depends audit results, mark both [P]? Could but manual after. Fine.
+  T069/T070/T071 manual reviews can parallel different aspects but same verification.md file would conflict. Give separate files? User didn't ask docs but tasks plan could use specs/.../verification/accessibility.md etc. Plan structure only tasks no verification. Quickstart record results no file prescribed. I can use specs/001.../verification.md one file sequential. Don't mark P.
+
+  Task format every task exact file path. For run task T007 path package-lock.json, okay. T073 path verification.md. No bare checkboxes elsewhere. All story tasks [US]. Setup no labels. Good.
+
+  Could include [P] T002-T005 etc. T006 no P because depends config. T008/T009 [P]. Tests all P. Domain implementation T017 no P, T018/T019 P, T020 no. T021 no. T022-T025 P perhaps different files no dependencies among them; yes. T026 integration, T027 CSS can [P] with components? T027 styles depends markup class names, so not until components done. no.
+  US2 T037 P with T034-T036? ConfirmDialog independent from storage adapter, after UI tests. Mark P.
+  US3 T042 and T043 P. T045/T046 P after T044.
+  US4 T052/T053 P after T051.
+  Final T063-65 P after scale fixture (a11y/responsive don't need scale but okay).
+  T066 no.
+  T067/T068 P perhaps different files but T067 includes StatusMessage etc no styles. yes.
+
+  Should mention no screenshot tasks explicit note in final doc: "Browser checks use assertions and traces/videos? No screenshot task. Do not create browser captures; article evidence separate VS Code." Could include in phase final purpose. Avoid "traces" unnecessary. Explicit "No browser screenshot tasks are included; article evidence remains separate macOS VS Code window captures." Good.
+
+  Should perhaps no emojis per instructions. Template uses emoji but user not. I can omit.
+
+  Now Write tasks.md new. Should use TodoList before.
+
+• The design defines five independently testable stories and fourteen reusable quickstart case sets. I’m structuring the tasks so every story writes domain, persistence, UI, and browser tests as applicable before implementation, with a red smoke-test checkpoint before any application source exists.
+
+• Now craft content. Should have exact task T005 index shell no app source. Test smoke test import missing. T007 install dependencies generates package-lock; if test fails command nonzero expected. Task says run and record expected missing module. Fine.
+
+  Tasks doc frontmatter perhaps description. Tests statement test-first mandatory.
+  Independent criteria each exact spec.
+
+  Early checkpoint after Phase1 before Phase2 application source. Good.
+
+  Phase2 no source implementation.
+  Checkpoints after story.
+
+  Tasks detailed.
+
+  Potential issue tests/ui app smoke failing due no App means all test commands cannot run suites until App created; story red checkpoint all fail at import expected. Once App created, all future tests for later stories might be written? Only relevant files. Fine.
+
+  Task T014 add form tests includes A11Y errors associated etc.
+  T015 month UI includes current fixed date, totals, future, overflow.
+  T016 browser core includes CORE001-004 DATE001-004 MONEY001/002 and MONEY003 available components only. MONEY003 deletion/demo later.
+  T010 money test includes accepted amount full AMOUNT set domain; T014 UI add AMOUNT all. T039 edit all.
+
+  Expense types task field constraints quote verbatim from data model. "Define Expense with `id` as nonempty stable unique... `amountCents` positive safe integer from 1 through...; category exactly...; date...; note omitted..." Exact enough.
+  T017 persisted validation all-or-nothing? Adapter handles collection. Domain validate record.
+  T018 grammar verbatim.
+  T019 date local.
+  T020 summary.
+
+  US2 adapter validation duplicates etc. Task T028 tests all malformed variants including duplicate.
+  T029 write tests simulate quota, serialization, unavailable, later full success. Good.
+  T030 recovery UI accessible dialog tests before ConfirmDialog exists. Includes start fresh etc.
+  T031 unsaved warning.
+  T032 actual browser PERSIST raw bytes no writes, injected failure.
+
+  T033 sole localStorage boundary key. Strict envelope.
+  T034 state classifications.
+  T035 save entire next collection optimistic memory.
+  T036 recovery protocol.
+  T037 native dialog generic replacement.
+  T038 integrate status no claims unreadable raw.
+
+  US3 edit invalid tests original unchanged focus, cross month. Delete tests dialog initial cancel, no mutation, no undo. Browser native containment, failed reload.
+  Implementation store T042/T043 ordering: form edit and store can parallel. T044 delete save.
+  T045 deletion content MONEY.
+  T046 focus surviving.
+  T047 cross month focus.
+
+  US4 test domain raw unchanged tie. UI summaries. E2E keyboard empty focus. Implementation pure comparator id asc both directions. Store ephemeral. Transaction controls. Dashboard summaries unfiltered.
+
+  US5 demo UI tests store with mock storage spies maybe jsdom proves no calls. E2E robust preinit counters both listener forms, all preconditions normal tab history.
+  Demo implementation exact baseline list long. T058 "Create readonly ... records ..." include all. Exact expected totals and order.
+  T059 branch before storage, no listeners all operations. Fresh reset perhaps T060.
+  T060 parse first query exact and fresh destination, label.
+  Mode parsing in App/main maybe okay.
+
+  Final scale task T061 tests generator all formulas independent expected summary. T062 implementation exact.
+  T063 seed storage before init, 1000 compare, actions three repeats within 2 sec.
+  T064 @axe all core states desktop/mobile no known violations. Could include "configure @axe-core/playwright" already dep T001.
+  T065 responsive assertions no screenshots at desktop 320 200% etc.
+  T066 optimize only if timings fail? Task "Profile and optimize..." required but should not change if no need. Actionable "Use SCALE results to remove measured bottlenecks... preserving..." okay.
+  T067 fix all automated/manual? Manual occurs after T069 so corrections before manual; final rerun T073 handles further fixes. Could phrase resolve known issues from automated and prior story tests, then manual. Completion if manual finds defects fix and rerun in T073.
+  T069 record results in verification.md.
+  T070 manual responsive record same file.
+  T071 recovery record same.
+  T072 audit matrix all 29 and SC? requirement-to-verification. "Audit all FR-001–FR-029 against quickstart matrix, recording case ID, precondition, input, actual outcome, Chromium version and automated/manual evidence in verification.md; leave no unmapped requirement." Good.
+  T073 run full sequence after reviews, fix defects and rerun affected then full, record no known failures. Task has file path verification.md.
+
+  Traceability table task numbers accurate. Task count per story later.
+  Parallel examples:
+  US1 T010–T016, then T018/T019, T022–T025
+  US2 T028–T032, T037 alongside store tasks after T033
+  US3 T039–T041, T042/T043, T045/T046
+  US4 T048–T050, T052/T053
+  US5 T055–T057
+  Final T063–T065 after T062.
+  Setup T002–T005, foundation T008/T009.
+  Should handle if T022-T025 depend T021? Components presentational typed props so can after domain and before store. Mention "once domain contracts T017-T020 exist". Good.
+
+  Task dependency graph text:
+  Setup → Foundation → US1 → US2 → US3 → US4 → US5 → Polish
+  US4 could start after US1, US5 fixture tests after Foundation but complete integration after US4. Sequential recommended to avoid conflicts. MVP US1. P1 complete US1+US2.
+
+  Should have no huge nested headings? File can headings appropriate. Response concise.
+
+  I'll Write.Now validate. Mark todo done next in progress. Perhaps script check count IDs format labels and paths, no screenshots tasks (word screenshot in no screenshot tasks okay). Should read generated perhaps sections enough? I wrote exact. Should use bash for validation scripts okay, dedicated Grep for patterns. Should count tasks by regex with python perhaps Bash appropriate processing. I can run python read file (not secret) and validate. No need Read solely prove write, but task depends exact external contract, inspect. I can use Grep and Bash. Make sure 73 sequential and count per story: US1 18, US2 11, US3 9, US4 7, US5 6, setup7 foundation2 polish13. Parallel count. Traceability all FR. Test tasks before implementation each. Validate markdown no format issue.
+
+  Use Bash python script parse lines, sequential IDs, all task have path pattern backtick perhaps every description has path. All tasks use backtick paths? T007 has package-lock. T061 etc. yes. Task regex. Check story tasks label. [P] labels. Count. Grep headings/checkpoints. Perhaps tasks with T067–T071 range in trace table not parsed. Fine.
+  Also check user requirement "domain, persistence, UI test tasks before corresponding implementation". US3 no new persistence test task before edit/delete store save implementation, but e2e covers failed persistence. User might expect meaningful domain persistence UI test tasks overall. US1 domain/UI, US2 persistence/UI, US3 UI/browser, US4 domain/UI. Good.
+
+  Potential flaw T018 [P] money implementation depends types T017 but example after T017. okay.
+  T022-T025 [P] all independent different files.
+  US2 T037 [P] but can run before T033 technically, no issue.
+  T067/T068 marked P, T067 needs styles for contrast/target size but task components only includes contrast target-size issues often CSS. T068 style resolves. Fine.
+
+  Potential no dedicated test to verify PERSIST009/010 at persistence adapter before store edit/delete implementation? e2e T041 yes meaningful. Good.
+
+  Should have requirements AMOUNT excess precision, etc all included.
+
+  Scale fixture deterministic stored ID order yes.
+  Demo fixtures all exact.
+  No browser screenshot tasks yes explicit.
+
+  Early runnable red checkpoint T007 after test setup, before source.
+  No app source in T003 setup file src/test/setup.ts counts not application source. okay.
+
+  Run validation.Tasks: 73; sequential IDs: T001–T073
+Breakdown: {'US1': 18, 'US2': 11, 'US3': 9, 'US4': 7, 'US5': 6, 'shared/polish': 22}
+Parallel tasks: 45
+Traceability: FR-001–FR-029 complete
+Format, early red checkpoint, demo/scale, Playwright, and responsive checks: PASS
+Should post hooks checked extensions already hooks empty no action. Now mark todo done. Respond summary path total task count per story parallel opportunities independent test criteria MVP format validation. Mention shared/polish 22 perhaps setup7 foundation2 polish13. Independent test criteria concise per story. No need tests run since doc only format validation. Could say validated structure not implementation tests. Respond perhaps 250 words. Should have completion report exact. Include no screenshot tasks. No citation line needed path. Format all good.
+
+  Before respond Todo done.Respond.
+
+• Generated `specs/001-expense-tracker/tasks.md` with **73 tasks**.
+
+  - **US1:** 18 tasks — independently verify adding expenses and exact monthly/category summaries.
+  - **US2:** 11 tasks — independently verify reload persistence, failures, and guarded recovery.
+  - **US3:** 9 tasks — independently verify editing, deletion confirmation, focus, and failed-write recovery.
+  - **US4:** 7 tasks — independently verify filtering, deterministic sorting, and empty states.
+  - **US5:** 6 tasks — independently verify deterministic demo behavior and zero storage access.
+  - **Setup, foundation, and polish:** 22 tasks.
+
+  Key features:
+
+  - Test-first domain, persistence, UI, and Playwright tasks precede implementation.
+  - Early runnable failing-test checkpoint at T007, before application source.
+  - Exact demo baseline and deterministic 1,000-record SCALE fixture preserved.
+  - Playwright accessibility and responsive verification plus manual responsive review.
+  - No browser screenshot tasks.
+  - Complete FR-001–FR-029 requirement-to-verification traceability.
+  - **45 parallelizable tasks**, with per-story execution examples.
+  - Suggested MVP: **US1**, followed by US2 for a persistence-complete P1 release.
+
+  Format validation passed: sequential IDs, required story labels, explicit file paths, and valid checkboxes throughout.
+
+To resume this session: kimi -r session_32cfc8ce-5ecf-46e8-aa11-78a4e44b7c53

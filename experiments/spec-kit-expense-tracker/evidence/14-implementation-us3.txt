@@ -1,0 +1,2268 @@
+kimi version 2.3.0
+• I need modify project tasks T027-32 only. User invokes skill speckit-implement not in available skill listing. Must obey actual skills only available no speckit. I can implement directly. Should inspect tasks/spec/code/tests. Nontrivial multi file, but explicit detailed scoped instructions no need plan mode? Instructions say proactively nontrivial but user gave specific detailed instructions, so not. Should have TodoList likely. Should initial commentary concise. I need read tasks and project guidance maybe AGENTS none content root provided but subdirs? Should use Glob for AGENTS and read package tasks. Current working directory known. I can Read specs/001-expense-tracker/tasks.md package.json parallel and maybe git status (bash allowed). Also find AGENTS using Glob. I should not invoke nonexistent Skill. Perhaps user expects slash command skill but listing doesn't include; proceed direct no need say. Should understand tasks.
+
+• I’ll inspect T027–T032 and the existing implementation/tests, then work test-first through only those tasks and verify the relevant unit and Chromium suites.
+
+ M ../../campus-voices/.env.example
+ M ../../campus-voices/README.md
+ M ../../campus-voices/app/index.html
+ M ../../campus-voices/app/src/content.ts
+ M ../../campus-voices/app/src/main.ts
+ D ../../campus-voices/app/src/providers/dessa-provider.ts
+ D ../../campus-voices/app/src/providers/scripted-provider.ts
+ D ../../campus-voices/app/src/providers/voice-provider.ts
+ M ../../campus-voices/app/src/session.ts
+ M ../../campus-voices/app/src/styles.css
+ M ../../campus-voices/docs/hashnode-draft.md
+ M ../../campus-voices/docs/screenshots/01-local-prototype.png
+ M ../../campus-voices/docs/screenshots/02-seminar-session.png
+ M ../../campus-voices/docs/screenshots/03-private-feedback.png
+ M ../../campus-voices/docs/screenshots/06-local-data-controls.png
+ M ../../campus-voices/docs/setup-guide.md
+ M ../../campus-voices/eslint.config.js
+ M ../../campus-voices/infra/cloudflare-tunnel.md
+ M ../../campus-voices/package.json
+ M ../../campus-voices/playwright.config.ts
+ M ../../campus-voices/scripts/capture.mjs
+ M ../../campus-voices/scripts/verify-static.mjs
+ M ../../campus-voices/server/app.ts
+ D ../../campus-voices/server/feedback.ts
+ M ../../campus-voices/server/index.ts
+ D ../../campus-voices/tests/feedback.test.ts
+ D ../../campus-voices/tests/providers.test.ts
+ M ../../campus-voices/tests/scenario.spec.ts
+ D ../../campus-voices/tests/server.test.ts
+ M ../../campus-voices/tests/session.test.ts
+?? ../../../.DS_Store
+?? ../../.DS_Store
+?? ../../ai-agent-engineering-feedback-loops/
+?? ../../campus-voices/app/public/
+?? ../../campus-voices/app/src/audio/
+?? ../../campus-voices/app/src/conversation-api.ts
+?? ../../campus-voices/scripts/download-minicpm.py
+?? ../../campus-voices/scripts/install-minicpm.sh
+?? ../../campus-voices/scripts/start-minicpm.sh
+?? ../../campus-voices/scripts/verify-voice.mjs
+?? ../../campus-voices/server/conversation/
+?? ../../campus-voices/tests/fakes/
+?? ../../campus-voices/tests/fixtures/
+?? ../../campus-voices/tests/memory-audio-store.test.ts
+?? ../../campus-voices/tests/minicpm-integration.test.ts
+?? ../../campus-voices/tests/minicpm-provider.test.ts
+?? ../../campus-voices/tests/provider-boundary.test.ts
+?? ../../campus-voices/tests/wav.test.ts
+?? ../../campus-voices/tests/web-server.ts
+?? ../
+• Repo app untracked overall no current useful diff. Should inspect source all relevant and spec/quickstart contracts. Read useExpenseStore App ExpenseForm ConfirmDialog TransactionList Dashboard expenseStorage StatusMessage, tests existing patterns and playwright config. Parallel multiple reads. Files size perhaps <100k. Also specs quickstart huge read search specific sections via Grep not Read whole. Perhaps read UI contract relevant. I can Grep CORE-005 DELETE etc in quickstart and ui-contract. Use Read source parallel.Should design robustly. Existing components simple. Should add tests first. Must inspect domain expense validation to reuse. Existing UI tests conventions and e2e tests fixture helper. Read domain expense and addExpense monthlyDashboard recovery tests, fixtures expenses, e2e persistence/core, styles relevant. I can parallel many.Should rest styles transaction layout.I need implement T027/T028/T029 tests comprehensive. Should decide UX: editing in same ExpenseForm with edit task (existing-value population) not separate modal. Add button triggers populate form heading "Edit expense", submit "Save changes", Cancel edit perhaps needed. Requester button named "Edit expense {note?}" perhaps accessible unique names? Tests can use within item button 'Edit'. Should have native dialog deletion exact details. State edit and delete callbacks. Focus deterministic App after updates.
+
+  Should consider recovery guard: edits/deletes with recovery non-null? Existing add mutates then replacement dialog. Requirements US3 complete durable saves. For recovery guarded, likely edits/deletes would also need first-replacement confirmation, but tasks specifically normal and PERSIST. Could follow same pattern: on mutation if recovery, set replacement first-replacement. Delete confirmation then replacement dialog perhaps weird but correct. Focus restoration complexities. Not central. I can centralize persistMutation with issue types expanded 'unsaved-edit'|'unsaved-delete'. Persistence message task associated.
+
+  Store:
+  type PersistenceIssue = 'unsaved-add' | 'unsaved-edit' | 'unsaved-delete' | 'replacement-failed' | null.
+  editExpense(id,draft): CreateExpenseResult = createExpense(id,draft), preserves ID. If id nonexistent? create result but no update? UI only valid IDs. Should same ID update no invalid mutation. perhaps return result no changes if no target? stable.
+  nextExpenses = expenses.map e id match {...result.expense}; set; guarded as add else save complete, issue based save.
+  deleteExpense(id): perhaps boolean or void; next=filter; set; recovery guard etc; save; issue. Confirmation occurs App before calling store so no mutation before.
+  Should complete collection retained after fail naturally.
+  Potential stale closure sequential user actions okay.
+
+  Form:
+  props onAdd, editingExpense?: Expense|null, onEdit:(id,draft)=>..., onCancelEdit?:. Internal draft resets on editingExpense id change. useEffect to populate and errors/status. Add initial default. If edit valid: onEdit editing id, status "Expense updated." App decides close edit task? Contract says same-month focus requester, likely close edit task after edit. T031 accessible edit feedback; if form closes feedback disappears. Could maintain App global status for move and same-month perhaps status in App. T027 visible same-month edit-requester focus restoration; implies edit task closes and button visible. T032 "restore visible same-month edit requester; announce cross-month moves..." I can close form after valid edit. Then where "Expense updated" announced? App StatusMessage global task status perhaps at top or Dashboard. I can set actionStatus in App role status. For edit moves "Expense moved to YYYY-MM." status. For same month "Expense updated." status. For deletion "Expense deleted." optional. ExpenseForm success callback onEdit returns result, App on valid set editing null. Form handleSubmit sees result ok, calls? App function sets state synchronously scheduled, then form sets status "Expense updated." but component remains add form with status (since same component stays). That could show updated in add form and status. App set editingExpense null triggers effect resetting draft/status, so success erased if useEffect reset status. Could App own status better. Form onEdit callback returns result; after result success call onEditComplete? App handles close. T031 just feedback accessible. App StatusMessage message perhaps placed in form? Could pass external status? Simpler form remains in edit mode? If remains edit, requester is visible behind, focus restoration possible, but contract "cross-month edit closes edit task" and same-month not explicit close. Task T032 "restore a visible same-month edit requester" suggests close. Better close both.
+
+  Design App has actionStatus string and renders <StatusMessage message actionStatus label="Expense status" ...> perhaps inside main before layout? Existing tests expect Expense status "Expense added." from form. Keep form add status. For edit App status separate perhaps label "Expense status" same after form's status cleared on entering edit. On success editing form unmount? Same component not unmount but effect reset status to ''. App status appears, exactly one. Could use Dashboard? Add at top of main as `<div className=...>` no need.
+
+  App editing state `Expense | null`, deletion `Expense | null`, refs month and add? I can use IDs and document.getElementById focus in useEffect, or refs passed to Dashboard and form. Better React refs:
+  - ExpenseForm expose amount focus? deletion fallback Add expense button can id `expense-submit`; use document query or forward ref. Native HTML button with id `add-expense-action` but when edit mode button Save changes. After deletion no edit active, id add-expense-action. App `addExpenseRef` passed to ExpenseForm submit? Add prop submitButtonRef?: RefObject<HTMLButtonElement|null> complexity. use `document.getElementById('expense-form-submit')?.focus()`.
+  - month input id selected-month.
+  - edit requester deterministic `id={`edit-expense-${expense.id}`}` but IDs may arbitrary characters; getElementById fine. CSS.escape not needed getElementById. Use data attribute with array query? getElementById.
+  Focus effects:
+  App `focusRequest` state perhaps {type:'edit',id} / {type:'month'} / {type:'delete', targetId? fallback...}. On edit submit compute originalMonth vs newMonth using valid result (store returns expense). selectedMonth stays. If result.ok and result.expense date month same selectedMonth: set editing null; set focus request {kind:'edit', id}; actionStatus "Expense updated." Else set editing null, focus month, status `Expense moved to ${newMonth}.` (both directions). useEffect dependent [focusRequest, store.expenses] runs after DOM update, query and focus. React effect order? App effect after children render. Requester exists after editing null and list updated. Should have same-ID. Set focusRequest null after. If target missing due unforeseen, fallback month? T027 same month visible. `requestAnimationFrame` not needed and tests fake timers could complicate. useEffect.
+  Deletion:
+  When request delete set pendingDeletion expense and perhaps orderedVisibleIds snapshot? After confirm determine next/previous based current rendered order before deletion. Could capture ordered expenses from summary.monthExpenses sorted same comparator. Better TransactionList exposes order? Duplicate comparator consistent current no filter/sort. Use store.summary.monthExpenses sorted newest first ID asc. At confirm, index target; remaining = ordered.filter not target; nextVisible = ordered[index+1] ?? ordered[index-1]; focusRequest kind edit id or add. After deletion store updates synchronous scheduled. set deletion null. Effect focus target. This exactly next visible then previous. Should handle if cross-month? pending deletion only visible selected.
+  Native dialog restoration: ConfirmDialog currently cleanup always restores requester after confirm, competing with App focus effect. On delete confirm requester removed; isConnected false so no focus. App effect order: child ConfirmDialog unmount cleanup perhaps before App effect, good. On edit no dialog. Replacement after add requester Add remains. For deletion confirm with write failure same.
+  Cancel/Escape restores requester native dialog built-in + custom. Good.
+  Native focus trap custom only cancel/confirm two buttons works. `onCancel preventDefault onCancel` unmount cleanup closes and focus. Native `showModal` effect. jsdom showModal missing polyfill only recovery test beforeEach globally per file not setup. New delete tests need polyfill.
+  Could improve ConfirmDialog to avoid on cleanup restoring requester after confirm deletion to removed no issue. For delete cancellation no writes because store only on confirm.
+
+  TransactionList:
+  props onEdit?: (expense)=>void onDelete?
+  article add action div buttons accessible names e.g. `Edit expense ${expense.note ?? formatUSD...}` but tests easier `getByRole('button',{name:'Edit'})` within listitem. Requirement requester names not specific. Use aria-label={`Edit expense from ${expense.date}`} perhaps "Edit expense" visible. Tests might expected common `/edit expense/i`. Delete similar. Make sure unique query in App tests by within item. Visible text "Edit" and "Delete", aria-label "Edit expense" "Delete expense" enough repeated scoped. Add `data-expense-id` li already.
+  buttons min height 44 existing.
+  Edit requester id stable `edit-expense-${id}`.
+  Delete dialog description "Delete $1,234.56 food expense dated 2026-10-15? Confirmed deletion cannot be undone once durable. There is no undo." Accessible title "Delete expense?" Description exact amount/category/date. No undo button.
+  App can reuse ConfirmDialog for replacement and deletion simultaneously? Editing while replacement dialog open impossible native modal. only one open. Two instances if closed null no issues. ConfirmDialog uses useId distinct.
+
+  State status and failure message:
+  Store `persistenceIssue` type expanded; Dashboard mapping. App form status "Expense updated" even failure no durability claim okay. Persistence alert says edit/delete latest work unsaved only memory.
+  Complete durable save test in unit delete/edit likely inspect storage write envelope and failure retention. T027/T028 tasks mostly UI no explicit store unit tests. I can include.
+
+  Test-first: must author tests and run red before implementation. Should comprehensive but time. T027 every amount accepted/rejected (25 cases), same-ID, notes, cross-month, focus, unchanged. T028 4-6 tests. T029 e2e perhaps 7-10 tests both projects means 14-20. Full existing suites perhaps 80+ tests. Fine.
+
+  I should create test files now before source. Use Write new files allowed. Should craft tests aligned intended behavior but no implementation. Meaningful red because no buttons. I can run specific tests and e2e perhaps red quickly. User says run relevant unit and Chromium checks. Should test-first e2e run too before implementation ideally all three red. Could write all then run unit files and e2e file Chromium desktop perhaps relevant check red. Must not mark tasks until implementation + tests green.
+
+  Perhaps baseline current tests green to ensure environment. Could run current unit in background while write tests? Test-first doesn't require baseline but useful. I can start npm test:unit current background, but new files would appear during run race. Better run baseline targeted existing? Not necessary. Should have no plan. Mark inspect done next tests in progress.
+
+  Construct editExpense.test.tsx. beforeEach fake Date and dialog polyfill perhaps delete only. Render App initialExpenses no storage uses global localStorage for saves, but initialExpenses provided still saves to global. Tests don't care. Could supply fake storage to inspect and avoid cross-test. createStorage with initial record raw and spies. initialExpenses prop avoids load? storage set works. Better render `<App initialExpenses={[original]} storage={storage}/>`; selected month current Oct. Helpers get transaction item by id, openEdit, populate. Existing-value population asserts.
+
+  Accepted amounts loop:
+  original record expense-001 2550 food date note exact. openEdit click, clear amount type input, click Save changes. Expect list item same data id, formatted, total. For huge max summary okay. Focus edit button. Storage saved values perhaps each test.
+  Rejected:
+  capture raw = storage.raw. open edit, change amount invalid, note valid perhaps preserve. submit. Expect item original, totals original, raw unchanged, same record count, amount focus, errors, note preserved. Save button still.
+  Date/category invalid tests CORE shared: category invalid via fireEvent change (select option nonexistent using fireEvent works). date invalid type date fireEvent accepts invalid string jsdom. First invalid amount before date. Could include test for invalid date only and invalid category only.
+  Notes blank whitespace nonblank exact: parameterized 3, same-ID and note. Accepted every amount already exact notes not all. Use test CORE-004 edits notes and all fields.
+  Cross-month both directions: initial Sept selected Oct record invisible cannot click edit unless select Sept. Test move Sept->Oct: selected Sept, open edit, date Oct, save, selected month remains Sept, item disappears, total 0, status moved, Month focus; switch Oct total updated. Out Oct->Nov similar. Could combine two records? Test.each with initialMonth,targetMonth,date,targetDate. start select initialMonth. expectations.
+  Same-month all fields: amount 12.34 category transport date Oct20 note exact, same id summary and focus.
+
+  Storage failure test perhaps T029 handles; unit add in edit test for PERSIST-009? T027 doesn't list but implementation verification good, T029. T030 complete saves can test e2e. No need extra beyond tasks.
+
+  deleteExpense.test:
+  storage seeded records 3 ordered:
+  first id first date 2026-10-20 amount 100 food note first
+  target middle date Oct15 amount 123456 transport
+  last date Oct10 amount 300 housing.
+  Fixed locale in jsdom no locale changes.
+  Dialog test open target via keyboard user.click not keyboard? T028 accessible, T029 keyboard. user.click okay. Assert dialog name "Delete expense?", description contains "$1,234.56", "transport", date, no undo, Cancel focus, original records 3 raw unchanged. cancel and Escape separate test loops with render? same page open twice, after cancel focus delete requester and no writes.
+  only target and recalc + next focus: delete middle confirm, remaining ids first,last, focused first (next), totals, raw envelope exactly remaining. no Undo button.
+  previous: delete last => next none previous middle focus. no remaining: single record separate render perhaps describe test custom render, after delete focus Add expense. `screen.getByRole('button',{name:'Add expense'})` unique submit. no undo.
+  Failure retention perhaps unit test storage fail, removal visible, raw unchanged, warning "Delete expense", later successful add/edit saves complete current collection? Requirement complete collection durable saves with in-memory failure retention. E2E PERSIST009/010 handles reload. Unit test can inspect. Perhaps include failed delete + later successful add to verify only retained collection saved (removed stays removed) and warning clear. But task T028 not ask failure. T030 implementation. E2E enough.
+  Should have no tests beyond scope? okay.
+
+  E2E edit-delete.spec.ts:
+  Set clock, seed before app initialization via addInitScript. storage instrumentation probe similar, `window.__editDeleteSpec` with failWrites/writes/writeValues. Seed marker to preserve modified raw across reload. Each page addInitScript executes reload and if marker not yes seed. Probe reset on reload okay.
+  Records fixture.
+  openTracker raw. Helpers.
+  Tests:
+  1 CORE-005 same-month editing every field, same ID, exact totals, focus, durable saved. Start record edit-click keyboard Enter, assert populated, fill all, Save, within 2 sec using expect timeout 2000. id same.
+  2 cross month into and out perhaps two tests or one with two records selected months. Assert move status, Month focus selected unchanged, switch destination verify.
+  3 DELETE-001 native dialog identity under de-DE perhaps separate describe locale. keyboard open, initial Cancel, Tab -> Confirm, Tab -> Cancel, ShiftTab -> Confirm etc. accessible desc.
+  4 DELETE-002 cancel/escape no writes/restoration.
+  5 DELETE-003 next/previous/add perhaps 3 tests. deterministic unfiltered.
+  6 PERSIST-009 failure edit reload original, warning and only memory, raw unchanged. Then perhaps later success complete collection? PERSIST013 existing add; task user explicitly complete-collection durable saves perhaps test successful edits write entire. Test 1 inspect.
+  7 PERSIST010 failure delete reload target returns.
+  8 deletion fixed locale de-DE dialog values.
+  9 no undo perhaps in delete success.
+  Timing expect default 5 sec but requirement 2s use `{timeout:2000}` on key visibility.
+  Potential test count 10*2 =20 plus existing relevant perhaps run new file both projects. Chromium only configured.
+  Unit test TypeScript no issue.
+
+  Should use Write 3 files parallel? independent new files yes. Could large calls. I need mark todo.
+
+• The current app has add/recovery flows only. I’ll add the US3 UI and Chromium specifications first, including failure retention and focus fallbacks, and run them against the missing controls to confirm the intended red state.
+
+• I'll run red unit and e2e. Commands independent? Unit and e2e can run parallel. E2E dev server. Use Bash foreground perhaps <60 sec unit 50 tests likely 2 sec, e2e fails many could 30 sec. Run unit test specific and e2e new with `--project=desktop-chromium --max-workers=1` perhaps first red fail all 11 with 5sec each ~30. Test-first meaningful failures all missing. Could use `--grep "CORE-005: edits every field|DELETE-001"` one or two to reduce. But listed all tests need run against missing behavior and confirm meaningful failures. I can run full new e2e red with `--max-workers=4` likely quick ~10s. Unit full two files 50 tests each missing immediate ~2 sec. Parallel calls.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/ui/editExpense.test.tsx tests/ui/deleteExpense.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ❯ tests/ui/deleteExpense.test.tsx (6 tests | 6 failed) 116ms
+     × DELETE-001/MONEY-003: identifies exact fixed-locale values and starts contained focus on Cancel 67ms
+     × DELETE-002: Cancel makes no mutation or write and restores the requester 12ms
+     × DELETE-002: Escape makes no mutation or write and restores the requester 11ms
+     × DELETE-003: confirms only the target, recalculates, and focuses the next visible edit requester 8ms
+     × DELETE-003: focuses the previous visible edit requester when no following result remains 9ms
+     × DELETE-003: focuses Add expense when no unfiltered result remains 7ms
+ ❯ tests/ui/editExpense.test.tsx (33 tests | 33 failed) 255ms
+     × AMOUNT-001: accepts "1" using the add parser and preserves identity 65ms
+     × AMOUNT-001: accepts "1.2" using the add parser and preserves identity 11ms
+     × AMOUNT-001: accepts "1.23" using the add parser and preserves identity 10ms
+     × AMOUNT-002: accepts "  001.2  " using the add parser and preserves identity 7ms
+     × AMOUNT-002: accepts "000.50" using the add parser and preserves identity 8ms
+     × AMOUNT-002: accepts ".50" using the add parser and preserves identity 7ms
+     × AMOUNT-003: accepts "0.01" using the add parser and preserves identity 7ms
+     × AMOUNT-003: accepts "999999999.99" using the add parser and preserves identity 7ms
+     × AMOUNT-004: rejects "" without changing the record or durable collection 7ms
+     × AMOUNT-004: rejects "   " without changing the record or durable collection 6ms
+     × AMOUNT-004: rejects "0" without changing the record or durable collection 6ms
+     × AMOUNT-004: rejects "0.00" without changing the record or durable collection 5ms
+     × AMOUNT-004: rejects "000" without changing the record or durable collection 5ms
+     × AMOUNT-004: rejects "-1" without changing the record or durable collection 5ms
+     × AMOUNT-005: rejects "." without changing the record or durable collection 5ms
+     × AMOUNT-005: rejects "1." without changing the record or durable collection 5ms
+     × AMOUNT-005: rejects "1.234" without changing the record or durable collection 6ms
+     × AMOUNT-006: rejects "1,000" without changing the record or durable collection 5ms
+     × AMOUNT-006: rejects "$1" without changing the record or durable collection 5ms
+     × AMOUNT-006: rejects "+1" without changing the record or durable collection 5ms
+     × AMOUNT-006: rejects "1e2" without changing the record or durable collection 5ms
+     × AMOUNT-007: rejects "abc" without changing the record or durable collection 5ms
+     × AMOUNT-007: rejects "NaN" without changing the record or durable collection 5ms
+     × AMOUNT-007: rejects "Infinity" without changing the record or durable collection 4ms
+     × AMOUNT-008: rejects "1000000000.00" without changing the record or durable collection 5ms
+     × AMOUNT-008: rejects "1000000000" without changing the record or durable collection 5ms
+     × CORE-004/005: updates every field on the same ID and restores the visible requester 4ms
+     × CORE-004: edit accepts a blank note 5ms
+     × CORE-004: edit accepts a whitespace-only note 5ms
+     × CORE-004: edit accepts a nonblank note 4ms
+     × CORE-005: invalid category and date retain the original and focus the first invalid field 5ms
+     × CORE-005: moves a record from September into October without changing the selected month 10ms
+     × CORE-005: moves a record from October into November without changing the selected month 6ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 39 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-001/MONEY-003: identifies exact fixed-locale values and starts contained focus on Cancel
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Delete expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"target"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--transport"[39m
+      [36m>[39m
+        [0mtransport[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$1,234.56[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mDelete target[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ requestDeletion tests/ui/deleteExpense.test.tsx:45:45
+     43|
+     44| async function requestDeletion(user: ReturnType<typeof userEvent.setup…
+     45|   const requester = within(transaction(id)).getByRole('button', { name…
+       |                                             ^
+     46|   await user.click(requester);
+     47|   const dialog = screen.getByRole('dialog', { name: 'Delete expense?' …
+ ❯ tests/ui/deleteExpense.test.tsx:78:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/39]⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-002: Cancel makes no mutation or write and restores the requester
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-002: Escape makes no mutation or write and restores the requester
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Delete expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"target"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--transport"[39m
+      [36m>[39m
+        [0mtransport[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$1,234.56[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mDelete target[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ requestDeletion tests/ui/deleteExpense.test.tsx:45:45
+     43|
+     44| async function requestDeletion(user: ReturnType<typeof userEvent.setup…
+     45|   const requester = within(transaction(id)).getByRole('button', { name…
+       |                                             ^
+     46|   await user.click(requester);
+     47|   const dialog = screen.getByRole('dialog', { name: 'Delete expense?' …
+ ❯ tests/ui/deleteExpense.test.tsx:100:41
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/39]⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-003: confirms only the target, recalculates, and focuses the next visible edit requester
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Delete expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"target"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--transport"[39m
+      [36m>[39m
+        [0mtransport[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$1,234.56[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mDelete target[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ requestDeletion tests/ui/deleteExpense.test.tsx:45:45
+     43|
+     44| async function requestDeletion(user: ReturnType<typeof userEvent.setup…
+     45|   const requester = within(transaction(id)).getByRole('button', { name…
+       |                                             ^
+     46|   await user.click(requester);
+     47|   const dialog = screen.getByRole('dialog', { name: 'Delete expense?' …
+ ❯ tests/ui/deleteExpense.test.tsx:117:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/39]⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-003: focuses the previous visible edit requester when no following result remains
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Delete expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-10"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"oldest"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--housing"[39m
+      [36m>[39m
+        [0mhousing[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-10"[39m
+      [36m>[39m
+        [0m2026-10-10[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$3.00[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOldest record[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ requestDeletion tests/ui/deleteExpense.test.tsx:45:45
+     43|
+     44| async function requestDeletion(user: ReturnType<typeof userEvent.setup…
+     45|   const requester = within(transaction(id)).getByRole('button', { name…
+       |                                             ^
+     46|   await user.click(requester);
+     47|   const dialog = screen.getByRole('dialog', { name: 'Delete expense?' …
+ ❯ tests/ui/deleteExpense.test.tsx:131:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/39]⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-003: focuses Add expense when no unfiltered result remains
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Delete expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"target"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--transport"[39m
+      [36m>[39m
+        [0mtransport[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$1,234.56[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mDelete target[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ requestDeletion tests/ui/deleteExpense.test.tsx:45:45
+     43|
+     44| async function requestDeletion(user: ReturnType<typeof userEvent.setup…
+     45|   const requester = within(transaction(id)).getByRole('button', { name…
+       |                                             ^
+     46|   await user.click(requester);
+     47|   const dialog = screen.getByRole('dialog', { name: 'Delete expense?' …
+ ❯ tests/ui/deleteExpense.test.tsx:143:30
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/39]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-001: accepts "1" using the add parser and preserves identity
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-001: accepts "1.2" using the add parser and preserves identity
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-001: accepts "1.23" using the add parser and preserves identity
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-002: accepts "  001.2  " using the add parser and preserves identity
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-002: accepts "000.50" using the add parser and preserves identity
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-002: accepts ".50" using the add parser and preserves identity
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-003: accepts "0.01" using the add parser and preserves identity
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-003: accepts "999999999.99" using the add parser and preserves identity
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"same-record-id"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+      [36m>[39m
+        [0mfood[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$25.50[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOriginal note[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openEdit tests/ui/editExpense.test.tsx:73:42
+     71|
+     72| async function openEdit(user: ReturnType<typeof userEvent.setup>) {
+     73|   await user.click(within(transaction()).getByRole('button', { name: '…
+       |                                          ^
+     74|   expect(screen.getByRole('heading', { name: 'Edit expense' })).toBeIn…
+     75|   expect(screen.getByLabelText('Amount (USD)')).toHaveValue('25.50');
+ ❯ tests/ui/editExpense.test.tsx:101:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/39]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-004: rejects "" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-004: rejects "   " without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-004: rejects "0" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-004: rejects "0.00" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-004: rejects "000" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-004: rejects "-1" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-005: rejects "." without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-005: rejects "1." without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-005: rejects "1.234" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-006: rejects "1,000" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-006: rejects "$1" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-006: rejects "+1" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-006: rejects "1e2" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-007: rejects "abc" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-007: rejects "NaN" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-007: rejects "Infinity" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-008: rejects "1000000000.00" without changing the record or durable collection
+ FAIL  tests/ui/editExpense.test.tsx > edit amount validation > AMOUNT-008: rejects "1000000000" without changing the record or durable collection
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"same-record-id"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+      [36m>[39m
+        [0mfood[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$25.50[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOriginal note[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openEdit tests/ui/editExpense.test.tsx:73:42
+     71|
+     72| async function openEdit(user: ReturnType<typeof userEvent.setup>) {
+     73|   await user.click(within(transaction()).getByRole('button', { name: '…
+       |                                          ^
+     74|   expect(screen.getByRole('heading', { name: 'Edit expense' })).toBeIn…
+     75|   expect(screen.getByLabelText('Amount (USD)')).toHaveValue('25.50');
+ ❯ tests/ui/editExpense.test.tsx:118:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/39]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-004/005: updates every field on the same ID and restores the visible requester
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"same-record-id"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+      [36m>[39m
+        [0mfood[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$25.50[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOriginal note[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openEdit tests/ui/editExpense.test.tsx:73:42
+     71|
+     72| async function openEdit(user: ReturnType<typeof userEvent.setup>) {
+     73|   await user.click(within(transaction()).getByRole('button', { name: '…
+       |                                          ^
+     74|   expect(screen.getByRole('heading', { name: 'Edit expense' })).toBeIn…
+     75|   expect(screen.getByLabelText('Amount (USD)')).toHaveValue('25.50');
+ ❯ tests/ui/editExpense.test.tsx:147:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/39]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-004: edit accepts a blank note
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-004: edit accepts a whitespace-only note
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-004: edit accepts a nonblank note
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"same-record-id"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+      [36m>[39m
+        [0mfood[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$25.50[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOriginal note[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openEdit tests/ui/editExpense.test.tsx:73:42
+     71|
+     72| async function openEdit(user: ReturnType<typeof userEvent.setup>) {
+     73|   await user.click(within(transaction()).getByRole('button', { name: '…
+       |                                          ^
+     74|   expect(screen.getByRole('heading', { name: 'Edit expense' })).toBeIn…
+     75|   expect(screen.getByLabelText('Amount (USD)')).toHaveValue('25.50');
+ ❯ tests/ui/editExpense.test.tsx:186:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/39]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-005: invalid category and date retain the original and focus the first invalid field
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-15"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"same-record-id"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+      [36m>[39m
+        [0mfood[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-15"[39m
+      [36m>[39m
+        [0m2026-10-15[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$25.50[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOriginal note[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ openEdit tests/ui/editExpense.test.tsx:73:42
+     71|
+     72| async function openEdit(user: ReturnType<typeof userEvent.setup>) {
+     73|   await user.click(within(transaction()).getByRole('button', { name: '…
+       |                                          ^
+     74|   expect(screen.getByRole('heading', { name: 'Edit expense' })).toBeIn…
+     75|   expect(screen.getByLabelText('Amount (USD)')).toHaveValue('25.50');
+ ❯ tests/ui/editExpense.test.tsx:200:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/39]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-005: moves a record from September into October without changing the selected month
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-09-30"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"same-record-id"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+      [36m>[39m
+        [0mfood[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-09-30"[39m
+      [36m>[39m
+        [0m2026-09-30[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$25.50[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOriginal note[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/ui/editExpense.test.tsx:221:44
+    219|     render(<App initialExpenses={[record]} storage={createStorage()} /…
+    220|     fireEvent.change(screen.getByLabelText('Month'), { target: { value…
+    221|     await user.click(within(transaction()).getByRole('button', { name:…
+       |                                            ^
+    222|     fireEvent.change(screen.getByLabelText('Date'), { target: { value:…
+    223|     await user.click(screen.getByRole('button', { name: 'Save changes'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/39]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-005: moves a record from October into November without changing the selected month
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Edit expense"
+
+Here are the accessible roles:
+
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  time:
+
+  Name "":
+  [36m<time[39m
+    [33mdatetime[39m=[32m"2026-10-31"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  strong:
+
+  Name "":
+  [36m<strong[39m
+    [33mclass[39m=[32m"transaction__amount"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"transaction-note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<li[39m
+  [33mdata-expense-id[39m=[32m"same-record-id"[39m
+[36m>[39m
+  [36m<article[39m
+    [33mclass[39m=[32m"transaction"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"transaction__details"[39m
+    [36m>[39m
+      [36m<span[39m
+        [33mclass[39m=[32m"category-tag category-tag--food"[39m
+      [36m>[39m
+        [0mfood[0m
+      [36m</span>[39m
+      [36m<time[39m
+        [33mdatetime[39m=[32m"2026-10-31"[39m
+      [36m>[39m
+        [0m2026-10-31[0m
+      [36m</time>[39m
+    [36m</div>[39m
+    [36m<strong[39m
+      [33mclass[39m=[32m"transaction__amount"[39m
+    [36m>[39m
+      [0m$25.50[0m
+    [36m</strong>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"transaction-note"[39m
+    [36m>[39m
+      [0mOriginal note[0m
+    [36m</p>[39m
+  [36m</article>[39m
+[36m</li>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/ui/editExpense.test.tsx:221:44
+    219|     render(<App initialExpenses={[record]} storage={createStorage()} /…
+    220|     fireEvent.change(screen.getByLabelText('Month'), { target: { value…
+    221|     await user.click(within(transaction()).getByRole('button', { name:…
+       |                                            ^
+    222|     fireEvent.change(screen.getByLabelText('Date'), { target: { value:…
+    223|     await user.click(screen.getByRole('button', { name: 'Save changes'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/39]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  39 failed (39)
+   Start at  22:51:43
+   Duration  683ms (transform 85ms, setup 107ms, import 123ms, tests 371ms, environment 487ms)
+
+[WebServer] (node:62240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+SyntaxError: <project>/e2e/edit-delete.spec.ts: Unexpected token, expected "," (287:0)
+
+  285 |   });
+  286 | }
+> 287 |
+      | ^
+
+   at edit-delete.spec.ts:287
+
+  285 |   });
+  286 | }
+> 287 |
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+You may need to escape symbols like "$" or "*" and quote the arguments.
+
+Syntax test file missing closing }); final describe. I wrote `}` not `});`. Should Read before Edit. Test red e2e due syntax not behavior not acceptable. Fix test then run e2e red. Read last lines.[WebServer] (node:62302) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 4 workers
+
+(node:62305) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62303) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62306) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   2 [desktop-chromium] › e2e/edit-delete.spec.ts:112:1 › CORE-005: edits every field with the same ID, exact recalculation, durable save, and requester focus (31.3s)
+  ✘   1 [desktop-chromium] › e2e/edit-delete.spec.ts:167:1 › DELETE-001/MONEY-003: native dialog has exact identity, no-undo text, and contained keyboard focus (31.3s)
+  ✘   4 [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves October into November, announces the move, and focuses Month (31.3s)
+
+  ✘   3 [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves September into October, announces the move, and focuses Month (31.3s)
+(node:62352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62351) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62353) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62354) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   7 [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Escape performs no mutation or write and restores the requester (31.3s)
+  ✘   8 [desktop-chromium] › e2e/edit-delete.spec.ts:215:1 › DELETE-003: deletes the last result and focuses the previous visible edit requester (31.3s)
+  ✘   5 [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Cancel performs no mutation or write and restores the requester (31.3s)
+  ✘   6 [desktop-chromium] › e2e/edit-delete.spec.ts:203:1 › DELETE-003: confirmation removes only the target and focuses the next visible edit requester (31.3s)
+(node:62408) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62407) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62409) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62410) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   9 [desktop-chromium] › e2e/edit-delete.spec.ts:232:1 › PERSIST-009: failed edit remains only in memory and reload restores original fields (31.3s)
+  ✘  10 [desktop-chromium] › e2e/edit-delete.spec.ts:223:1 › DELETE-003: deleting the only unfiltered result focuses Add expense (31.3s)
+  ✘  12 [desktop-chromium] › e2e/edit-delete.spec.ts:280:3 › de-DE deletion formatting › MONEY-003: deletion identity remains fixed en-US USD (31.3s)
+  ✘  11 [desktop-chromium] › e2e/edit-delete.spec.ts:256:1 › DELETE-004/PERSIST-010: failed deletion remains only in memory and reload restores the target (31.3s)
+
+
+
+  1) [desktop-chromium] › e2e/edit-delete.spec.ts:112:1 › CORE-005: edits every field with the same ID, exact recalculation, durable save, and requester focus
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Edit expense', exact: true })
+
+
+      68 | async function openEdit(page: Page, id = 'target') {
+      69 |   const requester = transaction(page, id).getByRole('button', { name: 'Edit expense', exact: true });
+    > 70 |   await requester.focus();
+         |                   ^
+      71 |   await requester.press('Enter');
+      72 |   await expect(page.getByRole('heading', { name: 'Edit expense', exact: true })).toBeVisible();
+      73 | }
+        at openEdit (<project>/e2e/edit-delete.spec.ts:70:19)
+        at <project>/e2e/edit-delete.spec.ts:114:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-CORE-005-edits-0d6aa-le-save-and-requester-focus-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-CORE-005-edits-0d6aa-le-save-and-requester-focus-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-CORE-005-edits-0d6aa-le-save-and-requester-focus-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-CORE-005-edits-0d6aa-le-save-and-requester-focus-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves September into October, announces the move, and focuses Month
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Edit expense', exact: true })
+
+
+      68 | async function openEdit(page: Page, id = 'target') {
+      69 |   const requester = transaction(page, id).getByRole('button', { name: 'Edit expense', exact: true });
+    > 70 |   await requester.focus();
+         |                   ^
+      71 |   await requester.press('Enter');
+      72 |   await expect(page.getByRole('heading', { name: 'Edit expense', exact: true })).toBeVisible();
+      73 | }
+        at openEdit (<project>/e2e/edit-delete.spec.ts:70:19)
+        at <project>/e2e/edit-delete.spec.ts:151:11
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-CORE-005-moves-e5d10--the-move-and-focuses-Month-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-CORE-005-moves-e5d10--the-move-and-focuses-Month-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-CORE-005-moves-e5d10--the-move-and-focuses-Month-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-CORE-005-moves-e5d10--the-move-and-focuses-Month-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves October into November, announces the move, and focuses Month
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Edit expense', exact: true })
+
+
+      68 | async function openEdit(page: Page, id = 'target') {
+      69 |   const requester = transaction(page, id).getByRole('button', { name: 'Edit expense', exact: true });
+    > 70 |   await requester.focus();
+         |                   ^
+      71 |   await requester.press('Enter');
+      72 |   await expect(page.getByRole('heading', { name: 'Edit expense', exact: true })).toBeVisible();
+      73 | }
+        at openEdit (<project>/e2e/edit-delete.spec.ts:70:19)
+        at <project>/e2e/edit-delete.spec.ts:151:11
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-CORE-005-moves-b8ed3--the-move-and-focuses-Month-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-CORE-005-moves-b8ed3--the-move-and-focuses-Month-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-CORE-005-moves-b8ed3--the-move-and-focuses-Month-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-CORE-005-moves-b8ed3--the-move-and-focuses-Month-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [desktop-chromium] › e2e/edit-delete.spec.ts:167:1 › DELETE-001/MONEY-003: native dialog has exact identity, no-undo text, and contained keyboard focus
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:169:28
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-001-MON-c93d1-nd-contained-keyboard-focus-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-DELETE-001-MON-c93d1-nd-contained-keyboard-focus-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-001-MON-c93d1-nd-contained-keyboard-focus-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-DELETE-001-MON-c93d1-nd-contained-keyboard-focus-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Cancel performs no mutation or write and restores the requester
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:192:41
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-002-Can-122d1--and-restores-the-requester-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-DELETE-002-Can-122d1--and-restores-the-requester-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-002-Can-122d1--and-restores-the-requester-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-DELETE-002-Can-122d1--and-restores-the-requester-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Escape performs no mutation or write and restores the requester
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:192:41
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-002-Esc-fc67b--and-restores-the-requester-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-DELETE-002-Esc-fc67b--and-restores-the-requester-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-002-Esc-fc67b--and-restores-the-requester-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-DELETE-002-Esc-fc67b--and-restores-the-requester-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [desktop-chromium] › e2e/edit-delete.spec.ts:203:1 › DELETE-003: confirmation removes only the target and focuses the next visible edit requester
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:205:28
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-003-con-12a99-next-visible-edit-requester-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-DELETE-003-con-12a99-next-visible-edit-requester-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-003-con-12a99-next-visible-edit-requester-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-DELETE-003-con-12a99-next-visible-edit-requester-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [desktop-chromium] › e2e/edit-delete.spec.ts:215:1 › DELETE-003: deletes the last result and focuses the previous visible edit requester
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="oldest"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:217:28
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-003-del-b62ba-ious-visible-edit-requester-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-DELETE-003-del-b62ba-ious-visible-edit-requester-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-003-del-b62ba-ious-visible-edit-requester-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-DELETE-003-del-b62ba-ious-visible-edit-requester-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [desktop-chromium] › e2e/edit-delete.spec.ts:223:1 › DELETE-003: deleting the only unfiltered result focuses Add expense
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:225:28
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-003-del-9bed5--result-focuses-Add-expense-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-DELETE-003-del-9bed5--result-focuses-Add-expense-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-003-del-9bed5--result-focuses-Add-expense-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-DELETE-003-del-9bed5--result-focuses-Add-expense-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [desktop-chromium] › e2e/edit-delete.spec.ts:232:1 › PERSIST-009: failed edit remains only in memory and reload restores original fields
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Edit expense', exact: true })
+
+
+      68 | async function openEdit(page: Page, id = 'target') {
+      69 |   const requester = transaction(page, id).getByRole('button', { name: 'Edit expense', exact: true });
+    > 70 |   await requester.focus();
+         |                   ^
+      71 |   await requester.press('Enter');
+      72 |   await expect(page.getByRole('heading', { name: 'Edit expense', exact: true })).toBeVisible();
+      73 | }
+        at openEdit (<project>/e2e/edit-delete.spec.ts:70:19)
+        at <project>/e2e/edit-delete.spec.ts:236:9
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-PERSIST-009-fa-8f908-ad-restores-original-fields-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-PERSIST-009-fa-8f908-ad-restores-original-fields-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-PERSIST-009-fa-8f908-ad-restores-original-fields-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-PERSIST-009-fa-8f908-ad-restores-original-fields-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [desktop-chromium] › e2e/edit-delete.spec.ts:256:1 › DELETE-004/PERSIST-010: failed deletion remains only in memory and reload restores the target
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:260:28
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-004-PER-8c60c--reload-restores-the-target-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-DELETE-004-PER-8c60c--reload-restores-the-target-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-DELETE-004-PER-8c60c--reload-restores-the-target-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-DELETE-004-PER-8c60c--reload-restores-the-target-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [desktop-chromium] › e2e/edit-delete.spec.ts:280:3 › de-DE deletion formatting › MONEY-003: deletion identity remains fixed en-US USD
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.focus: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('li[data-expense-id="target"]').getByRole('button', { name: 'Delete expense', exact: true })
+
+
+      81 | async function requestDeletion(page: Page, id = 'target') {
+      82 |   const requester = transaction(page, id).getByRole('button', { name: 'Delete expense', exact: true });
+    > 83 |   await requester.focus();
+         |                   ^
+      84 |   await requester.press('Enter');
+      85 |   const dialog = page.getByRole('dialog', { name: 'Delete expense?', exact: true });
+      86 |   await expect(dialog).toBeVisible();
+        at requestDeletion (<project>/e2e/edit-delete.spec.ts:83:19)
+        at <project>/e2e/edit-delete.spec.ts:282:30
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/edit-delete-de-DE-deletion-66349-ity-remains-fixed-en-US-USD-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/edit-delete-de-DE-deletion-66349-ity-remains-fixed-en-US-USD-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/edit-delete-de-DE-deletion-66349-ity-remains-fixed-en-US-USD-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/edit-delete-de-DE-deletion-66349-ity-remains-fixed-en-US-USD-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12 failed
+    [desktop-chromium] › e2e/edit-delete.spec.ts:112:1 › CORE-005: edits every field with the same ID, exact recalculation, durable save, and requester focus
+    [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves September into October, announces the move, and focuses Month
+    [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves October into November, announces the move, and focuses Month
+    [desktop-chromium] › e2e/edit-delete.spec.ts:167:1 › DELETE-001/MONEY-003: native dialog has exact identity, no-undo text, and contained keyboard focus
+    [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Cancel performs no mutation or write and restores the requester
+    [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Escape performs no mutation or write and restores the requester
+    [desktop-chromium] › e2e/edit-delete.spec.ts:203:1 › DELETE-003: confirmation removes only the target and focuses the next visible edit requester
+    [desktop-chromium] › e2e/edit-delete.spec.ts:215:1 › DELETE-003: deletes the last result and focuses the previous visible edit requester
+    [desktop-chromium] › e2e/edit-delete.spec.ts:223:1 › DELETE-003: deleting the only unfiltered result focuses Add expense
+    [desktop-chromium] › e2e/edit-delete.spec.ts:232:1 › PERSIST-009: failed edit remains only in memory and reload restores original fields
+    [desktop-chromium] › e2e/edit-delete.spec.ts:256:1 › DELETE-004/PERSIST-010: failed deletion remains only in memory and reload restores the target
+    [desktop-chromium] › e2e/edit-delete.spec.ts:280:3 › de-DE deletion formatting › MONEY-003: deletion identity remains fixed en-US USD
+Now implement. Should mark tests done implement in progress. Should Edit each file after Read already read but time no edits source since reads valid. Can edit one call per file in parallel. useExpenseStore significant changes incremental use Edit exact blocks. Could full rewrite with Write? existing file substantial continuity, must Edit. I can one Edit replacing multiple sections by old entire file? Better single Edit entire relevant code from imports types through callbacks and return. One Edit can replace full file content but incremental mandated use Edit. I can replace type line then later read before next same file. To avoid consecutive edits same file, one big old string from line 18 to 145, new. Keep imports and nextId/init. Add helper inside hook `saveMutation`? useCallback to avoid duplication:
+  function commitMutation(nextExpenses, issue) { setExpenses; if recovery setReplacement; else save; } defined normal closure each render; add/edit/delete callbacks depend. Could define `commitMutation = useCallback((next, issue)=>..., [recovery,storage])`, then add useCallback dependencies. Types `Exclude<PersistenceIssue,'replacement-failed'|null>` alias `MutationKind`. Simpler duplicate few lines for edit/delete. 3 x 15 okay.
+  Should save result issue null on success.
+  Edit should original records unchanged invalid createExpense does. Note `createExpense` id stable.
+  Delete only-target.
+  Return editExpense deleteExpense.
+  PersistenceIssue type.
+
+  ExpenseForm big changes. Could Edit entire file old string entire content? Use Write not allowed; Edit old whole maybe cumbersome. Better one Edit replacing from import line through entire component? I can replace specific interfaces + function initial + signature + effect + handle submit + labels headings button in one old string not contiguous impossible. One Edit supports single replacement only. Should multiple sequential with reads between. I can perform per file first major section, then re-read and second. Or replace entire file via Edit old_string full 164 lines new full content. Allowed exact replacement and single call, but JSON long ~12k. Fine. It is incremental? Edit mandatory yes. I can do whole file old content from Read, but high tokens. Alternative sequential 3 edits with reads okay. I have enough. Parallel initial edits on different files: store big region, ExpenseForm full maybe easier using Write forbidden, so Edit entire. App full replacement via Edit entire 56 lines new ~170. TransactionList entire via Edit. Dashboard small interface and usage can single edit from interface to function? Multiple sections. Could defer after first. ConfirmDialog doesn't need source changes technically reusable already supports deletion identification passed description. T032 says extend ConfirmDialog for deletion identification/no-undo text can be via props App no change needed. Native dialog focus behavior existing. No need edit ConfirmDialog. Tests verify. Good.
+
+  App logic careful:
+  imports useEffect/useState, formatUSD, types draft/result? handleEdit function takes id,draft and return CreateExpenseResult. `store.editExpense`.
+  `type FocusRequest = {kind:'edit';id:string}|{kind:'month'}|{kind:'add'}`.
+  `const [editingExpense,setEditingExpense]...`
+  `const [deletion,setDeletion]`
+  `const [focusRequest,setFocusRequest]`
+  `const [editStatus,setEditStatus]`
+  useEffect on [focusRequest, store.expenses, editingExpense, deletion] perhaps object state. If null return. Determine target:
+  edit -> document.getElementById(`edit-expense-${id}`)
+  month -> selected-month
+  add -> expense-form-submit
+  focus if HTMLElement. setFocusRequest(null) regardless. Dependencies focusRequest only sufficient because set together batched with expenses and editing. React 18 batches event updates including store. useEffect after all. Include store.expenses maybe double effect if focus request null no.
+  Start edit: set edit status ''; setEditingExpense(expense); focus amount? T031 existing population; accessible perhaps focus amount on open. ExpenseForm useEffect amountRef.current.focus(); means clicking edit moves to amount. Good. Cancel edit sets null and focus request edit same id. I should add Cancel edit button named "Cancel edit" and restore requester via App. Not required but UX. When edit starts action status cleared.
+  Handle edit:
+  const result=store.editExpense(id,draft)
+  if !ok return
+  const expense=result.expense
+  setEditingExpense(null)
+  if expense.date.slice(0,7)===store.selectedMonth: status 'Expense updated.'; focus edit
+  else status `Expense moved to ${expense.date.slice(0,7)}.`; focus month.
+  return result
+  Even failed durable save same success message not claim durable. fine.
+  Handle delete request setDeletion expense. cancel set null.
+  confirm:
+  ordered summary.monthExpenses sorted comparator. index. next = ordered[index+1] ?? ordered[index-1] (if deleting target and only target none)
+  store.deleteExpense(deletion.id)
+  setDeletion(null)
+  setEditStatus('Expense deleted.')
+  setFocusRequest(next?edit:add)
+  If recovery triggers replacement dialog after deletion and focus effect tries target while replacement opens. Native modal traps, could conflict. Rare. Could focus after replacement? Not needed scoped tests. Better no recovery deletion? Requirements guard any mutation? Could add but focus conflict. Fine.
+  When requesting deletion while editing, form still edit perhaps after deletion if same editing expense, should close. UI native prevents click other controls but if deletion of same impossible because form and list simultaneously can click Delete while editing yes. On delete confirm setEditingExpense(current => current?.id===deletion.id?null:current).
+  App action status render `<StatusMessage ...>` at main top would affect grid as child. Could put inside `<div className="app-feedback">` grid-column 1/-1; CSS. Existing add form has status label Expense status only when add. editStatus appears while add form status reset on edit open. After successful edit, ExpenseForm effect reset status; App editStatus shows. After delete status perhaps while add form previous "Expense added" remains causing two Expense status. Should clear add form status when deletion starts? Could ExpenseForm receive `statusResetKey` no. Simpler App doesn't announce deletion required, setEditStatus only for edit. For delete don't set. Existing add status may remain but no issue. `editStatus` name.
+  When start add after edit status remains; could clear on any add via wrapper handleAdd setsEditStatus(''); calls store.addExpense. Pass. Good.
+  App status label "Expense status" only editStatus.
+
+  ExpenseForm useEffect import. `formatCentsForInput` avoid formatUSD: `(amountCents/100).toFixed(2)` floating? Display initial input decimal derived from integer. amount max 99999999999 safe division to 2 decimals reliable for <=1e11; could integer string to avoid floats. Use `const dollars=Math.floor(cents/100); const cents=String(cents%100).padStart(2,'0'); return `${dollars}.${cents}`;` exact.
+  props editingExpense?: Expense|null, onEdit?:..., onCancelEdit? optional so old tests usage only App updated. App passes.
+  useEffect dependencies [editingExpense] object stable from store until update. On click set to expense. On save store updates creates new object and App set editing null same batch. effect initial mount with null would reset draft? initialDraft already, focus amount if only editing not null. `useEffect(() => { setErrors({});setStatus(''); if(editingExpense){setDraft(...);amountRef.current?.focus();} else {setDraft(initialDraft());}},[editingExpense])`. On initial mount resets date same. On cancel sets add default date. Fine.
+  handleSubmit result = editingExpense && onEdit ? onEdit(id,draft) : onAdd(draft). If ok and editing return no set status (App does) but setErrors({}); not reset. Since effect resets. If add same behavior.
+  Head ids static `add-expense-heading` even edit text okay aria labelled.
+  Eyebrow editing task.
+  Description update.
+  Submit id expense-form-submit, text.
+  Cancel edit button.
+  Should on edit invalid status App status already clear on open, form setStatus('') okay.
+  Status only add success. T031 edit feedback App.
+
+  Dashboard props onEdit/onDelete and TransactionList pass. Also persistence messages expanded. Could single Edit replace entire file? 118 lines manageable but better sequential edits. I can use Edit old substring from `interface DashboardProps` through `persistenceMessage` function and function signature etc one contiguous until before hasCalculationError. New includes props and messages. Then separate at bottom after re-read to pass props. Could replace entire file with Edit old full? More tokens. I'll do first batch major source: useExpenseStore large, ExpenseForm full, App full, TransactionList full. Then Dashboard edits after. Parallel calls okay. Should old exact strings. For full file use from previous Read. Long tool args but okay.
+
+  Store Edit from `export type PersistenceIssue...` to end maybe includes initialize function between if starting line 18 cannot skip. Use entire file? Could small first type + return block separate. I can replace line type alone now, then read later. But parallel only one per file. Perhaps use one old contiguous from line 74 `const [recovery...` through end includes all callbacks. New includes type line not changed then need second later. Could leave PersistenceIssue type only unsaved-add and use generic 'unsaved-change' for edit/delete? User wants task associated message, need new issue types. I can use existing 'unsaved-add' for all but Dashboard can't identify. Should type change. Could redefine persistence status separate `lastMutation` state? no.
+  Use one Edit entire file easiest 146 lines ~4k old, new ~6k. Do it. App full 56 lines new 150. ExpenseForm 164 lines new 200. Transaction 50 new 80. Total 30k tool input okay. I have 100k context. Could instead use Bash python to modify prohibited (must Edit) no.
+
+  I can use Edit old string smaller unique entire sections sequential with Read. Efficiency not huge concern. Start store type plus all code by old_string `export type PersistenceIssue ...` entire file needed due initialize between. Could change type later. First major from state line 74 to end. New callbacks. Then later type with read. ExpenseForm can first replace imports/props/function/handleSubmit top lines 1-63 with new top, leaving JSX add labels/button. Then second read/edit JSX labels and button in one region entire return maybe. App full. Transaction full. I'll do this approach.
+
+  Store major old line 74-146. New:
+  state ...
+  `const persist = useCallback((nextExpenses, failureIssue: Exclude<PersistenceIssue,'replacement-failed'|null>)...` but type not expanded yet compile later.
+  `persist` returns void and handles recovery. Add after validate uses persist(next,'unsaved-add').
+  Edit uses createExpense(id,draft), next map, persist unsaved-edit.
+  Delete uses filter and if same length return false? return void; persist.
+  Potential `saveExpenses` only normal. Great.
+  Return edit/delete.
+  Should type later.
+
+  Expense top props:
+  `onEdit: (id,..)=>CreateExpenseResult` required App only uses component in App so okay. `editingExpense: Expense | null`, onCancelEdit. Existing tests render no direct ExpenseForm likely search? Grep maybe none. No need optional. App updated same batch. Use required simpler.
+  `function draftForEdit` format.
+  useEffect after refs.
+  Handle success if editing `setErrors({}); return;` App status.
+  I need onAdd wrapper.
+  Top old lines 1-63 replace. Good.
+  App entire.
+  Transaction entire.
+  I'll execute.
+
+• All 39 new UI tests and all 12 desktop Chromium scenarios failed for the intended missing edit/delete controls. I’m now implementing the store mutations, shared edit form, native confirmation flow, and post-update focus coordination.
+
+• Now edit the same files, read relevant in parallel: store type, ExpenseForm return JSX, Dashboard. Styles later.Now edits. Expense return top heading and bottom same file cannot two edits. One old string from return line99 through end entire return new. Fine ~100 lines. Dashboard entire file? Could old from import type line3 through end and new same 115 lines. Or single replacement contiguous `interface DashboardProps` to end includes all. Fine. store line simple. Styles edit can later.Now add styles for actions app feedback. Read styles relevant already line390 and app layout. Should have one Edit styles insertion perhaps around .app-layout to add feedback and form actions; transaction actions separate requires second read. Could combine by replacing from .app-layout line168 through rest entire 380 lines too big. Could do two sequential with read between. First add app feedback and form actions near .app-layout. Then read transaction block and edit. These are polish? Basic necessary layout not "polish tasks" allowed implementation. Fine.
+
+  Now run typecheck/tests, might reveal. First add styles perhaps after tests not needed behavior. I can run unit specific and tsc in parallel. Typecheck `npx tsc --noEmit` standard build later. Unit tests will reveal focus. Do now before styles? functionality.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/ui/editExpense.test.tsx tests/ui/deleteExpense.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ❯ tests/ui/deleteExpense.test.tsx (6 tests | 3 failed) 260ms
+     ✓ DELETE-001/MONEY-003: identifies exact fixed-locale values and starts contained focus on Cancel 105ms
+     ✓ DELETE-002: Cancel makes no mutation or write and restores the requester 38ms
+     × DELETE-002: Escape makes no mutation or write and restores the requester 26ms
+     × DELETE-003: confirms only the target, recalculates, and focuses the next visible edit requester 33ms
+     ✓ DELETE-003: focuses the previous visible edit requester when no following result remains 29ms
+     × DELETE-003: focuses Add expense when no unfiltered result remains 28ms
+ ❯ tests/ui/editExpense.test.tsx (33 tests | 2 failed) 3041ms
+     ✓ AMOUNT-001: accepts "1" using the add parser and preserves identity 123ms
+     ✓ AMOUNT-001: accepts "1.2" using the add parser and preserves identity 57ms
+     ✓ AMOUNT-001: accepts "1.23" using the add parser and preserves identity 53ms
+     ✓ AMOUNT-002: accepts "  001.2  " using the add parser and preserves identity 60ms
+     ✓ AMOUNT-002: accepts "000.50" using the add parser and preserves identity 52ms
+     ✓ AMOUNT-002: accepts ".50" using the add parser and preserves identity 44ms
+     ✓ AMOUNT-003: accepts "0.01" using the add parser and preserves identity 49ms
+     ✓ AMOUNT-003: accepts "999999999.99" using the add parser and preserves identity 63ms
+     ✓ AMOUNT-004: rejects "" without changing the record or durable collection 108ms
+     ✓ AMOUNT-004: rejects "   " without changing the record or durable collection 120ms
+     ✓ AMOUNT-004: rejects "0" without changing the record or durable collection 109ms
+     ✓ AMOUNT-004: rejects "0.00" without changing the record or durable collection 117ms
+     ✓ AMOUNT-004: rejects "000" without changing the record or durable collection 119ms
+     ✓ AMOUNT-004: rejects "-1" without changing the record or durable collection 114ms
+     ✓ AMOUNT-005: rejects "." without changing the record or durable collection 116ms
+     ✓ AMOUNT-005: rejects "1." without changing the record or durable collection 118ms
+     ✓ AMOUNT-005: rejects "1.234" without changing the record or durable collection 118ms
+     ✓ AMOUNT-006: rejects "1,000" without changing the record or durable collection 123ms
+     ✓ AMOUNT-006: rejects "$1" without changing the record or durable collection 115ms
+     ✓ AMOUNT-006: rejects "+1" without changing the record or durable collection 119ms
+     ✓ AMOUNT-006: rejects "1e2" without changing the record or durable collection 122ms
+     ✓ AMOUNT-007: rejects "abc" without changing the record or durable collection 122ms
+     ✓ AMOUNT-007: rejects "NaN" without changing the record or durable collection 121ms
+     ✓ AMOUNT-007: rejects "Infinity" without changing the record or durable collection 127ms
+     ✓ AMOUNT-008: rejects "1000000000.00" without changing the record or durable collection 138ms
+     ✓ AMOUNT-008: rejects "1000000000" without changing the record or durable collection 135ms
+     × CORE-004/005: updates every field on the same ID and restores the visible requester 126ms
+     ✓ CORE-004: edit accepts a blank note 38ms
+     ✓ CORE-004: edit accepts a whitespace-only note 49ms
+     × CORE-004: edit accepts a nonblank note 70ms
+     ✓ CORE-005: invalid category and date retain the original and focus the first invalid field 34ms
+     ✓ CORE-005: moves a record from September into October without changing the selected month 33ms
+     ✓ CORE-005: moves a record from October into November without changing the selected month 31ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-002: Escape makes no mutation or write and restores the requester
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <dialog
+  aria-describedby="_r_b_"
+  aria-labelledby="_r_a_"
+  class="confirm-dialog"
+  open=""
+>
+  <h2
+    id="_r_a_"
+  >
+    Delete expense?
+  </h2>
+  <p
+    id="_r_b_"
+  >
+    Delete $1,234.56 transport expense dated 2026-10-15? Confirmed deletion cannot be undone once durable; there is no undo.
+  </p>
+  <div
+    class="confirm-dialog__actions"
+  >
+    <button
+      type="button"
+    >
+      Cancel
+    </button>
+    <button
+      class="danger-button"
+      type="button"
+    >
+      Confirm deletion
+    </button>
+  </div>
+</dialog> instead
+ ❯ tests/ui/deleteExpense.test.tsx:105:46
+    103|     else await user.keyboard('{Escape}');
+    104|
+    105|     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+       |                                              ^
+    106|     expect(requester).toHaveFocus();
+    107|     expect(visibleIds()).toEqual(['newest', 'target', 'oldest']);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-003: confirms only the target, recalculates, and focuses the next visible edit requester
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button
+  aria-label="Edit expense"
+  id="edit-expense-newest"
+  type="button"
+>
+  Edit
+</button>
+Received element with focus:
+  <button
+  aria-label="Edit expense"
+  id="edit-expense-oldest"
+  type="button"
+>
+  Edit
+</button>
+ ❯ tests/ui/deleteExpense.test.tsx:123:89
+    121|     expect(screen.getByLabelText('Monthly total')).toHaveTextContent('…
+    122|     expect(screen.getByLabelText('Transport total')).toHaveTextContent…
+    123|     expect(within(transaction('newest')).getByRole('button', { name: '…
+       |                                                                                         ^
+    124|     expect(JSON.parse(storage.raw).expenses.map((expense: { id: string…
+    125|     expect(screen.queryByRole('button', { name: /undo/i })).not.toBeIn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/ui/deleteExpense.test.tsx > delete confirmation > DELETE-003: focuses Add expense when no unfiltered result remains
+TestingLibraryElementError: Unable to find an accessible element with the role "listitem"
+
+There are no accessible roles. But there might be some inaccessible roles. If you wish to access them, then set the `hidden` option to `true`. Learn more about this here: https://testing-library.com/docs/dom-testing-library/api-queries#byrole
+
+Ignored nodes: comments, script, style
+[36m<ul[39m
+  [33maria-labelledby[39m=[32m"transactions-heading"[39m
+  [33mclass[39m=[32m"transaction-list"[39m
+[36m/>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:109:15
+ ❯ visibleIds tests/ui/deleteExpense.test.tsx:40:6
+     38| function visibleIds() {
+     39|   return within(screen.getByRole('list', { name: 'Transactions' }))
+     40|     .getAllByRole('listitem')
+       |      ^
+     41|     .map((item) => item.getAttribute('data-expense-id'));
+     42| }
+ ❯ tests/ui/deleteExpense.test.tsx:146:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-004/005: updates every field on the same ID and restores the visible requester
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Exact  edited note
+Received:
+  Exact edited note
+ ❯ tests/ui/editExpense.test.tsx:162:62
+    160|     expect(transaction()).toHaveTextContent('transport');
+    161|     expect(transaction()).toHaveTextContent('2026-10-20');
+    162|     expect(transaction().querySelector('.transaction-note')).toHaveTex…
+       |                                                              ^
+    163|     expect(screen.getByLabelText('Monthly total')).toHaveTextContent('…
+    164|     expect(screen.getByLabelText('Food total')).toHaveTextContent('$0.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/ui/editExpense.test.tsx > edit core behavior > CORE-004: edit accepts a nonblank note
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Keep exactly
+Received:
+  Keep exactly
+ ❯ tests/ui/editExpense.test.tsx:193:67
+    191|
+    192|     if (expected === null) expect(transaction().querySelector('.transa…
+    193|     else expect(transaction().querySelector('.transaction-note')).toHa…
+       |                                                                   ^
+    194|     expect(transaction()).toHaveAttribute('data-expense-id', original.…
+    195|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  5 failed | 34 passed (39)
+   Start at  22:58:37
+   Duration  3.48s (transform 85ms, setup 114ms, import 125ms, tests 3.30s, environment 521ms)
+
+tests/ui/monthlyDashboard.test.tsx(109,8): error TS2739: Type '{ selectedMonth: string; onMonthChange: () => void; summary: MonthlySummary; }' is missing the following properties from type 'DashboardProps': onEdit, onDelete
+Now fix actual bugs vs test assertions. Focus next wrong: requirement next visible after deletion in current order after deletion. If deleting middle, next visible is oldest (following), not newest. My test expected newest mistakenly interpreting next perhaps task says next visible then previous, usual next is following. T028 wording next-visible/previous-visible. Original code focuses oldest correctly. Test should expect oldest not newest. E2E same wrong. Should not weaken assertions, correcting to normative. User explicit deterministic focus, quickstart "following visible result" confirms next = following. So change tests to oldest. Not implementation bug.
+  Escape jsdom user.keyboard doesn't dispatch cancel because jsdom no native dialog. Existing recovery test fireEvent cancel. My test should fireEvent to simulate native cancel; e2e tests real. Modify test import fireEvent and use fireEvent(dialog,new Event). This is test environment not weakening.
+  visibleIds use queryAll to handle empty. Fix test.
+  Note exact preservation toHaveTextContent normalizes whitespace. Use `.textContent` toBe exact. Existing add test uses textContent for exact. Fix.
+  Dashboard props optional with defaults no-op to preserve direct component tests. onEdit/onDelete optional and TransactionList props optional? Dashboard direct renders list, can pass noop default. Better `onEdit?:... onDelete?:...`, destructure defaults `() => {}` but functions new each render no issue. TransactionList required gets function. This preserves UI no actions? In monthlyDashboard direct component will still show buttons no-op, tests don't care. Could ideally optional list hides buttons if no handlers, but production passes. Not necessary. Set defaults `onEdit = () => {}, onDelete = () => {}`. TypeScript.
+  Should test changes allowed since incorrect test not behavior. I must use Read before Edit each test. I just have tool output but requirement Read before every Edit. Read targeted lines in parallel and Dashboard relevant. Then edit one per file (multiple replacements per file not allowed consecutive unless read). For editExpense two occurrences same pattern different exact lines can replace_all `.toHaveTextContent(exactNote)` etc separate old block encompassing both? Should have one Edit replace_all generic `.querySelector('.transaction-note')).toHaveTextContent(` cannot convert to textContent easily. Could replace all `.querySelector('.transaction-note')` with ... no. I can change two using one big old string from first through second (~40 lines) or sequential read. Better use one Edit `expect(transaction().querySelector('.transaction-note')).toHaveTextContent(exactNote);` -> `expect(...textContent).toBe(exactNote)` then later read and second. I can also use replace_all with old string `.querySelector('.transaction-note')).toHaveTextContent(` no new syntax cannot parameter. Two calls sequential with read.
+  Delete test modifications 4 locations same file; use one Edit entire file? Could targeted large from imports through visibleIds to change import + query all, and later read body focus/Escape. Multiple sequential. Fine.
+  E2E focus next fix one.
+  Dashboard optional.
+  Styles perhaps later.
+  I'll do first round reads.
+
+• Most behavior is now passing. The remaining issues are a jsdom-only Escape simulation, empty-list test querying, exact-whitespace assertions, and a test that reversed the specified “following result” focus expectation; I’m correcting those while preserving the implementation’s behavior.
+
+• I'll edit. For delete file single Edit whole file perhaps unnecessary, can replace specific large string from import line through visibleIds for first changes, then later read for rest. But could use one Edit replace_all `'newest')).getByRole...` etc plus escape not. Multiple changes same file must one edit or read between. I'll do one big old entire file? 152 lines 7k, new same. I already wrote it initially; Write not allowed. Edit old whole big tokens. Better sequential small. I have reminder no issue.
+
+  First parallel:
+  - editExpense exactNote
+  - delete import + visibleIds contiguous not same (import and visible separated) can't. Start visibleIds queryAll only.
+  - e2e newest to oldest
+  - Dashboard optional+defaults contiguous from onEdit lines through destructure includes persistenceMessage in between if one replacement large 50 lines; or make optional only now then defaults later. Typecheck fails until later okay. Single Edit replace lines 20-22 optional, then read. I'll do multiple iterations.Should delete import fireEvent and two body changes same file. Could avoid fireEvent import using `dialog.dispatchEvent(new Event...)` wrapped act? React event handler onCancel responds to dispatch via fireEvent only? dispatchEvent native React event should work but needs act; user event wraps act. Could use `fireEvent` imported. One Edit entire import through test focus? Big 123 lines but can replace exact string containing import and all until focus to adjust three things. Or sequential read each. Do body escape and focus in one contiguous old lines95-123 replacement 29 lines, then later import. Good.
+  Styles insert app feedback and expense form actions one edit.
+  Dashboard defaults.
+  Edit note second.Now import fireEvent. Read line1 then edit. Also transaction styles read and edit.Now run specific unit+tsc.
+
+• The edit/delete paths are implemented, including exact same-ID saves, full-collection writes, unsaved-edit/delete warnings, and deterministic next/previous/Add focus. I’m checking the focused suites and types before the full regression runs.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/ui/editExpense.test.tsx tests/ui/deleteExpense.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/ui/deleteExpense.test.tsx (6 tests) 261ms
+ ✓ tests/ui/editExpense.test.tsx (33 tests) 3044ms
+
+ Test Files  2 passed (2)
+      Tests  39 passed (39)
+   Start at  23:01:33
+   Duration  3.46s (transform 91ms, setup 106ms, import 128ms, tests 3.30s, environment 483ms)
+
+
+
+• Should run e2e new both desktop mobile. Could run now and full unit in parallel? Relevant checks and prior-story regressions. User asks relevant unit and Chromium. Task checkpoint story and affected prior tests. Best full unit, new e2e both projects plus existing core/persistence? "relevant unit and Chromium checks" likely run full unit and new e2e, perhaps prior e2e too because shared form/ConfirmDialog. Should run full `npm run test:unit`, `npx playwright test e2e/edit-delete.spec.ts e2e/core.spec.ts e2e/persistence.spec.ts` both projects. 12+8+? persistence 23=43*2=86 perhaps 2min. Fine. But before full, run new e2e to detect issues quicker. Could run new both now in foreground timeout 180. Full unit parallel. Then fix.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/dates.test.ts (31 tests) 4ms
+ ✓ tests/domain/money.test.ts (34 tests) 5ms
+ ✓ tests/domain/expense.test.ts (22 tests) 5ms
+ ✓ tests/persistence/expenseStorage.load.test.ts (19 tests) 6ms
+ ✓ tests/persistence/expenseStorage.write.test.ts (13 tests) 7ms
+ ✓ tests/ui/app.smoke.test.tsx (1 test) 70ms
+ ✓ tests/domain/dashboard.test.ts (4 tests) 101ms
+ ✓ tests/ui/monthlyDashboard.test.tsx (4 tests) 237ms
+ ✓ tests/ui/deleteExpense.test.tsx (6 tests) 302ms
+ ✓ tests/ui/persistenceStatus.test.tsx (4 tests) 536ms
+ ✓ tests/ui/recovery.test.tsx (9 tests) 585ms
+ ✓ tests/ui/editExpense.test.tsx (33 tests) 2903ms
+ ✓ tests/ui/addExpense.test.tsx (30 tests) 3148ms
+
+ Test Files  13 passed (13)
+      Tests  210 passed (210)
+   Start at  23:01:55
+   Duration  3.96s (transform 425ms, setup 1.26s, import 811ms, tests 7.91s, environment 7.19s)
+
+[WebServer] (node:62793) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 24 tests using 4 workers
+
+(node:62796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62794) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62797) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62795) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › e2e/edit-delete.spec.ts:167:1 › DELETE-001/MONEY-003: native dialog has exact identity, no-undo text, and contained keyboard focus (412ms)
+
+  ✓   3 [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves September into October, announces the move, and focuses Month (424ms)
+  ✓   2 [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves October into November, announces the move, and focuses Month (424ms)
+  ✓   4 [desktop-chromium] › e2e/edit-delete.spec.ts:112:1 › CORE-005: edits every field with the same ID, exact recalculation, durable save, and requester focus (449ms)
+  ✓   5 [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Cancel performs no mutation or write and restores the requester (301ms)
+  ✓   7 [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Escape performs no mutation or write and restores the requester (305ms)
+  ✓   8 [desktop-chromium] › e2e/edit-delete.spec.ts:215:1 › DELETE-003: deletes the last result and focuses the previous visible edit requester (301ms)
+  ✓   6 [desktop-chromium] › e2e/edit-delete.spec.ts:203:1 › DELETE-003: confirmation removes only the target and focuses the next visible edit requester (331ms)
+  ✓   9 [desktop-chromium] › e2e/edit-delete.spec.ts:223:1 › DELETE-003: deleting the only unfiltered result focuses Add expense (304ms)
+  ✓  12 [desktop-chromium] › e2e/edit-delete.spec.ts:280:3 › de-DE deletion formatting › MONEY-003: deletion identity remains fixed en-US USD (297ms)
+  ✓  10 [desktop-chromium] › e2e/edit-delete.spec.ts:232:1 › PERSIST-009: failed edit remains only in memory and reload restores original fields (417ms)
+  ✓  11 [desktop-chromium] › e2e/edit-delete.spec.ts:256:1 › DELETE-004/PERSIST-010: failed deletion remains only in memory and reload restores the target (407ms)
+
+(node:62834) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62835) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62837) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [mobile-chromium] › e2e/edit-delete.spec.ts:112:1 › CORE-005: edits every field with the same ID, exact recalculation, durable save, and requester focus (359ms)
+  ✓  14 [mobile-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves September into October, announces the move, and focuses Month (347ms)
+  ✓  16 [mobile-chromium] › e2e/edit-delete.spec.ts:167:1 › DELETE-001/MONEY-003: native dialog has exact identity, no-undo text, and contained keyboard focus (360ms)
+  ✓  15 [mobile-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves October into November, announces the move, and focuses Month (376ms)
+  ✓  17 [mobile-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Cancel performs no mutation or write and restores the requester (283ms)
+  ✓  18 [mobile-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Escape performs no mutation or write and restores the requester (282ms)
+  ✓  20 [mobile-chromium] › e2e/edit-delete.spec.ts:215:1 › DELETE-003: deletes the last result and focuses the previous visible edit requester (277ms)
+  ✓  19 [mobile-chromium] › e2e/edit-delete.spec.ts:203:1 › DELETE-003: confirmation removes only the target and focuses the next visible edit requester (295ms)
+
+  ✓  21 [mobile-chromium] › e2e/edit-delete.spec.ts:223:1 › DELETE-003: deleting the only unfiltered result focuses Add expense (287ms)
+  ✓  24 [mobile-chromium] › e2e/edit-delete.spec.ts:280:3 › de-DE deletion formatting › MONEY-003: deletion identity remains fixed en-US USD (271ms)
+  ✓  22 [mobile-chromium] › e2e/edit-delete.spec.ts:232:1 › PERSIST-009: failed edit remains only in memory and reload restores original fields (412ms)
+  ✓  23 [mobile-chromium] › e2e/edit-delete.spec.ts:256:1 › DELETE-004/PERSIST-010: failed deletion remains only in memory and reload restores the target (385ms)
+
+  24 passed (3.3s)
+Great. Should verify complete collection after failure later success specifically user "complete-collection durable saves with in-memory failure retention." Existing e2e failed edit/delete raw unchanged reload. Successful edit inspect all 3, delete all 2. Later success after failure not specifically for edit/delete but store generic works. Should I add tests for later successful save after failed edit/delete? User wording may demand behavior not necessarily test. Current generic later success covers add. T030 complete saves. Fine.
+
+  Should run prior Chromium core/persistence. Also build standard after changes. User only unit Chromium but build verify deliverable standard build per instructions. Run `npm run build` and e2e core persistence parallel. Before marking implementation done, tests green all new. I can mark implement done, checks in progress. Then run.
+
+• All 210 unit tests and all 24 new desktop/mobile Chromium scenarios pass. I’m running the prior add/persistence Chromium regressions and the production build, then I’ll mark only T027–T032 complete.
+
+[WebServer] (node:62924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 58 tests using 4 workers
+
+(node:62925) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62927) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62928) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62926) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 [desktop-chromium] › e2e/core.spec.ts:48:1 › CORE-001/004 and MONEY-001: add by keyboard and show exact zero/nonzero totals (452ms)
+  ✓   1 [desktop-chromium] › e2e/core.spec.ts:100:1 › DATE-002: leap-day acceptance and impossible-date rejection (465ms)
+  ✓   3 [desktop-chromium] › e2e/core.spec.ts:69:1 › CORE-002/003: fixed local current month and all five categories (495ms)
+  ✓   2 [desktop-chromium] › e2e/core.spec.ts:82:1 › CORE-001 and DATE-001/004: local first/last-day membership and month selection (531ms)
+  ✓   5 [desktop-chromium] › e2e/core.spec.ts:120:1 › DATE-003/004: future expense remains isolated until its local month is selected (332ms)
+  ✓   8 [desktop-chromium] › e2e/core.spec.ts:142:1 › responsive baseline: controls meet 24px targets without horizontal reflow (319ms)
+  ✓   6 [desktop-chromium] › e2e/core.spec.ts:129:1 › MONEY-002/003: exact fixed en-US USD transaction and summary output (416ms)
+  ✓   7 [desktop-chromium] › e2e/core.spec.ts:136:3 › de-DE browser locale › MONEY-001/003: output is identical under de-DE (397ms)
+  ✓   9 [desktop-chromium] › e2e/persistence.spec.ts:239:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (279ms)
+  ✓  10 [desktop-chromium] › e2e/persistence.spec.ts:250:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (401ms)
+  ✓  11 [desktop-chromium] › e2e/persistence.spec.ts:276:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (393ms)
+  ✓  12 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (393ms)
+
+  ✓  13 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (398ms)
+  ✓  14 [desktop-chromium] › e2e/persistence.spec.ts:314:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (381ms)
+  ✓  15 [desktop-chromium] › e2e/persistence.spec.ts:330:1 › PERSIST-006: duplicate IDs reject the complete collection (386ms)
+  ✓  16 [desktop-chromium] › e2e/persistence.spec.ts:345:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (406ms)
+  ✓  17 [desktop-chromium] › e2e/persistence.spec.ts:361:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (460ms)
+  ✓  18 [desktop-chromium] › e2e/persistence.spec.ts:382:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (335ms)
+  ✓  19 [desktop-chromium] › e2e/persistence.spec.ts:398:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (405ms)
+  ✓  20 [desktop-chromium] › e2e/persistence.spec.ts:417:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (466ms)
+  ✓  21 [desktop-chromium] › e2e/persistence.spec.ts:454:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (481ms)
+  ✓  22 [desktop-chromium] › e2e/persistence.spec.ts:473:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (506ms)
+  ✓  23 [desktop-chromium] › e2e/persistence.spec.ts:496:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (514ms)
+  ✓  24 [desktop-chromium] › e2e/persistence.spec.ts:513:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (447ms)
+  ✓  26 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (483ms)
+  ✓  25 [desktop-chromium] › e2e/persistence.spec.ts:537:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (584ms)
+
+  ✓  27 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (498ms)
+  ✓  28 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (481ms)
+(node:62999) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:63000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:63001) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  29 [desktop-chromium] › e2e/persistence.spec.ts:597:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (680ms)
+  ✓  30 [mobile-chromium] › e2e/core.spec.ts:48:1 › CORE-001/004 and MONEY-001: add by keyboard and show exact zero/nonzero totals (338ms)
+  ✓  31 [mobile-chromium] › e2e/core.spec.ts:69:1 › CORE-002/003: fixed local current month and all five categories (409ms)
+  ✓  32 [mobile-chromium] › e2e/core.spec.ts:82:1 › CORE-001 and DATE-001/004: local first/last-day membership and month selection (422ms)
+(node:63019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  33 [mobile-chromium] › e2e/core.spec.ts:120:1 › DATE-003/004: future expense remains isolated until its local month is selected (301ms)
+  ✓  34 [mobile-chromium] › e2e/core.spec.ts:129:1 › MONEY-002/003: exact fixed en-US USD transaction and summary output (389ms)
+  ✓  37 [mobile-chromium] › e2e/core.spec.ts:142:1 › responsive baseline: controls meet 24px targets without horizontal reflow (272ms)
+
+  ✓  35 [mobile-chromium] › e2e/core.spec.ts:136:3 › de-DE browser locale › MONEY-001/003: output is identical under de-DE (381ms)
+  ✓  36 [mobile-chromium] › e2e/core.spec.ts:100:1 › DATE-002: leap-day acceptance and impossible-date rejection (378ms)
+  ✓  38 [mobile-chromium] › e2e/persistence.spec.ts:239:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (263ms)
+  ✓  39 [mobile-chromium] › e2e/persistence.spec.ts:250:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (398ms)
+  ✓  40 [mobile-chromium] › e2e/persistence.spec.ts:276:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (397ms)
+  ✓  41 [mobile-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (367ms)
+  ✓  42 [mobile-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (377ms)
+  ✓  44 [mobile-chromium] › e2e/persistence.spec.ts:330:1 › PERSIST-006: duplicate IDs reject the complete collection (383ms)
+  ✓  43 [mobile-chromium] › e2e/persistence.spec.ts:314:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (385ms)
+  ✓  45 [mobile-chromium] › e2e/persistence.spec.ts:345:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (385ms)
+  ✓  46 [mobile-chromium] › e2e/persistence.spec.ts:361:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (426ms)
+  ✓  47 [mobile-chromium] › e2e/persistence.spec.ts:382:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (314ms)
+  ✓  48 [mobile-chromium] › e2e/persistence.spec.ts:398:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (423ms)
+  ✓  49 [mobile-chromium] › e2e/persistence.spec.ts:417:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (439ms)
+  ✓  50 [mobile-chromium] › e2e/persistence.spec.ts:454:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (444ms)
+  ✓  51 [mobile-chromium] › e2e/persistence.spec.ts:473:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (498ms)
+  ✓  52 [mobile-chromium] › e2e/persistence.spec.ts:496:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (502ms)
+
+  ✓  53 [mobile-chromium] › e2e/persistence.spec.ts:513:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (458ms)
+  ✓  54 [mobile-chromium] › e2e/persistence.spec.ts:537:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (553ms)
+  ✓  55 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (476ms)
+  ✓  56 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (468ms)
+  ✓  57 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (455ms)
+  ✓  58 [mobile-chromium] › e2e/persistence.spec.ts:597:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (562ms)
+
+  58 passed (7.7s)
+
+> personal-expense-tracker@0.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 27 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.47 kB │ gzip:  0.28 kB
+dist/assets/index-RUmPD-yt.css    7.15 kB │ gzip:  2.35 kB
+dist/assets/index-DjvRChd1.js   237.00 kB │ gzip: 73.89 kB
+
+✓ built in 56ms
+• Now mark tasks [X] only 27-32. Should Read tasks lines107-118 already read but before Edit target read earlier at start technically read before every edit and unchanged since no edits tasks. I can Read to satisfy immediate. Then Edit one block replacing all six. After tasks edit need verify final diff and only tasks. Git diff won't show app untracked. Use `git diff -- specs...` no because app untracked entire. Could use Read tasks and perhaps `git status --short -- .` shows ?? ../ only. Should inspect files final external contract. I already tests. Should check no T033 etc changed. Grep `^- \[X\] T0(27...)` or Read. Also perhaps test results artifacts generated, not relevant. Dist changed via build ignored. I should not mark all complete before verifying final source no unintended later features. No filter/sort/demo. Good.
+
+  Potential code issue App focus restoration on same month when write failure works. Native ConfirmDialog cleanup restoration after deletion: tests pass. Store `editExpense` on nonexistent id still saves unchanged and reports success, not in requirements but could be concern stable identity. Not needed. Complete collection durable saves yes.
+
+  Should have tasks checkboxes.Should have final verify diff and check tasks only completed. I should perhaps run git diff --no-index impossible baseline. `git status --short -- .` from app shows ?? ../ because parent app untracked. Fine not useful. Could use Grep tasks to confirm 27-32 X and 33+ unchecked. Read relevant plus list modified files maybe `git status --short -- .` shows ?? ../ only. I can use `git diff --stat` not show. No need. Should inspect final source perhaps Read App and store to verify no unintended. I have tests robust. But instructions "verify diff" todo I should actually use `git diff -- specs...` returns nothing due untracked; cannot. Could use `git diff --no-index /dev/null` whole files not helpful. I can list recent files via `stat` but not necessary. Use Grep tasks pattern T027-T040 to ensure. And `git status --short -- .` to note. Also perhaps full e2e new plus prior totals 82, build. Already all green. Mark checks done final task in progress.
+
+• The 58 prior Chromium regression scenarios and the production build also pass. I’ve marked only T027–T032 `[X]`; I’m doing the final scope check now.
+
+?? ./
+• Grep filter sort demo matches existing sort newest and filter delete, not new features. Could inspect output content to ensure no demo (App no demo, store filter delete, TransactionList sort existing, dashboard filter month). Fine. I'll mark final done. Perhaps final response concise summary and tests. Mention T027–T032 complete, stopped. File refs line numbers need accurate lines perhaps App etc current line unknown but can cite paths no line or known approximate. Instructions say cite locations path:42. I can include no code refs? Response summary with paths acceptable but best line numbers. Should obtain line positions via Grep for functions. I can Grep source names with content to get line. Already tasks line. I can cite `src/state/useExpenseStore.ts:111` maybe after added lines actual check. I'll Grep relevant function lines and App. Use one call perhaps unnecessary. Response could say "Implemented same-ID edit and confirmed delete with full-collection saves and failure retention; added shared form/native dialog and deterministic focus." No file references needed but useful. Tests counts. "Chromium: 24 edit/delete +58 core/persistence =82 passed across desktop and mobile." "Unit 210, build passed." "tasks.md T027-T032 [X], no later tasks started." Should have no claim all e2e (only relevant). Fine.
+  Before response, TodoList done.Respond moderate concise. Should mention test-first red 39 UI 12 desktop then green? Could include preserve test first confirmed. Deliverable details. "Completed T027–T032 and stopped." bullet implementation and verification. No headings heavy perhaps two headings. I should not mention unrelated git untracked. No later tasks. Respond.
+
+• Completed **T027–T032** and marked only those tasks `[X]` in `specs/001-expense-tracker/tasks.md:109`.
+
+  Implemented:
+  - Same-ID editing with shared add/edit validation and exact note preservation.
+  - Confirmed only-target deletion using native dialog focus containment and restoration.
+  - Deterministic edit, cross-month, and post-deletion focus behavior.
+  - Complete-collection durable saves with in-memory retention and task-specific warnings after failed writes.
+  - Test-first UI and Chromium coverage for edit/delete, failure reloads, formatting, and keyboard behavior.
+
+  Verification passed:
+  - **Unit:** 210/210 tests.
+  - **Chromium:** 24/24 new edit/delete scenarios across desktop and mobile.
+  - **Chromium regressions:** 58/58 core and persistence scenarios.
+  - **Build:** `npm run build`.
+
+  No filtering, sorting, demo, or polish tasks were started.
+
+To resume this session: kimi -r session_54e506a8-06e5-4a58-bd1a-ebfa6fd3363d

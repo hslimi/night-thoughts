@@ -1,0 +1,18 @@
+Independent integer-cent expectations for SCALE fixture
+2026-01: records=100 totalCents=4982500
+2026-02: records=100 totalCents=4974400
+2026-03: records=100 totalCents=4966300
+2026-04: records=100 totalCents=5058200
+2026-05: records=100 totalCents=5050100
+2026-06: records=100 totalCents=5042000
+2026-07: records=100 totalCents=5033900
+2026-08: records=100 totalCents=4925800
+2026-09: records=100 totalCents=4917700
+2026-10: records=100 totalCents=4909600
+Categories across all ten months:
+food: records=200 totalCents=10024500
+transport: records=200 totalCents=10008300
+housing: records=200 totalCents=9892100
+entertainment: records=200 totalCents=9975900
+other: records=200 totalCents=9959700
+Grand total: 49860500 cents

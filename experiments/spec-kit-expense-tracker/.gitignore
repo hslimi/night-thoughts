@@ -1,0 +1,13 @@
+app/node_modules/
+app/dist/
+app/coverage/
+app/playwright-report/
+app/test-results/
+app/.vite/
+**/*.log
+**/.DS_Store
+.env
+.env.*
+!.env.example
+.vscode/
+**/.specify/integrations/.cache/

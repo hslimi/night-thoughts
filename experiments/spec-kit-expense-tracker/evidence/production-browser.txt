@@ -1,0 +1,12 @@
+PASS: create and exact monthly/category totals with September excluded
+PASS: category filtering preserves the unfiltered summary
+PASS: amount sorting is exact and deterministic
+PASS: edit recalculates the affected monthly total
+PASS: deletion requires confirmation, starts on Cancel, and preserves data on Escape
+PASS: edited data persists after a production reload
+PASS: negative, malformed, excess-precision, and zero amounts are visibly rejected
+PASS: expense creation is operable by keyboard
+PASS: month navigation keeps adjacent-month totals isolated
+PASS: desktop and 390px layouts have no horizontal overflow
+PASS: malformed storage warns and remains unchanged after recovery cancellation
+PASS: no browser console errors in production scenarios

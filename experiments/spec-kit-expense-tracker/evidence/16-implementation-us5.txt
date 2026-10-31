@@ -1,0 +1,721 @@
+kimi version 2.3.0
+• Kimi needs to execute tasks T038-T041 exact. Should inspect tasks and skill. User invokes /skill:speckit-implement must Skill tool. I have skill listing doesn't include? User slash skill available maybe Skill tool exact. I'll call.
+
+• I’ll load the implementation workflow, inspect T038–T041 and the current tests, then execute only those tasks in test-first order.
+
+• Skill not found but perhaps commands files. Should not retry. I'll say unavailable use project workflow. Inspect .specify etc tasks. Todo.
+
+• The requested skill is not registered in this session, so I’ll follow the repository’s Spec Kit artifacts directly and keep the requested scope unchanged.
+
+• Should inspect quickstart demo, data model, ui contract, source all relevant. Large but can parallel reads. Should have no plan mode since explicit tasks and test first. Could use subagent? I should do it myself. Perhaps git status baseline important. Bash git status and current test baseline perhaps after tests authored. Read files. M ../../campus-voices/.env.example
+ M ../../campus-voices/README.md
+ M ../../campus-voices/app/index.html
+ M ../../campus-voices/app/src/content.ts
+ M ../../campus-voices/app/src/main.ts
+ D ../../campus-voices/app/src/providers/dessa-provider.ts
+ D ../../campus-voices/app/src/providers/scripted-provider.ts
+ D ../../campus-voices/app/src/providers/voice-provider.ts
+ M ../../campus-voices/app/src/session.ts
+ M ../../campus-voices/app/src/styles.css
+ M ../../campus-voices/docs/hashnode-draft.md
+ M ../../campus-voices/docs/screenshots/01-local-prototype.png
+ M ../../campus-voices/docs/screenshots/02-seminar-session.png
+ M ../../campus-voices/docs/screenshots/03-private-feedback.png
+ M ../../campus-voices/docs/screenshots/06-local-data-controls.png
+ M ../../campus-voices/docs/setup-guide.md
+ M ../../campus-voices/eslint.config.js
+ M ../../campus-voices/infra/cloudflare-tunnel.md
+ M ../../campus-voices/package.json
+ M ../../campus-voices/playwright.config.ts
+ M ../../campus-voices/scripts/capture.mjs
+ M ../../campus-voices/scripts/verify-static.mjs
+ M ../../campus-voices/server/app.ts
+ D ../../campus-voices/server/feedback.ts
+ M ../../campus-voices/server/index.ts
+ D ../../campus-voices/tests/feedback.test.ts
+ D ../../campus-voices/tests/providers.test.ts
+ M ../../campus-voices/tests/scenario.spec.ts
+ D ../../campus-voices/tests/server.test.ts
+ M ../../campus-voices/tests/session.test.ts
+?? ../../../.DS_Store
+?? ../../.DS_Store
+?? ../../ai-agent-engineering-feedback-loops/
+?? ../../campus-voices/app/public/
+?? ../../campus-voices/app/src/audio/
+?? ../../campus-voices/app/src/conversation-api.ts
+?? ../../campus-voices/scripts/download-minicpm.py
+?? ../../campus-voices/scripts/install-minicpm.sh
+?? ../../campus-voices/scripts/start-minicpm.sh
+?? ../../campus-voices/scripts/verify-voice.mjs
+?? ../../campus-voices/server/conversation/
+?? ../../campus-voices/tests/fakes/
+?? ../../campus-voices/tests/fixtures/
+?? ../../campus-voices/tests/memory-audio-store.test.ts
+?? ../../campus-voices/tests/minicpm-integration.test.ts
+?? ../../campus-voices/tests/minicpm-provider.test.ts
+?? ../../campus-voices/tests/provider-boundary.test.ts
+?? ../../campus-voices/tests/wav.test.ts
+?? ../../campus-voices/tests/web-server.ts
+?? ../
+Entire app untracked relative repo weird. No matter.
+
+  Should design tests comprehensive. Should preserve test-first and run red. Should inspect existing test idioms fixture/playwright config and expense/dashboard types. Read relevant files.Should create tests. Should consider implementation mode detection and App props. T038 exact readonly fixed baseline and activation parser. Tests can import DEMO_EXPENSES, DEMO_SELECTED_MONTH, isDemoMode perhaps names need choose. Should define expected. UI demo tests should render <App demo /> or <App mode?> I choose prop demo?: boolean. main uses isDemoMode(window.location.search). useExpenseStore initialExpenses, storage, demo perhaps third arg. Better design API useExpenseStore(initialExpenses?, storage?, demo=false). App props demo?: boolean. This preserves existing tests.
+
+  T039 store-level isolation perhaps test useExpenseStore directly or App with mocked storage and listeners. I need no real storage reads/writes/listeners. In unit App with demo true storage mock and window spies. initializeStore should branch before load; persistMutation demo branch set state only. No listeners currently anywhere normal; no need add. Demo label persistent in App. Fresh activation via unmount rerender resets. Cross-mode no form etc via separate mount. "first-value activation" domain test covers query. UI demo tests first-value perhaps render based parser. All interactions add/edit/delete, validation, month selection, filter/sort. Should have tests comprehensive but reasonable.
+
+  E2E DEMO-001-007 plus both locales and instrumentation all preconditions including normal tab. This is significant. I should write robust test suite. Must run red before implementation. Domain and UI test import missing causes suite fail. E2E fails no demo. Test-first all three written then run red. Could author all now. Should avoid too many overly complex tests. Task requires T040 all scenarios under every real-data precondition plus normal tab, all interactions. Could parametrize 5 preconditions × locales? Both locales baseline separate. Perhaps 4 storage preconditions each full interactions + concurrent normal tab test full interactions. Tests run desktop and mobile automatically -> 10 tests. Fine.
+
+  Instrumentation before application scripts:
+  page.addInitScript with precondition and seed raw. But instrument methods then seed needs original setItem not counted. Also unreadable override getItem throws. Must preserve real data populated/malformed etc. Should counter object window.__demoStorage. Type declarations via evaluate returns structural. Instrument Storage.prototype methods getItem setItem removeItem clear; addEventListener wrapper for storage; onstorage setter. I must ensure normal tab uses instrumented? For concurrent normal tab, if same context addInitScript applies both pages. Normal tab will access storage and counters there independent. Demo page counters zero. Good.
+  Seeding before app initialization in init script using original methods. For unreadable I can seed then getItem wrapper throw. Writes perhaps should function normally to detect counters, no need throw. All storage reads/writes/listener registration across init interactions. onstorage instrumentation: define property on window with getter/setter wrapping native descriptor? Should intercept assignments without breaking. Since app doesn't assign now. Can do let onstorageValue=null; Object.defineProperty(window,'onstorage',{ configurable:true, get(){return onstorageValue}, set(value){counts.listeners++; onstorageValue=value;} }); no need event behavior since zero expected. addEventListener wrapper intercept type === storage count then call original. Storage method wrappers on prototype; original getItem captured. Seeding via originalSetItem.call(window.localStorage). For missing remove via originalRemoveItem. readable malformed raw. unreadable seed valid then get throws. Use session? no.
+
+  Counter reads includes any getItem. Browser libs perhaps no storage use. Fine.
+
+  E2E helper read counters page.evaluate window as unknown. Avoid global type declarations. Baseline transaction records map values. assertions exact every October transaction under en/de. I can use transaction note and amounts. Should have deletion confirmation formatting MONEY-003 perhaps task says demo MONEY-003 every demo October transaction monthly/category summary. It says and demo MONEY-003. Could also check delete dialog in interaction test both locales? At least baseline both locale all values. Deletion confirmation in demo perhaps under both locales for one record. I'll include baseline test deletion dialog and cancel under each locale. Use tests run both desktop mobile (doubling). Fine.
+
+  DEMO-001 activation URL tests no storage instrumentation required. Normal initial no records current month from clock. For valid demo label role status name "Demo mode" perhaps implement label as StatusMessage? persistent fictional label "Fictional demo data — changes stay in this session and are never saved." Could use <p role="status" aria-label="Demo mode">Fictional demo data...</p>. Test getByRole('status',{name:'Demo mode'}). No persistence success claim. Normal label absent. Activation exact first-value tested in domain parser and E2E.
+
+  Fresh reset navigation/history state: test demo modifications including form and dialog then go to normal then back? page.goto reload creates fresh doc. history back may BFCache preserve state? SPA static page navigation to same URL different query via page.goto triggers reload. Browser back could use bfcache and preserve app state, violating fresh state. Contract fresh activation on history entry; main module only executes if new doc; BFCache could restore previous doc. Playwright Chromium page.goBack likely navigation reload perhaps bfcache not used due automation? Should possibly pageshow handler reload if persisted. But user says no storage listeners only, pageshow allowed. Could implement main listener pageshow event.persisted => window.location.reload() to reset. But tests can show. Should be careful no unnecessary mode in-place switch. main compute once. history back forward fresh docs likely. App form/status reset naturally. Normal persistence real records. Should seed known real and avoid instrumentation counters for transition test. Use page.addInitScript seeding once via sessionStorage? That reads storage but not demo instrumentation. Better seed before go to using addInitScript that checks? Use initial page.goto('/'); localStorage set via evaluate then page.goto demo. On fresh context. For history flow start normal add known real; demo changes then normal via page.goto; back -> demo; forward -> normal. Validate baseline and default prefs/month/form. Real known record stays. Could seed real record with page.evaluate after initial normal load. Normal initial UI shows fixture after reload. Should have no form leakage. Test open deletion dialog in demo then navigate normal; no dialog. Back demo baseline. History fresh.
+
+  Unit UI test can focus on isolation and interactions. Use App demo prop. mocked storage counters. Listener spies. no real localStorage global access because injected storage mocked and branch. Spy on Storage.prototype getItem etc plus window.addEventListener and onstorage setter? Unit "zero mocked storage reads/writes/listeners" use storage mock get/set and window addEventListener spy filtered. onstorage can spy setter with Object.getOwnPropertyDescriptor? jsdom perhaps descriptor. Simpler create instrument via vi.spyOn(window,'addEventListener'), storage getItem setItem; spies Storage.prototype removeItem clear; onstorage assignment count via defineProperty in beforeEach and restore after. But App no listeners. Should have no real storage reads/writes, mocked storage enough. "store-level isolation" direct renderHook useExpenseStore(undefined, storage, true) then act add etc; no UI. Could include renderHook test verifying baseline and mutations no storage. T039 asks store-level isolation. I can do one direct test.
+
+  Readonly baseline: Object.isFrozen array and each record perhaps requirement "readonly fixed baseline" TS readonly and runtime freeze. Test expects frozen. It might be stronger but appropriate. create fresh copies store avoids mutating baseline. DEMO_EXPENSES as readonly Expense[] but summarizeMonth expects Expense[]; initial state clones.
+
+  Test domain: expected exact array 10; expect(DEMO_EXPENSES).toEqual(expected), not same ref, frozen. summarizeMonth([...DEMO_EXPENSES], DEMO_SELECTED_MONTH) exact. filterAndSort default order. Adjacent months demo009 and demo010. Activation parser isDemoMode(search: string) perhaps accepts URLSearchParams? "exact first-value activation parser" function isDemoMode(search: string): boolean. Test cases all quickstart plus unrelated and encoded perhaps not needed.
+
+  I'll write tests. I'll create domain file and UI and e2e. Could use Write 3 in parallel. Should detailed code. I'll plan UI code to avoid tests relying on implementation specific App demo. Use render(<App demo storage={storage}/>). No implementation now TS error expected. Test all interactions:
+
+  beforeEach fake Date, dialog polyfills, addEventListener spy? Storage object vi fns. after restore.
+  helpers visibleIds transaction.
+
+  Test DEMO-001/002 initial exact and activation perhaps domain handles activation. UI test first-value using render with demo={isDemoMode(query)} requires import demo module (red missing). Iterate activation queries unmount and normal initial perhaps use initialExpenses real to avoid localStorage when normal. <App demo={isDemoMode(query)} initialExpenses={[]} storage={storage}>. Normal initialExpenses bypass load but demo branch should ignore initialExpenses! Important: App tests pass initialExpenses perhaps demo should not allow injected normal records. Implementation initialize if demo first then baseline before initialExpenses. Good.
+  First-value UI test only label.
+  Test baseline and no storage on month/filter/sort. DEMO-003 interactions:
+  - initial baseline.
+  - invalid add 0 date Oct 22 -> error, no new, no storage
+  - valid add 10.01 food date Oct22 note Demo addition -> total increases to 1832.66, visible first.
+  - edit added perhaps locate note parent and ID unknown, use transaction by text closest li. edit amount 11.01 note updated etc. Perhaps simpler edit demo-008 amount 40.00 date 2026-10-22 category other note updated; asserts totals. Then delete demo-007 confirm removes and no storage. Month Sep shows demo009; Nov demo010. Back Oct filter and sort.
+  - fresh unmount render baseline resets prefs/status. Could split to avoid complexity.
+  No cross-mode leakage test: demo modified + invalid form status? navigate via unmount render normal with real records, then unmount demo. Ensure baseline and no form status/dialog. I can test.
+
+  Storage counters assert after each. listener spies: window.addEventListener used by React? React doesn't typically window addEventListener perhaps userEvent? Count only storage calls. onstorage setter spy define once; but tests can check zero. Mock storage removeItem clear not part StorageLike so create object with all vi fns.
+
+  Store-level isolation renderHook from RTL. `const { result } = renderHook(() => useExpenseStore(undefined, storage, true));` act(() => result.current.addExpense(...)) result ok. Should check initial expenses baseline and selectedMonth. act delete etc. Could be redundant. T039 says store-level isolation explicit. Include.
+
+  E2E full interactions helper:
+  expectBaseline
+  add invalid then valid; edit; delete; month; filter sort.
+  Should preserve baseline for precondition tests not important exact after interactions except reset. Counts zero after all. Real raw byte-for-byte for populated/malformed can read via original? Instrumented page.evaluate localStorage.getItem increments read counter, violating final zero. Should snapshot raw captured init into counter `initialRaw`, and inspect through originalGetItem exposed function? I can include `readOriginalRaw` on window function but then e2e evaluate call to original avoids counter. Simpler counters has rawSeed string, after test assert unchanged raw by originalGetItem call stored on window `readRaw` would be test instrumentation. But task explicitly unchanged known real byte for byte DEMO007 separately normal. For demo isolation no need raw in every precondition if counts zero. For final return normal known data read normal (counts no longer matter after leaving demo? "through every interaction" and navigation? I can assert counters before leaving). Good.
+
+  Normal tab concurrent: Open normal page first without instrumentation? context.addInitScript applies future only if page.addInitScript per page. I can instrument demoPage only; normal page open normal with known storage. Then demoPage addInitScript instrumentation and go demo. Both same context. normal tab has loaded data. Interactions demo no events. At end counters zero; normal page raw still known via evaluate normal (no instrumentation). This covers normal tab. Other precondition tests use page fixture.
+
+  I can parametrize precondition with test() each. `test.describe` locale perhaps test.use cannot inside loop? `test.describe('locale...', ()=> { test.use({ locale }) ...})` works. Existing global test.use timezone. I'll set timezone/clock before each. For baseline locale use test.describe loops and test.use({ locale, timezoneId }). page clock installed.
+
+  Potential issue init script uses localStorage on about:blank? addInitScript runs each navigation including Vite iframe? only page. Good.
+
+  DEMO activation tests normal no data yields current 2026-10 but empty; label absent enough.
+
+  Test names include IDs.
+
+  I'll write files.
+
+• The current store always loads and saves through the real persistence boundary, and no demo module or tests exist. I’m adding the T038–T040 specifications first, including exact baseline values, activation rules, navigation resets, both locales, and pre-initialization storage instrumentation.
+
+• I wrote syntax error `screen.queryByRole(... } !== null)` in UI. Now fix before red; read file first mandated. Also E2E locale not set! Loop names but didn't test.use locale. Should describe or manually context? Browser locale cannot change per page after context created. Use for loop test.describe with test.use({locale}). Currently test just expects navigator.language equals locale default en-US -> de fail for wrong reason not desired. Fix with describe around loop. `test.describe(`locale ${locale}`,()=> { test.use({locale}); test(...)});`. Remove emulateMedia/offline unnecessary. I need read files before edits.Now run test red relevant. Unit command with two files likely missing module. E2E demo to red perhaps lots failures takes. Run unit first and E2E targeted DEMO-001 one project desktop to meaningful. Requirement tests before impl confirm failures. Run `npm run test:unit -- tests/domain/demoData.test.ts tests/ui/demoMode.test.tsx` and `npm run test:e2e -- e2e/demo.spec.ts --project=desktop-chromium --grep "DEMO-001"` parallel. E2E compile whole file could TS errors from instrumentation addEventListener overload etc. Playwright trans pile no TS check. Test UI syntax perhaps okay.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/domain/demoData.test.ts tests/ui/demoMode.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ❯ tests/domain/demoData.test.ts (0 test)
+ ❯ tests/ui/demoMode.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/domain/demoData.test.ts [ tests/domain/demoData.test.ts ]
+Error: Failed to resolve import "../../src/demo/demoData" from "tests/domain/demoData.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: <project>/tests/domain/demoData.test.ts:7:7
+  1  |  import { describe, expect, it } from "vitest";
+  2  |  import { filterAndSortExpenses, summarizeMonth } from "../../src/domain/dashboard";
+  3  |  import { DEMO_EXPENSES, DEMO_SELECTED_MONTH, isDemoMode } from "../../src/demo/demoData";
+     |                                                                  ^
+  4  |  const expectedRecords = [
+  5  |  	{
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8803:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8800:14
+ ❯ resolveId node_modules/vite/dist/node/chunks/node.js:26594:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26693:23
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26666:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8582:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20155:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/ui/demoMode.test.tsx [ tests/ui/demoMode.test.tsx ]
+Error: Failed to resolve import "../../src/demo/demoData" from "tests/ui/demoMode.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: <project>/tests/ui/demoMode.test.tsx:5:27
+  3  |  import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+  4  |  import App from "../../src/App";
+  5  |  import { isDemoMode } from "../../src/demo/demoData";
+     |                              ^
+  6  |  import { useExpenseStore } from "../../src/state/useExpenseStore";
+  7  |  import { buildExpenseDraft, buildFixedLocalClock, buildValidExpense } from "../fixtures/expenses";
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:8803:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:8800:14
+ ❯ resolveId node_modules/vite/dist/node/chunks/node.js:26594:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:26693:23
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:26666:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:8582:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20155:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  23:26:18
+   Duration  400ms (transform 18ms, setup 106ms, import 0ms, tests 0ms, environment 486ms)
+
+
+> personal-expense-tracker@0.0.0 test:e2e
+> playwright test e2e/demo.spec.ts --project=desktop-chromium --grep DEMO-001
+
+[WebServer] (node:64737) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:64738) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [desktop-chromium] › e2e/demo.spec.ts:198:1 › DEMO-001: only an exact first demo=1 value activates demo (5.5s)
+
+
+
+  1) [desktop-chromium] › e2e/demo.spec.ts:198:1 › DEMO-001: only an exact first demo=1 value activates demo
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('status', { name: 'Demo mode', exact: true })
+    Expected: 1
+    Received: 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" getByRole('status', { name: 'Demo mode', exact: true }) with timeout 5000ms
+      - waiting for getByRole('status', { name: 'Demo mode', exact: true })
+        14 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      204 |     await page.goto(`/${query}`);
+      205 |     await expect(page.getByRole('heading', { name: 'Personal Expense Tracker' })).toBeVisible();
+    > 206 |     await expect(page.getByRole('status', { name: 'Demo mode', exact: true })).toHaveCount(active ? 1 : 0);
+          |                                                                                ^
+      207 |     if (active) {
+      208 |       await expectBaseline(page);
+      209 |     } else {
+        at <project>/e2e/demo.spec.ts:206:80
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/demo-DEMO-001-only-an-exac-f5081-demo-1-value-activates-demo-desktop-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/demo-DEMO-001-only-an-exac-f5081-demo-1-value-activates-demo-desktop-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/demo-DEMO-001-only-an-exac-f5081-demo-1-value-activates-demo-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/demo-DEMO-001-only-an-exac-f5081-demo-1-value-activates-demo-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop-chromium] › e2e/demo.spec.ts:198:1 › DEMO-001: only an exact first demo=1 value activates demo
+Red confirmed. Implement domain, store, App, main. Should be careful types, baseline readonly. Domain file new. Store edit incremental use Edit after read already current (I read earlier no changes). Can single Edit entire imports/functions? I need modify multiple areas same file no consecutive edit without reread. Could use one Edit old_string entire file huge not ideal. Or read+edit per sequential. I can rewrite complete file with Write only complete replacement not allowed continuity high. Use Edit chunks with reread between. First create demoData and edit App/main maybe parallel. Store needs several edits. I can design minimal store changes:
+  - import DEMO...
+  - initializeStore(initialExpenses, storage, demo): if demo return baseline clones recovery null before initialExpenses.
+  - hook third arg demo=false; initializeStore(... demo)
+  - selectedMonth initializer demo ? DEMO_SELECTED_MONTH : current
+  - persistMutation setExpenses then `if (demo) { setPersistenceIssue(null); return; }` before recovery save. dependencies [demo,recovery,storage]
+  - recovery operations requestStartFresh etc should never visible in demo; no UI triggers, but store-level could call and cause storage. Requirement throughout recovery paths no real storage. I should guard requestStartFresh if demo return; confirmReplacement if demo set replacement null no save. cancel harmless. Since recovery always null demo, not reachable UI but robust.
+  - return isDemo maybe not needed.
+  This ensures no storage.
+  App props demo=false, useExpenseStore(initial,storage,demo); persistenceStatus demo ? null : ...; label near header maybe <div className app-feedback><StatusMessage label Demo mode tone success? success could claim persistence? message no. StatusMessage tone "success" icon check may imply success not durable but fine. Better tone warning? Fictional label informational but StatusMessage only success/warning/error? Read.
+
+• The new suites fail for the intended missing demo behavior: the demo module cannot resolve, and Chromium finds no demo activation or label. I’ll now add the fixed baseline and branch demo state before every storage path, then wire fresh-document activation and the persistent fictional label.
+
+• Now Edit store one chunk covers imports and initialize signature + hook + persist perhaps old string lines 7-109 huge 100 lines okay. Could edit smaller then reread each. First import add and init branch + hook etc in one old string from import dates through whole initialize and hook selected month perhaps 80 lines. Then persist separate after read. Simpler Edit imports only, App top and main in parallel.pageshow listener instrumentation only storage no issue. But could page reload loop? event.persisted true reload then new page pageshow false. fine.
+
+  Read store relevant and App relevant lines for next edits.Store one Edit entire block lines51-110. App one Edit top block then reread for label.Now guard recovery. Read store lines150-180. App label read lines131-150 already read before latest App edit changed earlier only lines25 so read content at label still current? Tool says Read before every Edit; last read was before previous Edit same file, need read again.Do edits. requestStartFresh demo guard perhaps not needed but include. confirm if demo setReplacement null return. dependencies demo. App label inside header after intro perhaps persistent and before main. `StatusMessage message="Fictional demo data. Changes are temporary and never use real saved expenses." label="Demo mode" />`.Implementation initial done run targeted unit and build perhaps parallel. I need ensure TS error satisfies readonly array type perhaps satisfies syntax okay. Run unit relevant and npm build.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/domain/demoData.test.ts tests/ui/demoMode.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/demoData.test.ts (14 tests) 4ms
+ ❯ tests/ui/demoMode.test.tsx (12 tests | 1 failed) 381ms
+     ✓ uses only the first exact demo value for ?demo=1 63ms
+     ✓ uses only the first exact demo value for ?source=x&demo=1 11ms
+     ✓ uses only the first exact demo value for ?demo=1&demo=0 10ms
+     ✓ uses only the first exact demo value for ?demo=0&demo=1 6ms
+     ✓ uses only the first exact demo value for ?demo=01 7ms
+     ✓ uses only the first exact demo value for ?demo=true 5ms
+     ✓ uses only the first exact demo value for ?Demo=1 6ms
+     ✓ uses only the first exact demo value for  5ms
+     ✓ renders the fixed labeled baseline independently of injected normal records 26ms
+     × supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory 119ms
+     ✓ resets records, preferences, forms, dialogs, and status on every fresh activation and keeps normal data separate 119ms
+     ✓ branches before loading and mutates separate memory without any storage access 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/demoMode.test.tsx > DEMO-003/004: interactions and fresh activation > supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  $1,832.66
+Received:
+  $1,742.66
+ ❯ tests/ui/demoMode.test.tsx:127:52
+    125|     await user.type(screen.getByLabelText('Note (optional)'), 'Demo ad…
+    126|     await user.click(screen.getByRole('button', { name: 'Add expense' …
+    127|     expect(screen.getByLabelText('Monthly total')).toHaveTextContent('…
+       |                                                    ^
+    128|     expect(screen.getByText('Demo addition')).toBeInTheDocument();
+    129|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 25 passed (26)
+   Start at  23:28:53
+   Duration  786ms (transform 66ms, setup 106ms, import 86ms, tests 385ms, environment 480ms)
+
+
+> personal-expense-tracker@0.0.0 build
+> tsc --noEmit && vite build
+
+tests/ui/demoMode.test.tsx(56,47): error TS7031: Binding element 'type' implicitly has an 'any' type.
+Test math wrong 1732.65 +10.01=1742.66. Then edit +7.60 =1750.26, delete -67.20=1683.06, I expected 1673.25 erroneously based no add? Calculate baseline 173265 +1001 +760 -6720 =168306 yes $1,683.06. Update tests both unit and e2e. This is my test incorrect not weaken implementation. Fix. Type spy calls implicit any due generic; specify `[type]` as `[unknown]`? addEventListener mock calls any because vi spy overload. `filter(([type]: [string, ...unknown[]]) =>` tuple mismatch perhaps calls typed any. easiest `filter((call) => call[0] === 'storage')` call infer any? noImplicitAny for call perhaps inferred any[] from mock so not implicit? destructuring binding implicit any occurred. use `filter((call: unknown[]) => call[0] === 'storage')`. Mock calls arrays perhaps tuple assign acceptable callback parameter contravariance? Array any okay. Better `expect(addEventListener.mock.calls.some((call) => call[0] === 'storage')).toBe(false);` call inferred tuple perhaps no error. I'll change.
+
+  Should Read before edits.
+
+• The baseline and isolation paths are working. The remaining unit failure is an arithmetic error in my new test expectations ($1,732.65 + $10.01 is $1,742.66); I’ll correct those expectations and the test typing, then rerun rather than changing behavior.
+
+• Edit same UI file all replacements one call can old_string whole smaller? replace_all only values individually not same call. Could one Edit old block 51-152 huge 100 lines not ideal. I can use replace_all for `$1,832.66` then need reread for next. Or one Edit block from function expectNoStorage through test 152 huge. Better sequential with read each required. 3 edits UI plus 2 E2E. I can parallel first UI typing and E2E first math then reread.Read both relevant.Could Edit replace block lines127-152 only values by replacing entire substring from first amount through second total huge 25 lines but okay. Or use replace_all math? Two different values. Should sequential reads. I'll do first values both in parallel.Now run targeted unit/build again.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/domain/demoData.test.ts tests/ui/demoMode.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/demoData.test.ts (14 tests) 4ms
+ ❯ tests/ui/demoMode.test.tsx (12 tests | 1 failed) 445ms
+     ✓ uses only the first exact demo value for ?demo=1 62ms
+     ✓ uses only the first exact demo value for ?source=x&demo=1 11ms
+     ✓ uses only the first exact demo value for ?demo=1&demo=0 10ms
+     ✓ uses only the first exact demo value for ?demo=0&demo=1 6ms
+     ✓ uses only the first exact demo value for ?demo=01 7ms
+     ✓ uses only the first exact demo value for ?demo=true 5ms
+     ✓ uses only the first exact demo value for ?Demo=1 6ms
+     ✓ uses only the first exact demo value for  6ms
+     ✓ renders the fixed labeled baseline independently of injected normal records 27ms
+     × supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory 189ms
+     ✓ resets records, preferences, forms, dialogs, and status on every fresh activation and keeps normal data separate 113ms
+     ✓ branches before loading and mutates separate memory without any storage access 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/demoMode.test.tsx > DEMO-003/004: interactions and fresh activation > supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  $92.60
+Received:
+  $125.00
+ ❯ tests/ui/demoMode.test.tsx:136:50
+    134|     await user.click(screen.getByRole('button', { name: 'Save changes'…
+    135|     expect(within(transaction('demo-008')).getByText('$40.00')).toBeIn…
+    136|     expect(screen.getByLabelText('Other total')).toHaveTextContent('$9…
+       |                                                  ^
+    137|
+    138|     await user.click(within(transaction('demo-007')).getByRole('button…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 25 passed (26)
+   Start at  23:30:19
+   Duration  845ms (transform 67ms, setup 107ms, import 87ms, tests 449ms, environment 469ms)
+
+
+> personal-expense-tracker@0.0.0 build
+> tsc --noEmit && vite build
+
+tests/ui/demoMode.test.tsx(56,44): error TS7006: Parameter 'call' implicitly has an 'any' type.
+Other total initial85 +40=125 yes test wrong. E2E doesn't assert other after edit so fine. Type explicitly `call: any[]` noImplicit any allowed explicit any but quality avoid. ReturnType<typeof vi.spyOn> broad any. I can avoid spy type by define `addEventListener: { mock: { calls: unknown[][] }}` but actual calls tuple not assignable unknown[][]? Function parameter expects mock calls unknown[][] and vi spy any perhaps assignable. `type ListenerSpy = { mock: { calls: readonly (readonly unknown[])[] } }`; actual Mock calls any[][] assignable. Then `.some((call) =>` inferred readonly unknown[]. Update signature. Or `addEventListener.mock.calls.some((call: unknown[])...` simple explicit. Use unknown[] no issue. Should read UI lines.One edit with two exact locations requires a huge block, or sequential. Could change other total first then reread type. Do.Run again targeted unit build.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/domain/demoData.test.ts tests/ui/demoMode.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/demoData.test.ts (14 tests) 4ms
+ ❯ tests/ui/demoMode.test.tsx (12 tests | 1 failed) 503ms
+     ✓ uses only the first exact demo value for ?demo=1 62ms
+     ✓ uses only the first exact demo value for ?source=x&demo=1 12ms
+     ✓ uses only the first exact demo value for ?demo=1&demo=0 10ms
+     ✓ uses only the first exact demo value for ?demo=0&demo=1 6ms
+     ✓ uses only the first exact demo value for ?demo=01 7ms
+     ✓ uses only the first exact demo value for ?demo=true 5ms
+     ✓ uses only the first exact demo value for ?Demo=1 6ms
+     ✓ uses only the first exact demo value for  5ms
+     ✓ renders the fixed labeled baseline independently of injected normal records 26ms
+     × supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory 248ms
+     ✓ resets records, preferences, forms, dialogs, and status on every fresh activation and keeps normal data separate 113ms
+     ✓ branches before loading and mutates separate memory without any storage access 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ui/demoMode.test.tsx > DEMO-003/004: interactions and fresh activation > supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory
+AssertionError: expected [ …(3) ] to deeply equal [ 'demo-005', 'demo-002' ]
+
+- Expected
++ Received
+
+  [
++   "expense-688929d8-dd6d-4312-a33a-acd098982609",
+    "demo-005",
+    "demo-002",
+  ]
+
+ ❯ tests/ui/demoMode.test.tsx:151:26
+    149|     fireEvent.change(screen.getByLabelText('Month'), { target: { value…
+    150|     await user.selectOptions(screen.getByLabelText('Category filter'),…
+    151|     expect(visibleIds()).toEqual(['demo-005', 'demo-002']);
+       |                          ^
+    152|     expect(screen.getByLabelText('Monthly total')).toHaveTextContent('…
+    153|     await user.selectOptions(screen.getByLabelText('Category filter'),…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 25 passed (26)
+   Start at  23:31:11
+   Duration  910ms (transform 63ms, setup 108ms, import 85ms, tests 507ms, environment 483ms)
+
+
+> personal-expense-tracker@0.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 28 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.47 kB │ gzip:  0.28 kB
+dist/assets/index-A7fYFbvx.css    7.35 kB │ gzip:  2.38 kB
+dist/assets/index-CHf6POG1.js   241.83 kB │ gzip: 75.13 kB
+
+✓ built in 52ms
+Again test expected forgot addition. Should assert IDs dynamic starts expense then demo005 demo002. E2E count 2 likewise should 3 and indices shift. Sorting ascending first demo005? Amounts after interactions: demo005 1280, demo0031850, demo0042400, demo0084000, demo0024275, add1001 -> add first actually lowest $10.01. So first is added expense dynamic. Could assert first contains Demo addition instead of ID. Better test filter `expect(visibleIds()).toHaveLength(3); expect(visibleIds().slice(1)).toEqual([...])`, E2E count3, nth1 demo005 nth2 demo002; sorting first transaction contains Demo addition. No weakening, accurate all interactions.
+
+  Kimi should update tests. Read UI relevant current and e2e.Edit both blocks.Now run targeted unit only and E2E demo all perhaps long 22 tests. First unit quick, e2e desktop to debug. Can run parallel.
+
+• The implementation now builds, and the remaining failures were incorrect expectations that omitted the newly added demo record from later list assertions. Those are corrected; I’m running the complete demo suites next.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run tests/domain/demoData.test.ts tests/ui/demoMode.test.tsx
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/demoData.test.ts (14 tests) 4ms
+ ✓ tests/ui/demoMode.test.tsx (12 tests) 538ms
+
+ Test Files  2 passed (2)
+      Tests  26 passed (26)
+   Start at  23:31:59
+   Duration  944ms (transform 65ms, setup 106ms, import 84ms, tests 542ms, environment 485ms)
+
+
+> personal-expense-tracker@0.0.0 test:e2e
+> playwright test e2e/demo.spec.ts --project=desktop-chromium
+
+[WebServer] (node:65135) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 9 workers
+
+(node:65137) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65142) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65139) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65138) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65143) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65141) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 [desktop-chromium] › e2e/demo.spec.ts:218:5 › demo locale en-US › DEMO-002 and MONEY-003: exact fixed en-US USD baseline and deletion dialog in en-US (1.0s)
+  ✓   4 [desktop-chromium] › e2e/demo.spec.ts:218:5 › demo locale de-DE › DEMO-002 and MONEY-003: exact fixed en-US USD baseline and deletion dialog in de-DE (1.1s)
+  ✓   9 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: unreadable real storage has zero reads, writes, and listeners through all interactions (1.5s)
+  ✓   1 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: malformed real storage has zero reads, writes, and listeners through all interactions (1.5s)
+  ✓   2 [desktop-chromium] › e2e/demo.spec.ts:232:1 › DEMO-003: reload restores the exact baseline and default view after every interaction (1.5s)
+  ✓   3 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: missing real storage has zero reads, writes, and listeners through all interactions (1.5s)
+  ✓   5 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: populated real storage has zero reads, writes, and listeners through all interactions (1.5s)
+  ✓   8 [desktop-chromium] › e2e/demo.spec.ts:259:1 › DEMO-004/007: URL, reload, back, and forward create fresh isolated destination state (1.6s)
+  ✓   7 [desktop-chromium] › e2e/demo.spec.ts:198:1 › DEMO-001: only an exact first demo=1 value activates demo (1.9s)
+  ✓  10 [desktop-chromium] › e2e/demo.spec.ts:292:1 › DEMO-006/007: a concurrent normal tab remains untouched and receives no demo storage activity (1.1s)
+
+  10 passed (3.0s)
+
+
+• Good. Should check test adequacy on onstorage unit? E2E covers. Now mark implementation done verification in progress. Run all relevant unit (full npm test:unit) and Chromium all relevant includes demo both projects and prior-story regression tests. User "Run all relevant unit and Chromium checks, including both locales and storage instrumentation" likely full unit and full e2e all existing + demo, not final verification tasks. Running full e2e is relevant regression and not T050? T050 final full sequence includes build after reviews. User explicitly no final verification tasks but relevant checks okay. I already build. Should run npm test:unit full and `npm run test:e2e` all (currently 4+demo). This is story checkpoint relevant prior. Fine. Perhaps before mark done verify UI test requirement no onstorage listener unit not necessary E2E. T040 all real-data preconditions and normal tab yes. Both locales every October transaction + summaries yes. T039 all demo interactions fresh etc. T038 exact. T041 done. Run full.
+
+• All 26 new domain/UI tests and all 10 desktop demo Chromium scenarios pass, including exact zero storage counters. I’m now running the full unit suite and the complete existing Chromium suite on desktop and mobile for regressions.
+> personal-expense-tracker@0.0.0 test:unit
+> vitest run
+
+
+ RUN  v4.1.12 <project>
+
+ ✓ tests/domain/dates.test.ts (31 tests) 4ms
+ ✓ tests/domain/money.test.ts (34 tests) 5ms
+ ✓ tests/domain/expense.test.ts (22 tests) 5ms
+ ✓ tests/domain/dashboard.list.test.ts (11 tests) 5ms
+ ✓ tests/persistence/expenseStorage.write.test.ts (13 tests) 8ms
+ ✓ tests/domain/demoData.test.ts (14 tests) 5ms
+ ✓ tests/persistence/expenseStorage.load.test.ts (19 tests) 6ms
+ ✓ tests/domain/dashboard.test.ts (4 tests) 106ms
+ ✓ tests/ui/app.smoke.test.tsx (1 test) 82ms
+ ✓ tests/ui/monthlyDashboard.test.tsx (4 tests) 257ms
+ ✓ tests/ui/deleteExpense.test.tsx (6 tests) 329ms
+ ✓ tests/ui/persistenceStatus.test.tsx (4 tests) 569ms
+ ✓ tests/ui/recovery.test.tsx (9 tests) 637ms
+ ✓ tests/ui/transactionPreferences.test.tsx (10 tests) 640ms
+ ✓ tests/ui/demoMode.test.tsx (12 tests) 655ms
+     ✓ supports validation, add, edit, confirmed deletion, months, filter, and sort only in memory  336ms
+ ✓ tests/ui/editExpense.test.tsx (33 tests) 2865ms
+ ✓ tests/ui/addExpense.test.tsx (30 tests) 3063ms
+
+ Test Files  17 passed (17)
+      Tests  257 passed (257)
+   Start at  23:32:39
+   Duration  4.10s (transform 770ms, setup 2.66s, import 1.28s, tests 9.24s, environment 11.65s)
+
+
+> personal-expense-tracker@0.0.0 test:e2e
+> playwright test
+
+[WebServer] (node:65282) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 126 tests using 9 workers
+
+(node:65284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65291) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65290) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65289) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65285) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65287) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65283) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65286) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    8 [desktop-chromium] › e2e/core.spec.ts:142:1 › responsive baseline: controls meet 24px targets without horizontal reflow (645ms)
+  ✓    7 [desktop-chromium] › e2e/core.spec.ts:120:1 › DATE-003/004: future expense remains isolated until its local month is selected (668ms)
+  ✓    5 [desktop-chromium] › e2e/core.spec.ts:48:1 › CORE-001/004 and MONEY-001: add by keyboard and show exact zero/nonzero totals (687ms)
+  ✓    3 [desktop-chromium] › e2e/core.spec.ts:100:1 › DATE-002: leap-day acceptance and impossible-date rejection (692ms)
+  ✓    1 [desktop-chromium] › e2e/core.spec.ts:129:1 › MONEY-002/003: exact fixed en-US USD transaction and summary output (760ms)
+  ✓    9 [desktop-chromium] › e2e/core.spec.ts:136:3 › de-DE browser locale › MONEY-001/003: output is identical under de-DE (762ms)
+  ✓    4 [desktop-chromium] › e2e/core.spec.ts:69:1 › CORE-002/003: fixed local current month and all five categories (821ms)
+  ✓    6 [desktop-chromium] › e2e/core.spec.ts:82:1 › CORE-001 and DATE-001/004: local first/last-day membership and month selection (837ms)
+  ✓   10 [desktop-chromium] › e2e/demo.spec.ts:218:5 › demo locale en-US › DEMO-002 and MONEY-003: exact fixed en-US USD baseline and deletion dialog in en-US (859ms)
+  ✓   11 [desktop-chromium] › e2e/demo.spec.ts:218:5 › demo locale de-DE › DEMO-002 and MONEY-003: exact fixed en-US USD baseline and deletion dialog in de-DE (901ms)
+  ✓   19 [desktop-chromium] › e2e/edit-delete.spec.ts:112:1 › CORE-005: edits every field with the same ID, exact recalculation, durable save, and requester focus (477ms)
+  ✓    2 [desktop-chromium] › e2e/demo.spec.ts:198:1 › DEMO-001: only an exact first demo=1 value activates demo (2.1s)
+  ✓   12 [desktop-chromium] › e2e/demo.spec.ts:232:1 › DEMO-003: reload restores the exact baseline and default view after every interaction (1.4s)
+  ✓   13 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: populated real storage has zero reads, writes, and listeners through all interactions (1.4s)
+  ✓   14 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: missing real storage has zero reads, writes, and listeners through all interactions (1.4s)
+  ✓   15 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: malformed real storage has zero reads, writes, and listeners through all interactions (1.4s)
+  ✓   16 [desktop-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: unreadable real storage has zero reads, writes, and listeners through all interactions (1.4s)
+  ✓   17 [desktop-chromium] › e2e/demo.spec.ts:259:1 › DEMO-004/007: URL, reload, back, and forward create fresh isolated destination state (1.5s)
+  ✓   20 [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves September into October, announces the move, and focuses Month (471ms)
+  ✓   23 [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Cancel performs no mutation or write and restores the requester (402ms)
+  ✓   21 [desktop-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves October into November, announces the move, and focuses Month (458ms)
+  ✓   24 [desktop-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Escape performs no mutation or write and restores the requester (385ms)
+  ✓   22 [desktop-chromium] › e2e/edit-delete.spec.ts:167:1 › DELETE-001/MONEY-003: native dialog has exact identity, no-undo text, and contained keyboard focus (461ms)
+  ✓   25 [desktop-chromium] › e2e/edit-delete.spec.ts:203:1 › DELETE-003: confirmation removes only the target and focuses the next visible edit requester (420ms)
+  ✓   26 [desktop-chromium] › e2e/edit-delete.spec.ts:215:1 › DELETE-003: deletes the last result and focuses the previous visible edit requester (405ms)
+  ✓   27 [desktop-chromium] › e2e/edit-delete.spec.ts:223:1 › DELETE-003: deleting the only unfiltered result focuses Add expense (424ms)
+  ✓   31 [desktop-chromium] › e2e/persistence.spec.ts:239:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (406ms)
+  ✓   30 [desktop-chromium] › e2e/edit-delete.spec.ts:280:3 › de-DE deletion formatting › MONEY-003: deletion identity remains fixed en-US USD (417ms)
+  ✓   18 [desktop-chromium] › e2e/demo.spec.ts:292:1 › DEMO-006/007: a concurrent normal tab remains untouched and receives no demo storage activity (1.5s)
+  ✓   29 [desktop-chromium] › e2e/edit-delete.spec.ts:256:1 › DELETE-004/PERSIST-010: failed deletion remains only in memory and reload restores the target (546ms)
+  ✓   28 [desktop-chromium] › e2e/edit-delete.spec.ts:232:1 › PERSIST-009: failed edit remains only in memory and reload restores original fields (581ms)
+  ✓   32 [desktop-chromium] › e2e/persistence.spec.ts:250:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (561ms)
+  ✓   34 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (562ms)
+  ✓   33 [desktop-chromium] › e2e/persistence.spec.ts:276:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (638ms)
+  ✓   35 [desktop-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (516ms)
+  ✓   36 [desktop-chromium] › e2e/persistence.spec.ts:314:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (517ms)
+  ✓   37 [desktop-chromium] › e2e/persistence.spec.ts:330:1 › PERSIST-006: duplicate IDs reject the complete collection (528ms)
+  ✓   40 [desktop-chromium] › e2e/persistence.spec.ts:382:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (433ms)
+  ✓   38 [desktop-chromium] › e2e/persistence.spec.ts:345:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (547ms)
+  ✓   39 [desktop-chromium] › e2e/persistence.spec.ts:361:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (539ms)
+  ✓   41 [desktop-chromium] › e2e/persistence.spec.ts:398:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (541ms)
+  ✓   42 [desktop-chromium] › e2e/persistence.spec.ts:417:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (654ms)
+  ✓   43 [desktop-chromium] › e2e/persistence.spec.ts:454:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (708ms)
+  ✓   44 [desktop-chromium] › e2e/persistence.spec.ts:473:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (651ms)
+  ✓   45 [desktop-chromium] › e2e/persistence.spec.ts:496:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (647ms)
+  ✓   46 [desktop-chromium] › e2e/persistence.spec.ts:513:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (668ms)
+  ✓   48 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (674ms)
+  ✓   49 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (654ms)
+  ✓   50 [desktop-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (646ms)
+  ✓   47 [desktop-chromium] › e2e/persistence.spec.ts:537:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (823ms)
+  ✓   53 [desktop-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: date asc has ID-ascending ties and no summary/raw mutation (491ms)
+  ✓   54 [desktop-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: date desc has ID-ascending ties and no summary/raw mutation (410ms)
+  ✓   52 [desktop-chromium] › e2e/transaction-list.spec.ts:111:1 › FILTER-001/002: every category is exact, summaries/raw data stay stable, and all restores results (638ms)
+  ✓   55 [desktop-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: amount asc has ID-ascending ties and no summary/raw mutation (452ms)
+  ✓   56 [desktop-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: amount desc has ID-ascending ties and no summary/raw mutation (472ms)
+  ✓   57 [desktop-chromium] › e2e/transaction-list.spec.ts:156:1 › EMPTY-001/002 and FILTER-002: distinct non-error actions focus Amount and Category filter (488ms)
+  ✓   51 [desktop-chromium] › e2e/persistence.spec.ts:597:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (947ms)
+  ✓   58 [desktop-chromium] › e2e/transaction-list.spec.ts:182:1 › CORE-006: same-month edit out of the active filter announces membership and focuses Category filter (461ms)
+  ✓   59 [desktop-chromium] › e2e/transaction-list.spec.ts:200:1 › CORE-006: visible same-month edit restores the requester after amount resorting (487ms)
+  ✓   60 [desktop-chromium] › e2e/transaction-list.spec.ts:212:1 › DELETE-005: last filtered deletion announces no matches and focuses Clear filter with hidden month data intact (411ms)
+  ✓   63 [desktop-chromium] › e2e/transaction-list.spec.ts:255:1 › DELETE-003: deleting the only unfiltered result focuses the visible Add expense submit (336ms)
+  ✓   61 [desktop-chromium] › e2e/transaction-list.spec.ts:224:1 › DELETE-003: filtered and amount-sorted deletion focuses the next visible requester (449ms)
+(node:65449) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   62 [desktop-chromium] › e2e/transaction-list.spec.ts:240:1 › DELETE-003: filtered and amount-sorted deletion focuses the previous visible requester when no next remains (410ms)
+(node:65450) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65451) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65453) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65454) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65455) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65458) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   64 [mobile-chromium] › e2e/core.spec.ts:48:1 › CORE-001/004 and MONEY-001: add by keyboard and show exact zero/nonzero totals (509ms)
+  ✓   68 [mobile-chromium] › e2e/core.spec.ts:120:1 › DATE-003/004: future expense remains isolated until its local month is selected (493ms)
+  ✓   67 [mobile-chromium] › e2e/core.spec.ts:100:1 › DATE-002: leap-day acceptance and impossible-date rejection (571ms)
+  ✓   65 [mobile-chromium] › e2e/core.spec.ts:69:1 › CORE-002/003: fixed local current month and all five categories (643ms)
+  ✓   66 [mobile-chromium] › e2e/core.spec.ts:82:1 › CORE-001 and DATE-001/004: local first/last-day membership and month selection (673ms)
+  ✓   69 [mobile-chromium] › e2e/core.spec.ts:129:1 › MONEY-002/003: exact fixed en-US USD transaction and summary output (612ms)
+  ✓   71 [mobile-chromium] › e2e/core.spec.ts:142:1 › responsive baseline: controls meet 24px targets without horizontal reflow (479ms)
+  ✓   70 [mobile-chromium] › e2e/core.spec.ts:136:3 › de-DE browser locale › MONEY-001/003: output is identical under de-DE (653ms)
+  ✓   73 [mobile-chromium] › e2e/demo.spec.ts:218:5 › demo locale en-US › DEMO-002 and MONEY-003: exact fixed en-US USD baseline and deletion dialog in en-US (846ms)
+  ✓   74 [mobile-chromium] › e2e/demo.spec.ts:218:5 › demo locale de-DE › DEMO-002 and MONEY-003: exact fixed en-US USD baseline and deletion dialog in de-DE (831ms)
+  ✓   82 [mobile-chromium] › e2e/edit-delete.spec.ts:112:1 › CORE-005: edits every field with the same ID, exact recalculation, durable save, and requester focus (437ms)
+  ✓   75 [mobile-chromium] › e2e/demo.spec.ts:232:1 › DEMO-003: reload restores the exact baseline and default view after every interaction (1.3s)
+
+  ✓   76 [mobile-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: populated real storage has zero reads, writes, and listeners through all interactions (1.3s)
+  ✓   77 [mobile-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: missing real storage has zero reads, writes, and listeners through all interactions (1.3s)
+  ✓   78 [mobile-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: malformed real storage has zero reads, writes, and listeners through all interactions (1.3s)
+  ✓   79 [mobile-chromium] › e2e/demo.spec.ts:247:3 › DEMO-005: unreadable real storage has zero reads, writes, and listeners through all interactions (1.3s)
+  ✓   72 [mobile-chromium] › e2e/demo.spec.ts:198:1 › DEMO-001: only an exact first demo=1 value activates demo (1.9s)
+  ✓   83 [mobile-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves September into October, announces the move, and focuses Month (439ms)
+  ✓   80 [mobile-chromium] › e2e/demo.spec.ts:259:1 › DEMO-004/007: URL, reload, back, and forward create fresh isolated destination state (1.5s)
+  ✓   85 [mobile-chromium] › e2e/edit-delete.spec.ts:167:1 › DELETE-001/MONEY-003: native dialog has exact identity, no-undo text, and contained keyboard focus (392ms)
+  ✓   84 [mobile-chromium] › e2e/edit-delete.spec.ts:147:3 › CORE-005: moves October into November, announces the move, and focuses Month (425ms)
+  ✓   86 [mobile-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Cancel performs no mutation or write and restores the requester (357ms)
+  ✓   87 [mobile-chromium] › e2e/edit-delete.spec.ts:189:3 › DELETE-002: Escape performs no mutation or write and restores the requester (370ms)
+  ✓   88 [mobile-chromium] › e2e/edit-delete.spec.ts:203:1 › DELETE-003: confirmation removes only the target and focuses the next visible edit requester (383ms)
+  ✓   89 [mobile-chromium] › e2e/edit-delete.spec.ts:215:1 › DELETE-003: deletes the last result and focuses the previous visible edit requester (363ms)
+  ✓   90 [mobile-chromium] › e2e/edit-delete.spec.ts:223:1 › DELETE-003: deleting the only unfiltered result focuses Add expense (374ms)
+  ✓   93 [mobile-chromium] › e2e/edit-delete.spec.ts:280:3 › de-DE deletion formatting › MONEY-003: deletion identity remains fixed en-US USD (368ms)
+  ✓   94 [mobile-chromium] › e2e/persistence.spec.ts:239:1 › PERSIST-001: missing storage opens a normal empty dashboard without recovery UI (361ms)
+  ✓   81 [mobile-chromium] › e2e/demo.spec.ts:292:1 › DEMO-006/007: a concurrent normal tab remains untouched and receives no demo storage activity (1.5s)
+  ✓   91 [mobile-chromium] › e2e/edit-delete.spec.ts:232:1 › PERSIST-009: failed edit remains only in memory and reload restores original fields (543ms)
+  ✓   92 [mobile-chromium] › e2e/edit-delete.spec.ts:256:1 › DELETE-004/PERSIST-010: failed deletion remains only in memory and reload restores the target (524ms)
+  ✓   95 [mobile-chromium] › e2e/persistence.spec.ts:250:1 › PERSIST-002: a valid envelope reloads the exact complete collection without alteration (521ms)
+  ✓   96 [mobile-chromium] › e2e/persistence.spec.ts:276:1 › PERSIST-003: malformed JSON rejects everything and cancellation preserves exact raw bytes (501ms)
+
+  ✓   97 [mobile-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: unsupported version requires all-or-nothing recovery without a write (478ms)
+  ✓   98 [mobile-chromium] › e2e/persistence.spec.ts:300:3 › PERSIST-004: invalid envelope shape requires all-or-nothing recovery without a write (485ms)
+  ✓  100 [mobile-chromium] › e2e/persistence.spec.ts:330:1 › PERSIST-006: duplicate IDs reject the complete collection (485ms)
+  ✓   99 [mobile-chromium] › e2e/persistence.spec.ts:314:1 › PERSIST-005: one invalid record rejects the entire otherwise-valid collection (503ms)
+  ✓  103 [mobile-chromium] › e2e/persistence.spec.ts:382:1 › PERSIST-011: envelope serialization failure retains work without writes or destructive fallback (380ms)
+  ✓  101 [mobile-chromium] › e2e/persistence.spec.ts:345:1 › PERSIST-007: unreadable storage performs zero writes before or after cancellation (505ms)
+  ✓  102 [mobile-chromium] › e2e/persistence.spec.ts:361:1 › PERSIST-008: a quota-failed add stays visible with a warning and is omitted after reload (521ms)
+  ✓  104 [mobile-chromium] › e2e/persistence.spec.ts:398:1 › PERSIST-012: a mid-session storage access failure retains the complete add only in memory (504ms)
+  ✓  105 [mobile-chromium] › e2e/persistence.spec.ts:417:1 › PERSIST-013: a later save writes every retained change, clears warning, and survives reload (618ms)
+  ✓  106 [mobile-chromium] › e2e/persistence.spec.ts:454:1 › RECOVERY-001: start-fresh Cancel and Escape retain empty guarded memory and exact raw data (594ms)
+  ✓  107 [mobile-chromium] › e2e/persistence.spec.ts:473:1 › RECOVERY-002: confirmed start fresh writes one empty version-1 envelope and clears recovery (591ms)
+  ✓  108 [mobile-chromium] › e2e/persistence.spec.ts:496:1 › RECOVERY-003: failed start fresh makes no success claim and never automatically retries (571ms)
+  ✓  109 [mobile-chromium] › e2e/persistence.spec.ts:513:1 › RECOVERY-004: guarded work survives first-save Cancel and Escape with no write (607ms)
+  ✓  111 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: serialization failure retains guarded work and recovery without retry (636ms)
+  ✓  110 [mobile-chromium] › e2e/persistence.spec.ts:537:1 › RECOVERY-005: confirmed first replacement saves the complete guarded collection and reloads it (730ms)
+  ✓  112 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: quota failure retains guarded work and recovery without retry (607ms)
+  ✓  113 [mobile-chromium] › e2e/persistence.spec.ts:576:3 › RECOVERY-006: access failure retains guarded work and recovery without retry (610ms)
+  ✓  116 [mobile-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: date asc has ID-ascending ties and no summary/raw mutation (392ms)
+  ✓  117 [mobile-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: date desc has ID-ascending ties and no summary/raw mutation (381ms)
+  ✓  115 [mobile-chromium] › e2e/transaction-list.spec.ts:111:1 › FILTER-001/002: every category is exact, summaries/raw data stay stable, and all restores results (595ms)
+  ✓  118 [mobile-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: amount asc has ID-ascending ties and no summary/raw mutation (399ms)
+  ✓  119 [mobile-chromium] › e2e/transaction-list.spec.ts:145:3 › SORT-001/002: amount desc has ID-ascending ties and no summary/raw mutation (396ms)
+  ✓  120 [mobile-chromium] › e2e/transaction-list.spec.ts:156:1 › EMPTY-001/002 and FILTER-002: distinct non-error actions focus Amount and Category filter (447ms)
+  ✓  121 [mobile-chromium] › e2e/transaction-list.spec.ts:182:1 › CORE-006: same-month edit out of the active filter announces membership and focuses Category filter (452ms)
+  ✓  114 [mobile-chromium] › e2e/persistence.spec.ts:597:1 › RECOVERY-007: unreadable cancellation, failure, and success write only after explicit confirmation (893ms)
+  ✓  123 [mobile-chromium] › e2e/transaction-list.spec.ts:212:1 › DELETE-005: last filtered deletion announces no matches and focuses Clear filter with hidden month data intact (391ms)
+  ✓  122 [mobile-chromium] › e2e/transaction-list.spec.ts:200:1 › CORE-006: visible same-month edit restores the requester after amount resorting (458ms)
+  ✓  126 [mobile-chromium] › e2e/transaction-list.spec.ts:255:1 › DELETE-003: deleting the only unfiltered result focuses the visible Add expense submit (334ms)
+  ✓  125 [mobile-chromium] › e2e/transaction-list.spec.ts:240:1 › DELETE-003: filtered and amount-sorted deletion focuses the previous visible requester when no next remains (395ms)
+  ✓  124 [mobile-chromium] › e2e/transaction-list.spec.ts:224:1 › DELETE-003: filtered and amount-sorted deletion focuses the next visible requester (398ms)
+
+  126 passed (10.7s)
+
+
+• All pass. I'll mark tasks only T038-T041 X. Read lines 150-162 current then Edit each? Can replace all block four in one Edit with exact. Do that. Also perhaps final build passed before full tests; no need again unless tasks md no build effect. Should inspect git diff? Entire untracked so git diff not show. Could use `git status --short -- .` shows ?? ../ only. No need. Perhaps check tasks only. Read.
+
+• Verification is green: 257 unit tests and all 126 Chromium tests pass across desktop and mobile, including both demo locales and every instrumented storage precondition. I’ll mark only T038–T041 complete and leave T042 onward untouched.
+
+• Edit replace all `- [ ] T0` can't only 38-41. One old block lines154-160 exact huge but doable. Or four sequential edits each read. Better single replace individual prefix patterns? `old_string` block from T038 to T041 includes full texts long 3k tokens. Could Edit `- [ ] T038` to X unique then read etc 4 calls. Fine tools cost low. First.Continue T040, T041.Now done. Todo done then respond. Kimi could verify only tasks check with Grep T04 statuses but no need re-read solely prove write. Instructions say after write do not re-read solely prove; I already have edits success. Respond concise with summary and tests. Mention skill unavailable? Not necessary in response perhaps user asked command, I did work. Include T038-T041 marked, no T042. Files key. Tests build passed. No final verification/polish. Could say "Stopped after T041; T042+ untouched." Ensure not overclaim full final verification (I did full test suite but not task T050). Fine. Todo clear? mark done.
+
+• Implemented and marked **T038–T041** complete in `specs/001-expense-tracker/tasks.md:154`.
+
+  - Added the exact readonly ten-record baseline, October 2026 totals, ordering, and first-value `demo=1` parser in `src/demo/demoData.ts`.
+  - Added isolated in-memory demo interactions with no storage reads, writes, recovery status, or storage listeners.
+  - Added persistent fictional labeling and fresh state across reload, URL navigation, and browser history.
+  - Added domain/UI tests and Chromium coverage for DEMO-001–007, both locales, all storage preconditions, and a concurrent normal tab.
+  - Preserved test-first ordering with confirmed initial failures.
+
+  Verification passed:
+
+  - `npm run test:unit` — **257 tests**
+  - `npm run test:e2e` — **126 tests**, desktop and mobile Chromium
+  - `npm run build`
+
+  Stopped after T041. **T042 onward remains untouched and unchecked.**
+
+To resume this session: kimi -r session_a9fcfc3a-c39d-466a-8111-4943c6916f2b
