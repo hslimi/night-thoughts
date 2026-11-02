@@ -1,1 +1,0 @@
-Frozen artifact snapshot for read-only analysis: specs/001-expense-tracker and constitution.
