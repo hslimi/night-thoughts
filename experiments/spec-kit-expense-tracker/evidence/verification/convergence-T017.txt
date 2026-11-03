@@ -1,0 +1,19 @@
+# T017 Convergence Verification
+
+Date: 2026-11-03
+
+## Test-first regression checkpoint
+
+Before changing application code, the two new component regressions failed (2 failed, 18 skipped). Both reported that the Add expense heading was absent after confirmed deletion because edit mode remained active.
+
+The two new Chromium regressions also failed before the application change. Both timed out waiting for the Add expense heading after confirmed deletion, reproducing the same edit-state bug in Chromium.
+
+## Verification after the fix
+
+- Focused component regressions: 2 passed.
+- Focused Chromium regressions: 2 passed.
+- Full Vitest suite: 3 test files, 52 tests passed.
+- Full Playwright Chromium suite: 17 tests passed, including phone, tablet, and desktop overflow checks.
+- Production build (`tsc -b && vite build`): passed.
+
+Confirmed deletion now exits edit mode and clears the draft. With no visible neighboring transaction, focus lands on the Add expense submit button.

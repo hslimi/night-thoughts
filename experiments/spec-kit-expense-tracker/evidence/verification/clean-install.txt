@@ -1,0 +1,7 @@
+Clean dependency installation
+
+Command: npm ci
+Result: added 109 packages and audited 110 packages in 934ms.
+npm audit result: found 0 vulnerabilities.
+
+The clean installation was followed by the independently captured 52-test Vitest run, 17-test Playwright run, and production build in this directory. Four focused contrast regressions were added later by the bug-fix workflow, bringing the final Vitest total to 56.

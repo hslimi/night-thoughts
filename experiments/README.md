@@ -26,3 +26,9 @@ This is an Internet-accessible research showcase, not a clinically validated or 
 [DDXPlus MLX LoRA experiment](ddxplus-mlx-lora/): an educational local-AI workflow using synthetic DDXPlus cases, MLX LM LoRA, identical 490-case held-out evaluations, independent fused-model verification, and oMLX/QwenPaw deployment and rollback.
 
 The experiment is not clinically validated and must not be used for patient care. See its README for the full metrics, reproduction stages, rejected fused artifact, licensing, and safety limitations. Datasets, weights, credentials, and private run artifacts are excluded.
+
+### Spec Kit Expense Tracker
+
+[Spec Kit Expense Tracker](spec-kit-expense-tracker/): a completed GitHub Copilot and Spec Kit workflow covering constitution through convergence and structured bug fixing. Includes a new React/TypeScript/Vite expense tracker, exact-cent calculations, localStorage recovery, keyboard and responsive checks, 56 Vitest tests, 17 Chromium scenarios, 16 independent production-browser checks, sanitized workflow evidence, 18 inspected images, and the article source.
+
+The experiment is a frontend-only tutorial, not a hosted finance service. Its README documents exact versions, reproduction commands, the genuine convergence finding and contrast repair, evidence regeneration, limitations, and attribution.

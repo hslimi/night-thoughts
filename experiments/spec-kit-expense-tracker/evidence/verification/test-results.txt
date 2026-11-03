@@ -1,0 +1,11 @@
+Expense Tracker validation
+Date: 2026-11-03
+
+$ npm run test
+Test Files: 3 passed (3)
+Tests: 50 passed (50)
+
+$ npm run test:e2e
+Chromium tests: 15 passed (15)
+Responsive overflow checks: 390x844, 768x1024, and 1440x900 passed
+Storage recovery, malformed-data recovery, demo isolation, keyboard flows, and deletion focus checks passed

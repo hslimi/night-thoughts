@@ -1,0 +1,11 @@
+Muted-text contrast review before the bug-fix workflow
+
+Observed source value: --muted: #74817c in src/styles.css
+Calculation: WCAG relative luminance and contrast ratio, using the sRGB channel conversion and 0.2126/0.7152/0.0722 coefficients.
+
+#74817c on #ffffff: 4.059:1
+#74817c on #f5f7f5: 3.770:1
+
+Normal-text target used for this review: 4.5:1.
+Result: defect reproduced. The affected muted text includes dates, secondary transaction details, and introductory copy.
+This is a genuine implementation-review finding, not a deliberately introduced defect.
