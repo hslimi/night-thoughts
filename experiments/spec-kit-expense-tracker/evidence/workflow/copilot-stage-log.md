@@ -12,7 +12,7 @@ Genuine prompts and visible Copilot Chat results from this fresh run. Absolute w
 
 ### Final visible result
 
-Updated the [constitution](<.specify/memory/constitution.md>) with six principles covering exact-cent arithmetic, accessibility, business-logic tests, separation of concerns, destructive-action confirmation, and visible persistence errors. It also keeps planning proportionate to the small React, TypeScript, and Vite application.
+Updated the [constitution](<../../.specify/memory/constitution.md>) with six principles covering exact-cent arithmetic, accessibility, business-logic tests, separation of concerns, destructive-action confirmation, and visible persistence errors. It also keeps planning proportionate to the small React, TypeScript, and Vite application.
 
 **Version:** 1.0.0, establishing the first completed constitution from an unfilled scaffold. **Follow-up:** Replace the ratification-date TODO once the original date is known. No extension hooks were configured.
 
@@ -30,10 +30,10 @@ Updated the [constitution](<.specify/memory/constitution.md>) with six principle
 
 Specification created and quality-checked.
 
-- **SPECIFY_FEATURE_DIRECTORY:** [specs/001-expense-tracker](specs/001-expense-tracker)
-- **SPEC_FILE:** [spec.md](specs/001-expense-tracker/spec.md)
-- **Checklist:** [requirements.md](specs/001-expense-tracker/checklists/requirements.md) — all criteria pass; no clarification markers or template placeholders remain.
-- Updated [.specify/feature.json](.specify/feature.json) so later Spec Kit steps can locate the feature.
+- **SPECIFY_FEATURE_DIRECTORY:** [specs/001-expense-tracker](../../specs/001-expense-tracker)
+- **SPEC_FILE:** [spec.md](../../specs/001-expense-tracker/spec.md)
+- **Checklist:** [requirements.md](../../specs/001-expense-tracker/checklists/requirements.md) — all criteria pass; no clarification markers or template placeholders remain.
+- Updated machine-local `.specify/feature.json` so later Spec Kit steps could locate the feature. That pointer is intentionally not committed.
 
 No extension hooks were configured. The spec is ready for `/speckit-plan` or `/speckit-clarify`.
 
@@ -50,7 +50,7 @@ No extension hooks were configured. The spec is ready for `/speckit-plan` or `/s
 ## Clarification complete
 
 - **Questions asked:** 0. The seven product decisions you provided were recorded directly.
-- **Updated spec:** [spec.md](specs/001-expense-tracker/spec.md)
+- **Updated spec:** [spec.md](../../specs/001-expense-tracker/spec.md)
 - **Sections touched:** Clarifications, User Scenarios & Testing, Edge Cases, Functional Requirements, Key Entities, Success Criteria, Assumptions.
 - **Extension hooks:** Skipped; no `.specify/extensions.yml` exists.
 
@@ -88,11 +88,11 @@ The checklist’s Notes paragraph was preserved as required by the marker-only u
 Plan complete for branch `001-expense-tracker`. No extension hooks were registered.
 
 Generated:
-- [plan.md](specs/001-expense-tracker/plan.md)
-- [research.md](specs/001-expense-tracker/research.md)
-- [data-model.md](specs/001-expense-tracker/data-model.md)
-- [quickstart.md](specs/001-expense-tracker/quickstart.md)
-- [contracts/ui.md](specs/001-expense-tracker/contracts/ui.md)
+- [plan.md](../../specs/001-expense-tracker/plan.md)
+- [research.md](../../specs/001-expense-tracker/research.md)
+- [data-model.md](../../specs/001-expense-tracker/data-model.md)
+- [quickstart.md](../../specs/001-expense-tracker/quickstart.md)
+- [contracts/ui.md](../../specs/001-expense-tracker/contracts/ui.md)
 
 No implementation tasks were created; those belong to the next planning phase.
 
@@ -106,7 +106,7 @@ No implementation tasks were created; those belong to the next planning phase.
 
 ### Final visible result
 
-Created a new 8-item reviewer-owned checklist at [quality.md](specs/001-expense-tracker/checklists/quality.md). All items remain unchecked; they assess requirement quality, not implementation completion.
+Created a new 8-item reviewer-owned checklist at [quality.md](../../specs/001-expense-tracker/checklists/quality.md). All items remain unchecked; they assess requirement quality, not implementation completion.
 
 Focus: accessibility, exact monetary behavior, persistence recovery, demo isolation, and verification. Depth: standard. Audience/timing: reviewer. The requested focus areas are all incorporated.
 
@@ -120,7 +120,7 @@ Focus: accessibility, exact monetary behavior, persistence recovery, demo isolat
 
 ### Final visible result
 
-Generated [tasks.md](specs/001-expense-tracker/tasks.md).
+Generated [tasks.md](../../specs/001-expense-tracker/tasks.md).
 
 - **16 tasks:** US1: 6, US2: 3, US3: 3; plus setup/foundation and polish.
 - **Test criteria:** US1 covers creation, reload, validation, persistence recovery, and demo isolation; US2 covers monthly totals, filtering, sorting, and empty states; US3 covers edits, deletion confirmation, and focus behavior.
@@ -140,9 +140,9 @@ Generated [tasks.md](specs/001-expense-tracker/tasks.md).
 
 Clarification complete. **0 questions asked or answered**; the requested decisions were explicit.
 
-Updated [spec.md](specs/001-expense-tracker/spec.md): SC-001 now uses a vendor-neutral browser check, and other implementation-specific details were replaced with observable behavior. React/TypeScript/Vite and Playwright Chromium remain in the [technical plan](specs/001-expense-tracker/plan.md) and [tasks](specs/001-expense-tracker/tasks.md). No application source was changed.
+Updated [spec.md](../../specs/001-expense-tracker/spec.md): SC-001 now uses a vendor-neutral browser check, and other implementation-specific details were replaced with observable behavior. React/TypeScript/Vite and Playwright Chromium remain in the [technical plan](../../specs/001-expense-tracker/plan.md) and [tasks](../../specs/001-expense-tracker/tasks.md). No application source was changed.
 
-**Sections touched:** Clarifications, Edge Cases, Functional Requirements, Key Entities, Success Criteria. The [requirements checklist](specs/001-expense-tracker/checklists/requirements.md) was revalidated: **14/16 → 16/16**. Newly checked: “No implementation details” and “No implementation details leak into specification.” No regressions or unchecked items remain.
+**Sections touched:** Clarifications, Edge Cases, Functional Requirements, Key Entities, Success Criteria. The [requirements checklist](../../specs/001-expense-tracker/checklists/requirements.md) was revalidated: **14/16 → 16/16**. Newly checked: “No implementation details” and “No implementation details leak into specification.” No regressions or unchecked items remain.
 
 | Coverage category | Status |
 |---|---|

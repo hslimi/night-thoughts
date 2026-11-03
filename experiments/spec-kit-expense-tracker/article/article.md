@@ -54,7 +54,7 @@ The experiment used the following installed tools. Exact application dependency 
 | Playwright | 1.64.1 |
 | Bug Triage Workflow | 1.0.1 |
 
-The [Spec Kit documentation](https://github.com/github/spec-kit), [Copilot integration instructions](https://github.com/github/spec-kit/blob/main/docs/reference/agent-integrations.md), and [bug-fixing guide](https://github.github.com/spec-kit/guides/bugfix.html) supplied the current command shapes. Installed CLI help remained authoritative for flags.
+The [Spec Kit documentation](https://github.com/github/spec-kit), [Copilot integration instructions](https://github.com/github/spec-kit/blob/main/docs/integrations/copilot.md), and [bug-fixing guide](https://github.github.com/spec-kit/guides/bugfix.html) supplied the current command shapes. Installed CLI help remained authoritative for flags.
 
 ![Verified Spec Kit, Copilot, Node.js, and application dependency versions displayed in VS Code](assets/01-environment.png)
 

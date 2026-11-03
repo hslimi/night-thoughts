@@ -181,6 +181,25 @@ The capture script creates fresh contexts, sets 1440×900 desktop and 390×844 m
 
 Inspect every regenerated image before sharing it. Remove `evidence/.capture-tmp/` after acceptance; it is disposable and is not part of the committed evidence.
 
+## Audit documentation links
+
+Run the automated checker over the generated Markdown, relative paths and anchors, local images, GitHub targets, and external HTTP/CDN URLs:
+
+```bash
+python3 scripts/audit-links.py --output evidence/verification/link-audit.json
+```
+
+To include the unpublished Hashnode draft, retrieve its current body and pass it to the checker:
+
+```bash
+hashnode -p 6a9439bd520526685ca0ce83 --json draft get 6ae62b9522949cf8d9ef1cb0 > /tmp/spec-kit-link-audit-draft.json
+python3 scripts/audit-links.py \
+  --draft /tmp/spec-kit-link-audit-draft.json \
+  --output evidence/verification/link-audit-final.json
+```
+
+The checker exits nonzero on a real broken destination and identifies reserved example URLs separately. [link-audit.md](./evidence/verification/link-audit.md) records the initial failures, exact replacements, and final zero-broken-link result. These read-only checks do not publish or change the draft.
+
 ## Limitations and intended use
 
 This is a small tutorial application for one person in one browser. It is not a hosted service, accounting system, or secure finance backend. It uses USD only, has no accounts or synchronization, and stores unencrypted data in localStorage. Only Chromium was exercised; no cross-browser matrix, timed usability study, numerical latency benchmark, or screen-reader verification is claimed.

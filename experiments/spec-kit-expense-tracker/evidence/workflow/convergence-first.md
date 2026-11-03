@@ -14,7 +14,7 @@ The implementation and all requested validation suites pass. I found one edge ga
 
 | ID | Gap Type | Severity | Source | Evidence | Remaining Work |
 |---|---|---|---|---|---|
-| F1 | partial | HIGH | FR-003, FR-004, US3/AC4 | In [App.tsx](src/App.tsx), confirmed deletion leaves edit state active. If no visible neighbor remains, focus goes to the form’s submit button—which is “Save changes” during an edit, not “Add expense.” Deleting the edited record can also leave a stale draft. | Coordinate deletion with active edit state and ensure the required Add expense fallback. |
+| F1 | partial | HIGH | FR-003, FR-004, US3/AC4 | In [App.tsx](../../src/App.tsx), confirmed deletion leaves edit state active. If no visible neighbor remains, focus goes to the form’s submit button—which is “Save changes” during an edit, not “Add expense.” Deleting the edited record can also leave a stale draft. | Coordinate deletion with active edit state and ensure the required Add expense fallback. |
 
 **Checked:** 15 functional requirements, 12 buildable success criteria, 13 acceptance scenarios, plan/data-model/UI obligations, and all 6 constitution principles. All original 16 tasks were assessed; T003’s checkpoint is supported by its recorded missing-App test failure.
 
@@ -22,4 +22,4 @@ The implementation and all requested validation suites pass. I found one edge ga
 
 **Validation:** 50 unit/component tests passed, 15 Playwright tests passed, and the production build passed.
 
-**Outcome:** Appended one task, T017, under Phase 7 in [tasks.md](specs/001-expense-tracker/tasks.md). No application code or article was changed. Run `/speckit-implement` to complete the convergence task, then converge again.
+**Outcome:** Appended one task, T017, under Phase 7 in [tasks.md](../../specs/001-expense-tracker/tasks.md). No application code or article was changed. Run `/speckit-implement` to complete the convergence task, then converge again.

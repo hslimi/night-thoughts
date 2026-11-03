@@ -20,4 +20,4 @@
 
 ✅ Converged — the implementation satisfies the spec, plan, and tasks.
 
-[ tasks.md ](specs/001-expense-tracker/tasks.md) is byte-for-byte unchanged; its before/after SHA-256 checksums match. No application code was modified. Proceed to review or open a PR; no further implement pass is needed.
+[ tasks.md ](../../specs/001-expense-tracker/tasks.md) is byte-for-byte unchanged; its before/after SHA-256 checksums match. No application code was modified. Proceed to review or open a PR; no further implement pass is needed.

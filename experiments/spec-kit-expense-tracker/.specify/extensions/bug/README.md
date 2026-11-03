@@ -99,4 +99,4 @@ hooks:
       description: Collect evidence in the resolved bug directory
 ```
 
-Mandatory hooks are invoked and awaited; optional hooks are presented for the user to run. Disabled hooks and hooks with non-empty conditions are skipped by the command templates. With no registered hooks, the workflow proceeds as before. See the [Extension API Reference](../EXTENSION-API-REFERENCE.md#hook-events) for the shared hook contract.
+Mandatory hooks are invoked and awaited; optional hooks are presented for the user to run. Disabled hooks and hooks with non-empty conditions are skipped by the command templates. With no registered hooks, the workflow proceeds as before. See the [Extension API Reference](https://github.com/github/spec-kit/blob/main/docs/extensions/api.md#hook-events) for the shared hook contract.
