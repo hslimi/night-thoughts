@@ -19,7 +19,7 @@ Companion folder for the article on building a multi-model coding harness with O
 - `config/failover-test/` and `scripts/mock_provider.mjs`: the local mock provider used for failure tests. Readers setting up the harness do not need these.
 - `scripts/check_capability_contract.py`: static check of advertised capabilities.
 - `evidence/`: sanitized results. Start with `evidence/manifest.md`. `evidence/test-receipts.md` describes each test: what it checks, the exact prompts, and what counted as a pass.
-- `figures/`: the article's cover and the diagram of which provider serves each model in each package. `figures/source/` holds the HTML they were rendered from, at 1600 px wide in headless Chromium.
+- `figures/`: the article's cover, and one diagram per package showing which provider serves each model. `figures/source/` holds the HTML they were rendered from, at 1600 px wide in headless Chromium.
 
 ## Reproduce the Best setup
 
