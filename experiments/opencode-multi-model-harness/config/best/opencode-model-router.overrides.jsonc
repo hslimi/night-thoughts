@@ -1,0 +1,15 @@
+{
+  "activePreset": "best-frontier",
+  "activeMode": "normal",
+
+  "presets": {
+    "best-frontier": {
+      "fast":   { "readOnly": true, "model": "anthropic/claude-haiku-5-5",
+                  "costRatio": 1,  "steps": 30,  "description": "Exploration and bounded lookup" },
+      "medium": { "model": "anthropic/claude-sonnet-5-5",
+                  "costRatio": 20, "steps": 60,  "description": "Implementation and verification" },
+      "heavy":  { "model": "anthropic/claude-opus-5-5",
+                  "costRatio": 40, "steps": 100, "description": "Architecture and review" }
+    }
+  }
+}

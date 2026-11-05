@@ -1,0 +1,9 @@
+// Project fallback file for the failover tests. Place at <project>/.opencode/opencode-fallback.jsonc.
+// A short timeout keeps the no-first-token test quick. The backup is a real Haiku route.
+{
+  "timeout_seconds": 20,
+  "notify_on_fallback": true,
+  "agents": {
+    "build": { "fallback_models": ["anthropic/claude-haiku-5-5"] }
+  }
+}

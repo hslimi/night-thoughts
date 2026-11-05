@@ -1,0 +1,515 @@
+{
+ "info": {
+  "id": "ses_e539082b1ffeWtRFcv2cjRXAVo",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "qwen/qwen3.6-35b-a3b",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.0053317799999999995,
+  "tokens": {
+   "input": 34668,
+   "output": 328,
+   "reasoning": 642,
+   "cache": {
+    "read": 19008,
+    "write": 0
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793894350170,
+   "updated": 1793894418958,
+   "busy": 1793894416328,
+   "idle": 1793894418960,
+   "viewed": 1793894418960
+  },
+  "title": "[redacted:session-title:ses_e539082b1ffeWtRFcv2cjRXAVo]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e539082b1ffeWtRFcv2cjRXAVo]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac6f7d4d001VNUQmDqqSadVIC",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac6f7d4d001VNUQmDqqSadVIC"
+   },
+   "time": {
+    "created": 1793894350230
+   },
+   "text": "[redacted:text:msg_1ac6f7d4d001VNUQmDqqSadVIC]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac6f7d9a001xMczh5gshl6iRv",
+   "time": {
+    "created": 1793894350245,
+    "streamed": 1793894354507,
+    "completed": 1793894354539
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac6f7d9a001xMczh5gshl6iRv]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6f7d9a001xMczh5gshl6iRv"
+     },
+     "time": {
+      "created": 1793894351577,
+      "completed": 1793894354497
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6f7d9a001xMczh5gshl6iRv]"
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-81c16cc7a5ee0609",
+     "name": "read",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac6f7d9a001xMczh5gshl6iRv"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac6f7d9a001xMczh5gshl6iRv]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac6f7d9a001xMczh5gshl6iRv"
+      }
+     },
+     "time": {
+      "created": 1793894353731,
+      "ran": 1793894354500,
+      "completed": 1793894354518
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-b1f9061612b18615",
+     "name": "glob",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac6f7d9a001xMczh5gshl6iRv"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac6f7d9a001xMczh5gshl6iRv]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac6f7d9a001xMczh5gshl6iRv"
+      }
+     },
+     "time": {
+      "created": 1793894354011,
+      "ran": 1793894354501,
+      "completed": 1793894354529
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-8ca7fb75a6bc72f3",
+     "name": "glob",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac6f7d9a001xMczh5gshl6iRv"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac6f7d9a001xMczh5gshl6iRv]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac6f7d9a001xMczh5gshl6iRv"
+      }
+     },
+     "time": {
+      "created": 1793894354246,
+      "ran": 1793894354506,
+      "completed": 1793894354527
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_calls",
+   "cost": 0.0013288,
+   "tokens": {
+    "input": 9967,
+    "output": 113,
+    "reasoning": 256,
+    "cache": {
+     "read": 0,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6f8e70001wQLgUTnk5GcHhs",
+   "time": {
+    "created": 1793894354548,
+    "streamed": 1793894356841,
+    "completed": 1793894356859
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac6f8e70001wQLgUTnk5GcHhs]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6f8e70001wQLgUTnk5GcHhs"
+     },
+     "time": {
+      "created": 1793894355874,
+      "completed": 1793894356834
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-ada1e9841bb64892",
+     "name": "read",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac6f8e70001wQLgUTnk5GcHhs"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac6f8e70001wQLgUTnk5GcHhs]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac6f8e70001wQLgUTnk5GcHhs"
+      }
+     },
+     "time": {
+      "created": 1793894356111,
+      "ran": 1793894356837,
+      "completed": 1793894356848
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-80f9910d8e163610",
+     "name": "read",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac6f8e70001wQLgUTnk5GcHhs"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac6f8e70001wQLgUTnk5GcHhs]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac6f8e70001wQLgUTnk5GcHhs"
+      }
+     },
+     "time": {
+      "created": 1793894356443,
+      "ran": 1793894356838,
+      "completed": 1793894356846
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_calls",
+   "cost": 0.0006721,
+   "tokens": {
+    "input": 943,
+    "output": 81,
+    "reasoning": 33,
+    "cache": {
+     "read": 9504,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6f9780001uyEVKcZ8wpvhWw",
+   "time": {
+    "created": 1793894356867,
+    "streamed": 1793894359608,
+    "completed": 1793894359616
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac6f9780001uyEVKcZ8wpvhWw]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6f9780001uyEVKcZ8wpvhWw"
+     },
+     "time": {
+      "created": 1793894358178,
+      "completed": 1793894359607
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6f9780001uyEVKcZ8wpvhWw]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.0012538,
+   "tokens": {
+    "input": 10729,
+    "output": 39,
+    "reasoning": 162,
+    "cache": {
+     "read": 0,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6fa2410020ou86iwFdJDb4z",
+   "time": {
+    "created": 1793894359617
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  },
+  {
+   "id": "msg_1ac6fda6b001nOxoCdThAsq7bI",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac6fda6b001nOxoCdThAsq7bI"
+   },
+   "time": {
+    "created": 1793894374037
+   },
+   "text": "[redacted:text:msg_1ac6fda6b001nOxoCdThAsq7bI]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac6fda97001NjqQLZ1SuRtCEL",
+   "time": {
+    "created": 1793894374043,
+    "streamed": 1793894376447,
+    "completed": 1793894376460
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac6fda97001NjqQLZ1SuRtCEL]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6fda97001NjqQLZ1SuRtCEL"
+     },
+     "time": {
+      "created": 1793894375517,
+      "completed": 1793894376443
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6fda97001NjqQLZ1SuRtCEL]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.0011682,
+   "tokens": {
+    "input": 10953,
+    "output": 28,
+    "reasoning": 53,
+    "cache": {
+     "read": 0,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6fe40e002zd9pv1emjl20uZ",
+   "time": {
+    "created": 1793894376462
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  },
+  {
+   "type": "compaction",
+   "id": "msg_1ac701a16001yUtkjKC2xjxZPx",
+   "time": {
+    "created": 1793894390323
+   },
+   "status": "failed",
+   "reason": "manual",
+   "error": {
+    "type": "aborted",
+    "message": "Compaction cancelled"
+   }
+  },
+  {
+   "id": "msg_1ac701c8c001aekUwEEv0AhPaU",
+   "time": {
+    "created": 1793894390924
+   },
+   "type": "idle",
+   "outcome": "interrupted"
+  },
+  {
+   "id": "msg_1ac707fcb001JNRfQ02hZifDhf",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac707fcb001JNRfQ02hZifDhf"
+   },
+   "time": {
+    "created": 1793894416331
+   },
+   "type": "system",
+   "text": "[redacted:system:msg_1ac707fcb001JNRfQ02hZifDhf]",
+   "description": "Instructions updated: core/date"
+  },
+  {
+   "id": "msg_1ac707fa1001rVYLbsCCf7XK69",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac707fa1001rVYLbsCCf7XK69"
+   },
+   "time": {
+    "created": 1793894416332
+   },
+   "text": "[redacted:text:msg_1ac707fa1001rVYLbsCCf7XK69]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac707fcf001lCoB8zhwpy6GbO",
+   "time": {
+    "created": 1793894416337,
+    "streamed": 1793894418946,
+    "completed": 1793894418958
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac707fcf001lCoB8zhwpy6GbO]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac707fcf001lCoB8zhwpy6GbO"
+     },
+     "time": {
+      "created": 1793894417518,
+      "completed": 1793894418936
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac707fcf001lCoB8zhwpy6GbO]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.0008105,
+   "tokens": {
+    "input": 1589,
+    "output": 58,
+    "reasoning": 138,
+    "cache": {
+     "read": 9504,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac708a10002ukZGfu0fbgI5Zi",
+   "time": {
+    "created": 1793894418960
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

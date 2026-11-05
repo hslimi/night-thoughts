@@ -1,0 +1,115 @@
+{
+ "info": {
+  "id": "ses_e53921e2effdjqjupVZNqrJTqx",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "qwen/qwen3.6-35b-a3b",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.00158712,
+  "tokens": {
+   "input": 11160,
+   "output": 164,
+   "reasoning": 212,
+   "cache": {
+    "read": 0,
+    "write": 0
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793894244829,
+   "updated": 1793894249877,
+   "busy": 1793894244879,
+   "idle": 1793894249879,
+   "viewed": 1793894249879
+  },
+  "title": "[redacted:session-title:ses_e53921e2effdjqjupVZNqrJTqx]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e53921e2effdjqjupVZNqrJTqx]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac6de204001k43rCIEdXeFarD",
+   "time": {
+    "created": 1793894244890
+   },
+   "text": "[redacted:text:msg_1ac6de204001k43rCIEdXeFarD]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac6de21e0010TBInaAfwIQL7Y",
+   "time": {
+    "created": 1793894244903,
+    "streamed": 1793894249867,
+    "completed": 1793894249877
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac6de21e0010TBInaAfwIQL7Y]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6de21e0010TBInaAfwIQL7Y"
+     },
+     "time": {
+      "created": 1793894247528,
+      "completed": 1793894249863
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6de21e0010TBInaAfwIQL7Y]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.0013998,
+   "tokens": {
+    "input": 10288,
+    "output": 159,
+    "reasoning": 212,
+    "cache": {
+     "read": 0,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6df597001OSGNsZzBVHLd6j",
+   "time": {
+    "created": 1793894249879
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

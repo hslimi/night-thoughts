@@ -15,6 +15,12 @@ Planned experiments are not listed as completed work.
 
 ## Available Experiments
 
+### OpenCode Multi-Model Harness
+
+[OpenCode Multi-Model Harness](opencode-multi-model-harness/): configs, test scripts and sanitized evidence for a low-cost and a Claude-based OpenCode Desktop setup, tested with deliberate provider failures.
+
+This is a candidate harness, with its gaps listed in [the protocol results](opencode-multi-model-harness/evidence/protocol-results.md).
+
 ### NT Imaging Workflow
 
 [NT Imaging Workflow](nt-imaging-workflow/): a local LangGraph/oMLX chest-radiograph drafting workflow with a deterministic Imaging Readiness Agent, durable single-worker execution, local graph inspection, and mandatory doctor review before idempotent export. Includes REAL and labelled MOCK/FAULT showcases, responsive console tests, two private-draft blog sources, and sanitized v3 evidence.

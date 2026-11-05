@@ -1,0 +1,263 @@
+{
+ "info": {
+  "id": "ses_e539fa9c7ffertVLlaw45RIHdo",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "anthropic/claude-haiku-5.5",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.00207642,
+  "tokens": {
+   "input": 10,
+   "output": 357,
+   "reasoning": 82,
+   "cache": {
+    "read": 16767,
+    "write": 13506
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793893357120,
+   "updated": 1793893366744,
+   "busy": 1793893357234,
+   "idle": 1793893366746,
+   "viewed": 1793893366746
+  },
+  "title": "[redacted:session-title:ses_e539fa9c7ffertVLlaw45RIHdo]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e539fa9c7ffertVLlaw45RIHdo]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac605637001oTYVj3h6M8IeFM",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac605637001oTYVj3h6M8IeFM"
+   },
+   "time": {
+    "created": 1793893357199
+   },
+   "text": "[redacted:text:msg_1ac605637001oTYVj3h6M8IeFM]",
+   "files": [
+    {
+     "data": "",
+     "mime": "image/png",
+     "source": {
+      "type": "inline"
+     },
+     "name": "[redacted:file-name:0]"
+    }
+   ],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac605692001aswV6HZx1dbJG0",
+   "time": {
+    "created": 1793893357206,
+    "completed": 1793893357225
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "mock-503",
+    "providerID": "mock",
+    "variant": "default"
+   },
+   "content": [],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "error",
+   "error": {
+    "type": "provider.internal",
+    "message": "mock: service unavailable",
+    "status": 503,
+    "response": {
+     "body": "{\"error\":{\"message\":\"mock: service unavailable\",\"type\":\"overloaded\",\"code\":503}}"
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6056aa001DYAhQb8X7QB7MB",
+   "time": {
+    "created": 1793893357226
+   },
+   "type": "idle",
+   "outcome": "failed",
+   "error": {
+    "type": "provider.internal",
+    "message": "mock: service unavailable",
+    "status": 503,
+    "response": {
+     "body": "{\"error\":{\"message\":\"mock: service unavailable\",\"type\":\"overloaded\",\"code\":503}}"
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6056af001TNq6eK3oFu4nsb",
+   "time": {
+    "created": 1793893357231
+   },
+   "type": "model-switched",
+   "model": {
+    "id": "anthropic/claude-haiku-5.5",
+    "providerID": "openrouter"
+   },
+   "previous": {
+    "id": "mock-503",
+    "providerID": "mock",
+    "variant": "default"
+   }
+  },
+  {
+   "id": "msg_1ac6056b0001VYky1i7sBC7FmQ",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac6056b0001VYky1i7sBC7FmQ"
+   },
+   "time": {
+    "created": 1793893357237
+   },
+   "text": "[redacted:text:msg_1ac6056b0001VYky1i7sBC7FmQ]",
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac6056b70017WqJNsz9T9UnL5",
+   "time": {
+    "created": 1793893357241,
+    "streamed": 1793893362349,
+    "completed": 1793893365148
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "anthropic/claude-haiku-5.5",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6056b70017WqJNsz9T9UnL5"
+     },
+     "time": {
+      "created": 1793893361233,
+      "completed": 1793893362343
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6056b70017WqJNsz9T9UnL5]"
+    },
+    {
+     "type": "tool",
+     "id": "toolu_015hpZ8rDgnkgGLTiL8LFNXd",
+     "name": "subagent",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac6056b70017WqJNsz9T9UnL5"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac6056b70017WqJNsz9T9UnL5]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac6056b70017WqJNsz9T9UnL5"
+      }
+     },
+     "time": {
+      "created": 1793893361621,
+      "ran": 1793893362347,
+      "completed": 1793893365142
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_use",
+   "cost": 0.00182535,
+   "tokens": {
+    "input": 4,
+    "output": 286,
+    "reasoning": 82,
+    "cache": {
+     "read": 1595,
+     "write": 13000
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6075a0001DluH3wTRfQCz1p",
+   "time": {
+    "created": 1793893365154,
+    "streamed": 1793893366734,
+    "completed": 1793893366744
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "anthropic/claude-haiku-5.5",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6075a0001DluH3wTRfQCz1p]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.000231775,
+   "tokens": {
+    "input": 2,
+    "output": 60,
+    "reasoning": 0,
+    "cache": {
+     "read": 14595,
+     "write": 445
+    }
+   }
+  },
+  {
+   "id": "msg_1ac607bda0028o6w3sgtTY3ItK",
+   "time": {
+    "created": 1793893366746
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "info": {
+  "id": "ses_e53768ec0ffduePXaPGLSJi2f5",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "z-ai/glm-5.3-flash",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.0014873100000000002,
+  "tokens": {
+   "input": 9589,
+   "output": 30,
+   "reasoning": 30,
+   "cache": {
+    "read": 0,
+    "write": 0
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793896051028,
+   "updated": 1793896052842,
+   "busy": 1793896051070,
+   "idle": 1793896052844,
+   "viewed": 1793896052844
+  },
+  "title": "[redacted:session-title:ses_e53768ec0ffduePXaPGLSJi2f5]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e53768ec0ffduePXaPGLSJi2f5]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac89713f001yW5Iw5mBeKyIU9",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac89713f001yW5Iw5mBeKyIU9"
+   },
+   "time": {
+    "created": 1793896051072
+   },
+   "text": "[redacted:text:msg_1ac89713f001yW5Iw5mBeKyIU9]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac897183001JJhs2KxFeCjCR4",
+   "time": {
+    "created": 1793896051088,
+    "streamed": 1793896052828,
+    "completed": 1793896052842
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "z-ai/glm-5.3-flash",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac897183001JJhs2KxFeCjCR4]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac897183001JJhs2KxFeCjCR4"
+     },
+     "time": {
+      "created": 1793896052311,
+      "completed": 1793896052822
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac897183001JJhs2KxFeCjCR4]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.0013975,
+   "tokens": {
+    "input": 9130,
+    "output": 26,
+    "reasoning": 30,
+    "cache": {
+     "read": 0,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac89786c002HuK5qWVkaHPB0x",
+   "time": {
+    "created": 1793896052844
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

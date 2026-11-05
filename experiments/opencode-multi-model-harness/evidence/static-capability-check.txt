@@ -1,0 +1,33 @@
+catalog check date (UTC): 2026-11-05
+sources: https://models.dev/api.json , https://openrouter.ai/api/v1/models
+
+== best (PDF policy: native)
+-- routes
+PASS anthropic/claude-haiku-5-5: context=1000000 output=128000 inputs=text,image,pdf tools=True reasoning=True open_weights=False
+PASS anthropic/claude-opus-5-5: context=1000000 output=128000 inputs=text,image,pdf tools=True reasoning=True open_weights=False
+PASS anthropic/claude-sonnet-5-5: context=1000000 output=128000 inputs=text,image,pdf tools=True reasoning=True open_weights=False
+PASS openrouter/anthropic/claude-haiku-5.5: context=1000000 output=128000 inputs=text,image,pdf tools=True reasoning=True open_weights=False
+PASS openrouter/anthropic/claude-opus-5.5: context=1000000 output=128000 inputs=text,image,pdf tools=True reasoning=True open_weights=False
+PASS openrouter/anthropic/claude-sonnet-5.5: context=1000000 output=128000 inputs=text,image,pdf tools=True reasoning=True open_weights=False
+-- primary to backup edges
+PASS fast backup 1: anthropic/claude-haiku-5-5 -> openrouter/anthropic/claude-haiku-5.5
+PASS medium backup 1: anthropic/claude-sonnet-5-5 -> openrouter/anthropic/claude-sonnet-5.5
+PASS heavy backup 1: anthropic/claude-opus-5-5 -> openrouter/anthropic/claude-opus-5.5
+
+== cheap (PDF policy: preprocess)
+-- routes
+PASS deepseek/deepseek-flash: context=1048576 output=393216 inputs=text,image tools=True reasoning=True open_weights=True
+PASS openrouter/deepseek/deepseek-v4.1-flash: context=1048576 output=943718 inputs=text,image tools=True reasoning=True open_weights=True
+PASS openrouter/qwen/qwen3.6-35b-a3b: context=262144 output=235929 inputs=text,image,video tools=True reasoning=True open_weights=True
+PASS openrouter/qwen/qwen3.8-27b: context=1024000 output=235929 inputs=text,image,video tools=True reasoning=True open_weights=True
+PASS openrouter/z-ai/glm-5.3-flash: context=1048576 output=943717 inputs=text,image,video tools=True reasoning=True open_weights=True
+-- primary to backup edges
+PASS orchestrator backup 1: openrouter/z-ai/glm-5.3-flash -> deepseek/deepseek-flash
+PASS fast backup 1: deepseek/deepseek-flash -> openrouter/deepseek/deepseek-v4.1-flash
+PASS medium backup 1: openrouter/qwen/qwen3.6-35b-a3b -> deepseek/deepseek-flash
+PASS medium backup 2: openrouter/qwen/qwen3.6-35b-a3b -> openrouter/z-ai/glm-5.3-flash
+PASS heavy backup 1: openrouter/qwen/qwen3.8-27b -> deepseek/deepseek-flash
+PASS heavy backup 2: openrouter/qwen/qwen3.8-27b -> openrouter/z-ai/glm-5.3-flash
+
+result: PASS
+scope: advertised capabilities only; route independence compares the hosted route, not the upstream.

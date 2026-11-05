@@ -1,0 +1,193 @@
+{
+ "info": {
+  "id": "ses_e539a81e2ffdzrh1geqfyB1Q5h",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "claude-haiku-5-5",
+   "providerID": "anthropic",
+   "variant": "default"
+  },
+  "cost": 0.00043583999999999995,
+  "tokens": {
+   "input": 10,
+   "output": 109,
+   "reasoning": 94,
+   "cache": {
+    "read": 28959,
+    "write": 350
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793893695038,
+   "updated": 1793893706649,
+   "busy": 1793893695079,
+   "idle": 1793893697667,
+   "viewed": 1793893697667
+  },
+  "title": "[redacted:session-title:ses_e539a81e2ffdzrh1geqfyB1Q5h]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "revert": {
+   "messageID": "msg_1ac657e1d001UKsJnMxR366UgY",
+   "snapshot": "[REDACTED]",
+   "files": [
+    {
+     "file": "[redacted:revert-file:0]",
+     "patch": "[redacted:revert-patch:0]",
+     "additions": 0,
+     "deletions": 1,
+     "status": "deleted"
+    }
+   ]
+  },
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e539a81e2ffdzrh1geqfyB1Q5h]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac657e1d001UKsJnMxR366UgY",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac657e1d001UKsJnMxR366UgY"
+   },
+   "time": {
+    "created": 1793893695082
+   },
+   "text": "[redacted:text:msg_1ac657e1d001UKsJnMxR366UgY]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac657e6e001BEcTD2vrgf03s3",
+   "time": {
+    "created": 1793893695095,
+    "streamed": 1793893696691,
+    "completed": 1793893696733
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac657e6e001BEcTD2vrgf03s3"
+     },
+     "time": {
+      "created": 1793893696197,
+      "completed": 1793893696438
+     }
+    },
+    {
+     "type": "tool",
+     "id": "toolu_01J4nZ8Pa19kLYJNoPZJFqvu",
+     "name": "write",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac657e6e001BEcTD2vrgf03s3"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac657e6e001BEcTD2vrgf03s3]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac657e6e001BEcTD2vrgf03s3"
+      }
+     },
+     "time": {
+      "created": 1793893696440,
+      "ran": 1793893696686,
+      "completed": 1793893696694
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": [
+     "scratch2.txt"
+    ]
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_use",
+   "cost": 0.00023881,
+   "tokens": {
+    "input": 4,
+    "output": 75,
+    "reasoning": 94,
+    "cache": {
+     "read": 14141,
+     "write": 100
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6584e0001V3TpEhxoXZGv6C",
+   "time": {
+    "created": 1793893696738,
+    "streamed": 1793893697651,
+    "completed": 1793893697664
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6584e0001V3TpEhxoXZGv6C]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.00017836,
+   "tokens": {
+    "input": 2,
+    "output": 24,
+    "reasoning": 0,
+    "cache": {
+     "read": 14241,
+     "write": 190
+    }
+   }
+  },
+  {
+   "id": "msg_1ac658883001WB3Li3mzbs5CE2",
+   "time": {
+    "created": 1793893697667
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

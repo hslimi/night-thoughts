@@ -1,0 +1,189 @@
+{
+ "info": {
+  "id": "ses_e53797a8affdgjlLSNKAb3OLhA",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "qwen/qwen3.6-35b-a3b",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.002403128,
+  "tokens": {
+   "input": 12865,
+   "output": 706,
+   "reasoning": 258,
+   "cache": {
+    "read": 9888,
+    "write": 0
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793895859586,
+   "updated": 1793895911892,
+   "busy": 1793895859644,
+   "idle": 1793895911894,
+   "viewed": 1793895911894
+  },
+  "title": "[redacted:session-title:ses_e53797a8affdgjlLSNKAb3OLhA]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e53797a8affdgjlLSNKAb3OLhA]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac868575001AKjjhWiSK528LU",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac868575001AKjjhWiSK528LU"
+   },
+   "time": {
+    "created": 1793895859647
+   },
+   "text": "[redacted:text:msg_1ac868575001AKjjhWiSK528LU]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac8685c3001Ic3luUXwmawMwr",
+   "time": {
+    "created": 1793895859655,
+    "streamed": 1793895867773,
+    "completed": 1793895903781
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac8685c3001Ic3luUXwmawMwr]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac8685c3001Ic3luUXwmawMwr"
+     },
+     "time": {
+      "created": 1793895860676,
+      "completed": 1793895867768
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-bdf9ccabfe04c7c0",
+     "name": "subagent",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac8685c3001Ic3luUXwmawMwr"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac8685c3001Ic3luUXwmawMwr]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac8685c3001Ic3luUXwmawMwr"
+      }
+     },
+     "time": {
+      "created": 1793895862049,
+      "ran": 1793895867772,
+      "completed": 1793895903775
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_calls",
+   "cost": 0.0007617,
+   "tokens": {
+    "input": 471,
+    "output": 298,
+    "reasoning": 232,
+    "cache": {
+     "read": 9504,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac873229001OgTv5nwkCJTgrw",
+   "time": {
+    "created": 1793895903787,
+    "streamed": 1793895911880,
+    "completed": 1793895911892
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac873229001OgTv5nwkCJTgrw]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac873229001OgTv5nwkCJTgrw"
+     },
+     "time": {
+      "created": 1793895905370,
+      "completed": 1793895911877
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac873229001OgTv5nwkCJTgrw]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.001613,
+   "tokens": {
+    "input": 12296,
+    "output": 400,
+    "reasoning": 26,
+    "cache": {
+     "read": 0,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac8751d6002KIcZ54NNK3qFq9",
+   "time": {
+    "created": 1793895911894
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}
