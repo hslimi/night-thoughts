@@ -8,6 +8,7 @@ Sanitizing replaces only absolute paths and keys. Statuses and results are not e
 | `desktop-pings-2026-11-05.md` | Desktop pings on Best and Cheap routes | 2026-11-05 | 2.2.5 |
 | `glm-free-limit-failover.session.json` | Free-limit error followed by failover to a paid route | 2026-11-05 | 2.2.5 |
 | `protocol-results.md` | Results per protocol test | 2026-11-05 | 2.2.5 |
+| `test-receipts.md` | Per test: what it checks, setup, exact prompts, pass criteria, where it was checked | 2026-11-06 | 2.2.5 |
 | `best/01-tiers.session.json`, `best/01-tiers-router.session.json` | Test 1 | 2026-11-05 | 2.2.5 |
 | `best/02-image.session.json` | Test 2 | 2026-11-05 | 2.2.5 |
 | `best/03-pdf-native.session.json` | Test 3 | 2026-11-05 | 2.2.5 |
@@ -26,7 +27,9 @@ Sanitizing replaces only absolute paths and keys. Statuses and results are not e
 
 ## Screenshots
 
-Captured from the OpenCode Desktop window only, on a clean profile in dark mode at 1440×900. Each was inspected before being kept. None has been uploaded.
+Captured from the OpenCode Desktop window only, on a clean profile in dark mode at 1440×900. Each was inspected before being kept. The article uses copies uploaded to the Hashnode CDN.
+
+The cover and the provider diagram in `../figures/` are drawings, not screenshots. They were rendered from the HTML in `../figures/source/`.
 
 | File | Alt text | Date |
 |---|---|---|
