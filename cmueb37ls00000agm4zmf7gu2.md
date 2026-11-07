@@ -1,5 +1,7 @@
 ---
 title: "Security and Governance: The Guardrails That Make AI Safe to Use"
+seoTitle: "AI Guardrails: Security and Governance for AI Agents"
+seoDescription: "How security and governance keep AI safe to use: threats, roles, NIST AI RMF, ISO 42001, OWASP LLM Top 10, Qodo for code agents, a checklist."
 datePublished: 2026-09-23T16:17:12.281Z
 cuid: cmueb37ls00000agm4zmf7gu2
 slug: security-and-governance-the-guardrails-that-make-ai-safe-to-use
