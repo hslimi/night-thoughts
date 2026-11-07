@@ -6,7 +6,7 @@ datePublished: 2026-10-05T01:00:57.055Z
 cuid: cmuujn4g3000007od8hzf0tlk
 slug: openai-devday-2026-when-the-tool-becomes-the-worker
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/e1ee8b21-3ac7-4fc2-b62d-0b518eee047e.jpg
-tags: ai, developer, openai, llm, agents
+tags: ai, developer, openai, llm, ai-agents
 
 ---
 
