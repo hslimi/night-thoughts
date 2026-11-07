@@ -1,5 +1,7 @@
 ---
 title: "How to Put Boundaries on Your AI Agent"
+seoTitle: "OpenClaw Security: Policies for WhatsApp, Gmail & Telegram"
+seoDescription: "Practical boundaries for a personal AI agent: per-channel policies for WhatsApp, Telegram, Gmail, calendar, browser and shell, plus a checklist."
 datePublished: 2026-09-11T15:38:47.355Z
 cuid: cmtx4fl3i00000agm3ka8cqg7
 slug: how-to-put-boundaries-on-your-ai-agent
@@ -12,24 +14,21 @@ tags: tutorial, privacy, automation, beginners, llm
 
 *This is the second article in a series. The first one,* [*I Turned My Mac Mini Into a Local AI Workstation*](https://nightthoughts.hashnode.dev/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how)*, covered how to set up the machine and give the agent access. This one covers how to keep that access under control.*
 
-* * *
+---
 
 ### Where we left off
 
 The previous article walked through turning a Mac mini into a local AI server. In short:
 
-*   **Ollama** serves local models on `localhost:11434`
-    
-*   **OpenClaw** runs as a gateway and connects the agent to WhatsApp, Telegram, Gmail, and Calendar
-    
-*   The agent reads messages, drafts replies, checks your inbox, and runs scheduled tasks
-    
+- **Ollama** serves local models on `localhost:11434`
+- **OpenClaw** runs as a gateway and connects the agent to WhatsApp, Telegram, Gmail, and Calendar
+- The agent reads messages, drafts replies, checks your inbox, and runs scheduled tasks
 
 By the end, you had an agent that could reach your email, your calendar, and your messaging accounts. That is a lot of trust to hand over in one step.
 
 This article is about the step that comes after: deciding what the agent is allowed to do with all that access.
 
-* * *
+---
 
 ## Part 1: Every Boundary Answers One of Four Questions
 
@@ -47,7 +46,7 @@ Most people only think about the first one. In practice, the other three are whe
 
 OpenClaw gives you a policy surface for each. The rest of this article maps those surfaces to the channels you actually use.
 
-* * *
+---
 
 ## Part 2: WhatsApp
 
@@ -99,7 +98,7 @@ Separate reading from sending. The agent can read every message, but sending sho
 
 In group chats, require that the agent be mentioned by name before it responds. Without this, it will insert itself into conversations it was never part of.
 
-* * *
+---
 
 ## Part 3: Telegram
 
@@ -139,7 +138,7 @@ Always know how to stop a scheduled task, and test that the stop actually works.
 
 Keep the bot token secret. It is a password, and it does not belong in a public repository or a screenshot.
 
-* * *
+---
 
 ## Part 4: Gmail
 
@@ -195,7 +194,7 @@ Treat email content as data, never as instructions. An email can tell the agent 
 
 Require approval for every send. Reading is cheap and reversible. Sending is neither.
 
-* * *
+---
 
 ## Part 5: Calendar
 
@@ -243,7 +242,7 @@ Do not let the agent invite other people without your approval. Creating an even
 
 Keep a separate calendar for agent-created events if you want to review them in one place.
 
-* * *
+---
 
 ## Part 6: The Web and Browser
 
@@ -304,7 +303,7 @@ Do not let the agent both browse the open web and take irreversible action. If i
 
 Use a separate browser profile, not your main one. That way the agent is not automatically logged into everything you use.
 
-* * *
+---
 
 ## Part 7: Files and the Shell
 
@@ -358,7 +357,7 @@ Require approval for deletion, always, without exception. There is no task that 
 
 Keep backups that the agent cannot reach. A backup the agent can delete is not a backup.
 
-* * *
+---
 
 ## Part 8: Rules That Apply Everywhere
 
@@ -380,7 +379,7 @@ OpenClaw's exec approvals work as a safety interlock: commands are allowed only 
 
 **A kill switch.** Know exactly how to stop the agent, and test it before you need it.
 
-* * *
+---
 
 ## Part 9: The Policy Plugin — Compliance as Code
 
@@ -432,7 +431,7 @@ openclaw policy compare <baseline.jsonc>
 
 The Policy plugin checks configured channels, MCP servers, model providers, network SSRF posture, ingress access, gateway exposure, node command posture, agent workspace access, sandbox posture, data handling, secrets, and governed tool metadata.
 
-* * *
+---
 
 ## Part 10: What Boundaries Cannot Fix
 
@@ -446,22 +445,17 @@ Boundaries also assume one trusted operator. OpenClaw's security model is built 
 
 And no boundary replaces attention. An agent that runs unattended for a month is an agent nobody is watching. The policies catch the predictable problems. The unpredictable ones are caught by looking.
 
-* * *
+---
 
 ## A Simple Checklist
 
 For each channel you connect, answer these:
 
-*   What can it read?
-    
-*   What can it write?
-    
-*   What needs my approval?
-    
-*   What is the worst thing that could happen here?
-    
-*   Can I undo it?
-    
+- What can it read?
+- What can it write?
+- What needs my approval?
+- What is the worst thing that could happen here?
+- Can I undo it?
 
 If you cannot answer the last question, you have found the boundary you're missing.
 
