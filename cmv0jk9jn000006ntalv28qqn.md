@@ -1,5 +1,7 @@
 ---
 title: "Running LLMs Locally: How to Pick the Right Tool and Model for Your Machine"
+seoTitle: "How to Run LLMs Locally: Pick the Right Tool and Model"
+seoDescription: "Match a local LLM tool and model to your hardware: memory limits, GGUF vs MLX, quantization, trusted Hugging Face uploaders and a cheat sheet."
 datePublished: 2026-10-09T05:45:20.752Z
 cuid: cmv0jk9jn000006ntalv28qqn
 slug: running-llms-locally-how-to-pick-the-right-tool-and-model-for-your-machine
@@ -15,7 +17,7 @@ Running a model on your own machine buys you privacy, offline access, no rate li
 **Minimum viable hardware.** If you are below these numbers, you can still run something, but the experience will be limited. This is the honest floor:
 
 | Your RAM / VRAM | What you can realistically run | What to expect |
-|---|---|---|
+| --- | --- | --- |
 | Under 8 GB | 1–3B models, Q4 | Works, but slow and shallow. Fine for autocomplete or toy chat. |
 | 8 GB | 3–4B comfortably; 7–8B at Q4 is tight | Usable for light chat. Close other apps. |
 | 16 GB | 7–8B at Q4 comfortably; 13B at Q4 tight | The realistic starting point for a useful local assistant. |
@@ -31,7 +33,7 @@ Two things eat memory beyond the model file: the **context window** (longer conv
 People compare tools that operate at different layers. Sort them before comparing:
 
 | Layer | Examples | What it means for you |
-|---|---|---|
+| --- | --- | --- |
 | **Inference engine** | llama.cpp, MLX, ExLlamaV2, uzu | The thing that actually runs the math. Maximum control, minimum hand-holding. |
 | **Wrapper / launcher** | Ollama | Sits on top of an engine, adds model management, an API, and one-command installs. |
 | **Desktop app** | LM Studio, Jan, GPT4All, Mirai | A GUI on top of an engine. Point, click, download, chat. |
@@ -46,7 +48,7 @@ Ollama is not a competitor to llama.cpp — it *contains* llama.cpp. LM Studio w
 The single most important spec is memory, not CPU speed. Then it's which accelerator you have, because that determines which engine backends are available to you.
 
 | Your chip | Backend you get | Practical consequence |
-|---|---|---|
+| --- | --- | --- |
 | Apple Silicon (M1–M4) | Metal | Unified memory means the GPU can use most of your RAM. Excellent for local LLMs. |
 | NVIDIA GPU | CUDA | Best-supported path. Almost every tool works. |
 | AMD GPU (Linux) | ROCm / HIP | Works well with recent ROCm. |
@@ -58,7 +60,7 @@ The single most important spec is memory, not CPU speed. Then it's which acceler
 The rule of thumb for model sizing at 4-bit quantization is roughly **0.6–0.8 GB per billion parameters**, plus 1–2 GB overhead, plus context. That gives you this:
 
 | Model size | Q4 file size | Comfortable RAM/VRAM |
-|---|---|---|
+| --- | --- | --- |
 | 1–3B | 0.7–2 GB | 4 GB |
 | 7–8B | 4–5 GB | 8 GB |
 | 13–14B | 7–9 GB | 12–16 GB |
@@ -72,7 +74,7 @@ The rule of thumb for model sizing at 4-bit quantization is roughly **0.6–0.8 
 No single tool wins everywhere. Here is the neutral comparison:
 
 | Tool | Type | Runs on | Best for | Watch out for |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | **Ollama** | Wrapper | Mac, Windows, Linux | Easiest setup, model library, OpenAI-compatible API | Slightly slower than raw llama.cpp; less control over flags |
 | **LM Studio** | Desktop app | Mac, Windows, Linux | GUI, model discovery, shows what fits your RAM | Proprietary (free to use); heavier footprint |
 | **llama.cpp** | Engine | Almost everything | Maximum control, fastest on CPU, widest backend support | Command line; you configure everything yourself |
@@ -86,7 +88,7 @@ No single tool wins everywhere. Here is the neutral comparison:
 Now map that to your machine. Both columns are legitimate choices — the trade-off is stated so you can decide:
 
 | Your machine | Easiest path | More control | What you trade |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Mac M1–M4, 16 GB+ | Ollama or LM Studio | uzu, MLX, or llama.cpp | uzu claims the fastest Mac inference but has the smallest model library; MLX is Apple-native with more models; llama.cpp needs manual setup |
 | Windows + NVIDIA | LM Studio or Ollama | llama.cpp | GUI convenience vs. flag-level control and slightly more speed |
 | Windows + AMD | LM Studio (Vulkan) | llama.cpp | ROCm on Windows is unreliable; Vulkan is the safe path |
@@ -103,7 +105,7 @@ Now map that to your machine. Both columns are legitimate choices — the trade-
 Some tools ship with the model's context length, chat template, sampling parameters, and quant level already chosen. Others make you specify all of it. This is the convenience-versus-control axis, and it matters more than most beginners realize.
 
 | Tool | What's pre-configured | What you can still change |
-|---|---|---|
+| --- | --- | --- |
 | Ollama | Chat template, context length, sampling defaults, system prompt — all in a Modelfile | Anything, by editing the Modelfile |
 | LM Studio | Chat template, context length, GPU offload, sampling presets | All of it, via the UI |
 | llama.cpp | Almost nothing. You pass flags yourself. | Everything |
@@ -130,8 +132,8 @@ Two distinctions matter for choosing.
 
 **Dense vs. Mixture-of-Experts (MoE).** A dense model activates all its parameters for every token. An MoE model has many "experts" but only activates a few per token, so a 30B MoE might only use 3B parameters at a time.
 
-| | Dense | MoE |
-|---|---|---|
+|  | Dense | MoE |
+| --- | --- | --- |
 | Parameters active per token | All | A subset |
 | Memory needed | Proportional to total size | Proportional to total size (all experts must be loaded) |
 | Speed | Predictable | Can be much faster than its size suggests |
@@ -149,7 +151,7 @@ The practical takeaway: an MoE model is faster than a dense model of the *same t
 Four techniques show up in the wild. Only one of them is something you'll actively choose.
 
 | Technique | One-line explanation | Do you choose it? |
-|---|---|---|
+| --- | --- | --- |
 | **Quantization** | Store weights at lower precision (16-bit → 4-bit) | Yes — this is the main lever you control |
 | **Pruning** | Remove unimportant weights or whole layers | No — it's baked into the model by its authors |
 | **Distillation** | Train a small model to imitate a large one | No — it's how the model was made |
@@ -158,7 +160,7 @@ Four techniques show up in the wild. Only one of them is something you'll active
 Quantization is where your decisions live. Lower bits mean smaller files and faster inference, at the cost of quality. This table is the one to internalize:
 
 | Quant | Size vs. FP16 | Quality | Use when |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Q8_0 | ~50% | Near-lossless | You have memory to spare |
 | Q6_K | ~40% | Excellent | Good balance |
 | Q5_K_M | ~35% | Very good | Safe default |
@@ -175,7 +177,7 @@ A note on the naming: `Q` = quantized, the number = bits, `K` = K-quant (better 
 This is where most beginners get stuck, because a model you download may or may not work with the tool you installed.
 
 | Format | Type | CPU? | NVIDIA | AMD | Apple | Read by |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | **GGUF** | Single file | Yes — best CPU path | Yes | Yes | Yes | Ollama, LM Studio, llama.cpp, Jan, GPT4All |
 | **GPTQ** | safetensors directory | No | Yes | Limited | No | vLLM, ExLlamaV2 |
 | **AWQ** | safetensors directory | No | Yes | Limited | No | vLLM |
@@ -196,7 +198,7 @@ Second, **GGUF is a single file**; the others are directories of `safetensors` s
 
 ### On Hugging Face
 
-1. Go to **huggingface.co/models**.
+1. Go to [**huggingface.co/models**](http://huggingface.co/models).
 2. In the left filter panel, open **Libraries** and select **GGUF**.
 3. Search by base model family (e.g., `Qwen`, `Llama`, `Gemma`, `Mistral`).
 4. Sort by **Trending** for what's current, or **Most downloads** for what's proven.
@@ -212,11 +214,11 @@ Quantization quality varies by who did it. These accounts have good reputations:
 ### Other places to look
 
 | Source | What you get | Best for |
-|---|---|---|
+| --- | --- | --- |
 | Hugging Face | The largest catalog, all formats | Everything, especially GGUF |
-| Ollama library (ollama.com/library) | Curated models, one-command pull | Fastest path from zero to chatting |
+| Ollama library ([ollama.com/library](http://ollama.com/library)) | Curated models, one-command pull | Fastest path from zero to chatting |
 | LM Studio's built-in search | Models filtered by what fits your RAM | Beginners who want a GUI |
-| Mirai model library (trymirai.com/models) | Curated uzu-format models | Mac users who've chosen speed over selection |
+| Mirai model library ([trymirai.com/models](http://trymirai.com/models)) | Curated uzu-format models | Mac users who've chosen speed over selection |
 | ModelScope | Large catalog, strong on Chinese-language models | Non-English models |
 
 ---
@@ -226,7 +228,7 @@ Quantization quality varies by who did it. These accounts have good reputations:
 Find your machine, pick the column that matches your appetite for setup, and run the model class listed. Speed figures are rough and depend heavily on the specific model and context length.
 
 | Your machine | Tool | Model class | Format / quant | Rough speed |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | MacBook Air M1, 8 GB | Ollama or LM Studio | 3–4B instruct | GGUF Q4_K_M | 15–25 tok/s |
 | MacBook Pro M3 Pro, 18 GB | LM Studio or Mirai (uzu) | 7–8B instruct | GGUF Q4_K_M or uzu 4-bit | 25–50 tok/s |
 | Mac Studio M2 Ultra, 64 GB | Mirai (uzu) or Ollama | 27B dense, or 70B at Q3 | uzu 4-bit or GGUF Q4 | 15–40 tok/s |
