@@ -1,5 +1,7 @@
 ---
 title: "Cline: The Open-Source AI Coding Agent That Lives in Your ID"
+seoTitle: "Cline AI Coding Agent: Setup for VS Code and Cursor"
+seoDescription: "Install and configure Cline, the open-source coding agent for VS Code and Cursor: approvals, models, MCP servers, pricing and how it compares."
 datePublished: 2026-09-10T19:38:44.286Z
 cuid: cmtvxkb6b00000bgm2dvfge0h
 slug: cline-the-open-source-ai-coding-agent-that-lives-in-your-id
