@@ -1,6 +1,8 @@
 ---
 title: "The Qwen Uncensored Model: How "Brain Surgery" Removed AI Safety Rules
 "
+seoTitle: "Qwen Uncensored: How Abliteration Removes AI Safety Rules"
+seoDescription: "How 'brain surgery' on model weights stripped refusals from a Qwen 27B model, why it works, and what it means for open-weight AI safety."
 datePublished: 2026-10-03T15:04:31.738Z
 cuid: cmusiw9np000006l36qey9ecj
 slug: the-qwen-uncensored-model-how-brain-surgery-removed-ai-safety-rules
