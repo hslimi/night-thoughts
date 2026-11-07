@@ -1,5 +1,7 @@
 ---
 title: "Memory Mosaics: The AI That Learns Faster by Reading Less"
+seoTitle: "Memory Mosaics: AI That Learns From Far Less Data"
+seoDescription: "Meta's Memory Mosaics learn new tasks from far less data than transformers: who built it, what they found, the code, and what improved."
 datePublished: 2026-10-08T23:15:20.746Z
 cuid: cmv05mpzm000007jz0cp652da
 slug: memory-mosaics-the-ai-that-learns-faster-by-reading-less
