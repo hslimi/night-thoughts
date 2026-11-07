@@ -5,7 +5,7 @@ seoDescription: "What retrieval-augmented generation is and how an AI uses its o
 datePublished: 2026-10-05T18:19:35.871Z
 cuid: cmuvkqu0y000006p42zze46nt
 slug: rag-explained-for-beginners
-tags: artificial-intelligence, python, machine-learning, llm, vector-databases
+tags: ai, python, machine-learning, llm, vector-databases
 
 ---
 
