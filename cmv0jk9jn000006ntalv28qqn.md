@@ -10,7 +10,7 @@ tags: ai, llm, gguf, ollama, local-llm
 
 ---
 
-## Before you start: what local LLMs can and can't do
+## Before you start: what can local LLMs do, and what can't they?
 
 Running a model on your own machine buys you privacy, offline access, no rate limits, and no per-token bill. It does not buy you frontier-level intelligence. A 7B model running on your laptop is roughly "a competent assistant for drafts, summaries, translations, simple code, and offline Q&A." It is not a substitute for the largest cloud models on hard reasoning tasks. Set that expectation first, because most disappointment with local LLMs comes from comparing a 4 GB model to a trillion-parameter cloud service.
 
@@ -43,7 +43,7 @@ Ollama is not a competitor to llama.cpp — it *contains* llama.cpp. LM Studio w
 
 ---
 
-## Step 1: Know your machine
+## Step 1: How much memory does your machine need?
 
 The single most important spec is memory, not CPU speed. Then it's which accelerator you have, because that determines which engine backends are available to you.
 
@@ -172,7 +172,7 @@ A note on the naming: `Q` = quantized, the number = bits, `K` = K-quant (better 
 
 ---
 
-## Step 5: File formats
+## Step 5: Which file format should you use?
 
 This is where most beginners get stuck, because a model you download may or may not work with the tool you installed.
 
@@ -223,7 +223,7 @@ Quantization quality varies by who did it. These accounts have good reputations:
 
 ---
 
-## Step 7: The cheat sheet
+## Step 7: Which tool and model should you run? The cheat sheet
 
 Find your machine, pick the column that matches your appetite for setup, and run the model class listed. Speed figures are rough and depend heavily on the specific model and context length.
 
@@ -245,3 +245,21 @@ If you take nothing else from this article: **GGUF, Q4_K_M, an instruct model th
 ## Three quick-start recipes
 
 **Ollama (any platform, easiest):**
+
+## FAQ
+
+### How much RAM do I need to run a local LLM?
+
+At 4-bit quantization, plan for roughly 0.6 to 0.8 GB per billion parameters, plus 1 to 2 GB of overhead and room for context. In practice: 7–8B models need about 8 GB, 13–14B about 12–16 GB, 30–34B about 24–32 GB, and 70B 48 GB or more.
+
+### What is the safest default setup?
+
+A GGUF file, Q4_K_M quantization, and an instruct model that fits in your RAM. That combination works on every platform and tool in this guide.
+
+### Is a Mac good for running local LLMs?
+
+Apple Silicon Macs are excellent: the GPU uses Metal and can draw on most of the unified memory. Intel Macs have no GPU acceleration and should be treated as CPU-only.
+
+### How fast will a local model be?
+
+It depends on the machine and model. Rough figures: a 3–4B model on an 8 GB M1 MacBook Air runs at 15–25 tokens per second, a 30B model at Q4 on an RTX 4090 at 60–100, and a 7–8B model on a CPU-only server at 3–8.
