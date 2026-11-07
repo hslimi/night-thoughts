@@ -1,5 +1,7 @@
 ---
 title: "Built to Leave: Vendor vs. In-House, AI's Two Races and the Sovereignty Illusion"
+seoTitle: "Built to Leave: Cloud Dependency, AI and Sovereignty"
+seoDescription: "A three-part essay on build vs buy in finance, AI's twin security and competitive races, and why cloud sovereignty is harder than it looks."
 datePublished: 2026-10-02T13:37:43.359Z
 cuid: cmur0cs6e000006p081wi6gqf
 slug: the-old-trade-off-vendor-vs-in-house-before-ai-changed-the-rules
