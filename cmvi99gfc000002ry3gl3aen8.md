@@ -6,7 +6,7 @@ datePublished: 2026-10-21T15:16:51.461Z
 cuid: cmvi99gfc000002ry3gl3aen8
 slug: technical-breakdown-of-ornith-1-5-122b-impressive-data-moe-architecture-and-licensing-caveats
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/3b17fdde-e942-4ba8-a886-cab7c09a42a9.jpg
-tags: ai, opensource, machine-learning, software-engineering, machinelearning
+tags: ai, opensource, machine-learning, software-engineering
 
 ---
 
