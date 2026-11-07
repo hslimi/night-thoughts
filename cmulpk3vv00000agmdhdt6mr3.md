@@ -1,5 +1,7 @@
 ---
 title: "How to Set Up NVIDIA API Keys and Use Them with Ollama and OpenClaw on a Mac Mini (Part 1)"
+seoTitle: "NVIDIA Free API with Ollama and OpenClaw on a Mac mini"
+seoDescription: "Use NVIDIA's free hosted models from a Mac mini: create an API key, run an Ollama-compatible proxy with launchd, and wire it into OpenClaw."
 datePublished: 2026-09-28T20:36:38.483Z
 cuid: cmulpk3vv00000agmdhdt6mr3
 slug: how-to-set-up-nvidia-api-keys-and-use-them-with-ollama-and-openclaw-on-a-mac-mini-part-1
