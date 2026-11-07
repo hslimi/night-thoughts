@@ -1,5 +1,7 @@
 ---
 title: "Agent Orchestration with OpenClaw: A Multi-Agent Blogging System"
+seoTitle: "Multi-Agent Orchestration with OpenClaw: Local Blog Pipeline"
+seoDescription: "A 13-agent pipeline on a Mac mini that researches, writes, illustrates, reviews and publishes articles with OpenClaw, Ollama and SearXNG."
 datePublished: 2026-10-07T02:19:16.945Z
 cuid: cmuxhbk8h000006l30rn35vmx
 slug: agent-orchestration-with-openclaw-a-multi-agent-blogging-system
@@ -8,7 +10,7 @@ tags: orchestration, ai-agents, ollama, local-llm, multi-agent, openclaw
 
 ---
 
-## 1. Purpose and Design Principles
+## 1\. Purpose and Design Principles
 
 This guide teaches **multi-agent orchestration** through a concrete, end-to-end example: an autonomous blogging system.
 
@@ -47,7 +49,7 @@ A pipeline that only works until you restart the Mac is not a pipeline. It is a 
 The guide installs every service with an explicit always-on mechanism. Four services need four different mechanisms because macOS handles each differently:
 
 | Service | Mechanism | Persists Across Reboot? |
-|---|---|---|
+| --- | --- | --- |
 | Ollama | LaunchAgent plist | Yes |
 | OpenClaw Gateway | launchd via `openclaw gateway install` | Yes |
 | Kev | Supervisor via `brew services` | Yes |
@@ -60,7 +62,7 @@ By the end of the install sections, you can reboot the Mac and every service com
 The guide uses **four Ollama models** and one decision model. Each was chosen for a specific cognitive role, not for raw benchmark score.
 
 | Model | Role | Used By |
-|---|---|---|
+| --- | --- | --- |
 | qwen3.6:35b-a3b | Fast structured generation | router, explainer, paper-reviewer, solution-architect, content-reviewer |
 | qwen2.5-coder:32b | Code and determinism | tech-toolbox, mac-hands-on, man-human, illustrators, publisher, local-publisher |
 | batiai/gemma4-26b:iq4 | Creative writing | story-writer, illustrator-story |
@@ -73,14 +75,14 @@ No agent uses a model that does not fit its job. No model is overkill.
 
 ---
 
-## 2. Prerequisites
+## 2\. Prerequisites
 
 Before you start, confirm you have everything in this section. The install steps will fail silently or partially if any of these are missing.
 
 ### 2.1 Hardware
 
 | Requirement | Minimum | Recommended |
-|---|---|---|
+| --- | --- | --- |
 | Mac with Apple Silicon | M1 with 32 GB unified memory | M4 Pro with 48 GB unified memory |
 | Free disk space | 100 GB | 200 GB |
 | macOS version | 14 (Sonoma) | 15 (Sequoia) or later |
@@ -97,7 +99,7 @@ The rest of this guide uses Hashnode as the example destination, but the local p
 
 What you need for the default Hashnode path:
 
-1. A Hashnode account at https://hashnode.com
+1. A Hashnode account at <https://hashnode.com>
 2. A publication (blog) that you own
 3. An active **Pro plan** on that publication
 
@@ -105,7 +107,7 @@ To check your plan: open your blog dashboard, go to Billing, and look for the Pr
 
 You will need two values from Hashnode, obtained in Section 9.1:
 
-- A **Personal Access Token** (`HASHNODE_PAT`), from https://hashnode.com/settings/developer
+- A **Personal Access Token** (`HASHNODE_PAT`), from <https://hashnode.com/settings/developer>
 - Your **Publication ID** (`HASHNODE_PUBLICATION_ID`), from the second segment of your dashboard URL
 
 ### 2.3 Google Gemini API Key (Or Local Image Generation Alternative)
@@ -115,7 +117,7 @@ The default illustrator agents generate cover images using Gemini's Imagen API. 
 What you need for the default Gemini path:
 
 1. A Google account
-2. A Gemini API key from https://aistudio.google.com/app/apikey
+2. A Gemini API key from <https://aistudio.google.com/app/apikey>
 
 The free tier of the Gemini API is sufficient for testing. For production use with many articles, expect to pay for image generation beyond the free quota.
 
@@ -154,7 +156,7 @@ The pipeline is designed to run without any of these. That is the point.
 
 ---
 
-## 3. The Blogger Usecase
+## 3\. The Blogger Usecase
 
 ### 3.1 What the Blogger Does
 
@@ -195,7 +197,7 @@ Each stage reads the previous stage's output from a file and writes its own. The
 
 ---
 
-## 4. The Architecture: Who Does What and Why
+## 4\. The Architecture: Who Does What and Why
 
 ### 4.1 The Orchestration Pattern
 
@@ -228,7 +230,7 @@ Four spawns, four yields, five turns.
 The router agent's work splits into two layers that are easy to confuse:
 
 | Layer | Who does it | What it is |
-|---|---|---|
+| --- | --- | --- |
 | **Classification** | Kev (the decision model) | Reads the topic and returns a typed choice: `{ choice: "story-writer", confidence: 0.94 }` |
 | **Orchestration** | The router LLM | Calls Kev, reads the reply, writes the route file, spawns each specialist, yields, wakes on completion, moves to the next stage |
 
@@ -240,7 +242,7 @@ If you want to reclaim memory, you can swap the router to `qwen2.5-coder:32b` (1
 
 ### 4.3 High-Level Flow
 
-```
+```plaintext
 User Prompt
     │
     ▼
@@ -285,7 +287,7 @@ User Prompt
 ### 4.4 The Agent Roster
 
 | Agent | Role | Content Type | Primary Model |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | router | Call Kev + orchestrate | — | qwen3.6:35b-a3b |
 | paper-reviewer | Academic paper reviews | paper-review | qwen3.6:35b-a3b |
 | explainer | Simple concept explanations | explainer | qwen3.6:35b-a3b |
@@ -326,7 +328,7 @@ If you use the local publisher alternative (Section 11.1), the `publisher` agent
 ### 4.6 Division of Labor
 
 | Layer | Tool |
-|---|---|
+| --- | --- |
 | Content type classification | Kev decision model |
 | Pipeline orchestration | Router LLM (sessions_spawn + sessions_yield) |
 | Model selection | Per-agent config |
