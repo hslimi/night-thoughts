@@ -8,7 +8,7 @@ tags: ai, vendor, finance, public-cloud
 
 ---
 
-*This is the first chapter of **Built to Leave**, a series on cloud dependency, sovereignty, and the architecture that makes exit possible. The series follows the problem from its origins — the build-vs-buy trade-off that predates AI — through the structural costs of cloud dependency, the work required to regain control, and the architectural shift that AI workloads are now forcing. Full table of contents: [nightthoughts.hashnode.dev/build-to-leave](https://nightthoughts.me/series/build-to-leave)*
+*This is the first chapter of **Built to Leave**, a series on cloud dependency, sovereignty, and the architecture that makes exit possible. The series follows the problem from its origins — the build-vs-buy trade-off that predates AI — through the structural costs of cloud dependency, the work required to regain control, and the architectural shift that AI workloads are now forcing. Full table of contents: [nightthoughts.me/series/build-to-leave](https://nightthoughts.me/series/build-to-leave)*
 
 ---
 
