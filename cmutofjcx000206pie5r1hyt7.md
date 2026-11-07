@@ -1,7 +1,7 @@
 ---
 title: "How a Laptop Learned to Run a Giant: A Plain-English Guide to Local vs Cloud AI"
-seoTitle: "How to Run a 70B LLM on a Laptop: Quantization & Offloading"
-seoDescription: "Three tricks that let a 140 GB model run on 8-16 GB of VRAM: shrinking it, splitting the load between GPU and CPU, and doing less work."
+seoTitle: "Run Big AI Models on a Laptop: Local vs Cloud AI Guide"
+seoDescription: "How quantization and offloading fit giant models on a laptop, why model size matters less, the real cost of local vs cloud, and why hybrid wins."
 datePublished: 2026-10-04T10:27:15.014Z
 cuid: cmutofjcx000206pie5r1hyt7
 slug: how-a-laptop-learned-to-run-a-giant
