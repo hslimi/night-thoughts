@@ -1,5 +1,7 @@
 ---
 title: "Memory for AI Agents: Architectures, Tools, and How to Choose the Right One"
+seoTitle: "AI Agent Memory: Architectures, Tools and How to Choose"
+seoDescription: "Why agents need memory, the four memory types, architectural patterns, the tool landscape, selection criteria, and when Memori fits or not."
 datePublished: 2026-09-20T13:53:16.911Z
 cuid: cmu9vmkiq00010agm2j86br0p
 slug: memory-for-ai-agents-architectures-tools-and-how-to-choose-the-right-one
