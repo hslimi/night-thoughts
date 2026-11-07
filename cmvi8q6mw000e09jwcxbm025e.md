@@ -1,5 +1,7 @@
 ---
 title: "Onyx: The Open-Source AI Assistant That Keeps Company Data at Home"
+seoTitle: "Onyx (ex-Danswer): Self-Hosted AI Search for Company Data"
+seoDescription: "Onyx is an open-source, self-hosted AI assistant that connects to Drive, Slack, Jira and Confluence and answers questions without data leaving."
 datePublished: 2026-10-21T15:01:52.286Z
 cuid: cmvi8q6mw000e09jwcxbm025e
 slug: onyx-the-open-source-ai-assistant-that-keeps-company-data-at-home
