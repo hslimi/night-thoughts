@@ -1,5 +1,7 @@
 ---
 title: "OpenAI DevDay 2026: When the Tool Becomes the Worker"
+seoTitle: "OpenAI DevDay 2026: GPT-6.1 Sol, Dots and the Agents API"
+seoDescription: "OpenAI DevDay 2026 in brief: GPT-6.1 Sol pricing, Dots for managing AI work, the Agents API going general, and what developers should do next."
 datePublished: 2026-10-05T01:00:57.055Z
 cuid: cmuujn4g3000007od8hzf0tlk
 slug: openai-devday-2026-when-the-tool-becomes-the-worker
