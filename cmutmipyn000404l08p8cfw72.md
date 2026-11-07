@@ -7,7 +7,7 @@ tags: ai, technology, machine-learning, llm, local-ai
 
 ---
 
-*New to the jargon? Start with the [plain-English glossary](https://nightthoughts.hashnode.dev/plain-english-glossary-ai-terms-for-the-rest-of-us).*
+*New to the jargon? Start with the [plain-English glossary](https://nightthoughts.me/plain-english-glossary-ai-terms-for-the-rest-of-us).*
 
 ---
 
