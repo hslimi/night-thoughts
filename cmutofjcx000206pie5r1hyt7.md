@@ -9,7 +9,7 @@ tags: ai, machine-learning, hardware, llm, local-ai
 
 ---
 
-New to the jargon? [Start with the glossary →](https://nightthoughts.hashnode.dev/plain-english-glossary-ai-terms-for-the-rest-of-us)
+New to the jargon? [Start with the glossary →](https://nightthoughts.me/plain-english-glossary-ai-terms-for-the-rest-of-us)
 
 ---
 
@@ -69,4 +69,4 @@ That's why a laptop can do this. It's not performing miracles. It's just reading
 
 **Next in the series:** [The New Shape of AI Models →](#)
 
-**New to the jargon?** Every term in this series has a plain-English explanation in the [glossary](https://nightthoughts.hashnode.dev/plain-english-glossary-ai-terms-for-the-rest-of-us).
+**New to the jargon?** Every term in this series has a plain-English explanation in the [glossary](https://nightthoughts.me/plain-english-glossary-ai-terms-for-the-rest-of-us).
