@@ -12,6 +12,50 @@ A Mac mini running Ollama and OpenClaw is a capable local AI stack. The missing 
 
 This guide shows how to obtain an NVIDIA API key, run a local proxy that translates Ollama and OpenAI calls to NVIDIA NIM, and configure OpenClaw to use NVIDIA models directly.
 
+## Why NVIDIA's Free API Tier Is Worth Using
+
+NVIDIA offers free access to some of the most capable open models through its hosted API at [build.nvidia.com](https://build.nvidia.com). No GPU, no subscription: you sign up, create a key, and call an OpenAI-compatible endpoint (`https://integrate.api.nvidia.com/v1`). Here is what that gives you before we wire it into Ollama and OpenClaw.
+
+### The Free Models You Can Use
+
+NVIDIA has opened free access to a catalog of open-weight AI models through its developer platform at **build.nvidia.com**. This means you can use these models without paying for tokens or requests. Some of the models available include:
+
+*   **DeepSeek V4.1 Flash** – good for fast reasoning and coding tasks.
+    
+*   **GLM 5.3** – a very large model designed for long coding sessions and tool use.
+    
+*   **GLM 5.3 Flash** – a faster, lighter version of GLM.
+    
+*   **Kimi K3** – a massive model built for long conversations and coding.
+    
+
+There are also other models like Nemotron and MiniMax, and the catalog keeps growing.
+
+These are not small, stripped-down demo versions. Kimi K3, for example, is a huge model with billions of parameters. Running it on your own computer would require a server room full of expensive hardware. NVIDIA hosts everything on their own powerful machines.
+
+### What You Can Do With It
+
+Here are some practical things you can build:
+
+*   **A coding helper** that suggests fixes for your code.
+    
+*   **A document summarizer** that reads long articles and gives you the key points.
+    
+*   **A chatbot** for your website that answers common questions.
+    
+*   **A study assistant** that explains difficult topics in simple terms.
+    
+
+You can also connect these models to coding tools like Cursor or OpenCode, which have built-in NVIDIA integration.
+
+### A Few Things to Know
+
+The free tier runs on a **rate limit of about 40 requests per minute** for most models. This means you can make up to 40 requests every minute. For personal projects, learning, and small experiments, this is usually more than enough.
+
+If you need more, you can always look at the "Deploy" section on NVIDIA's website to run the model on your own infrastructure or through a cloud partner.
+
+There is also a **free credit allowance** for new accounts, which gives you some extra room before you ever need to think about limits.
+
 ## Before You Start: Ollama and OpenClaw Setup
 
 This guide assumes Ollama and OpenClaw are already installed, running, and configured on the Mac mini. If they are not, the foundation is covered in the previous guide: [I Turned My Mac Mini Into a Local AI Workstation — Here's Exactly How](https://nightthoughts.me/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how).
