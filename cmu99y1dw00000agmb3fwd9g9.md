@@ -1,5 +1,7 @@
 ---
 title: "What Is LLM Routing? A Simple Guide to Saving Money on AI"
+seoTitle: "LLM Routing Explained: Gateways vs Routers to Cut AI Costs"
+seoDescription: "What LLM gateways and routers do, four routing approaches, the open-source tools, and realistic savings from sending easy prompts to cheaper models."
 datePublished: 2026-09-20T03:46:20.444Z
 cuid: cmu99y1dw00000agmb3fwd9g9
 slug: what-is-llm-routing-a-simple-guide-to-saving-money-on-ai
@@ -87,7 +89,7 @@ Each approach has a cost benefit and a resiliency benefit. Cascade gives you bot
 **Learned** — Train a small AI model to make routing decisions. Highest ceiling, but needs data and machine learning skills. Resiliency depends on whether your training data includes failures.
 
 | Approach | Cost | Resiliency |
-| :--- | :--- | :--- |
+| :-- | :-- | :-- |
 | Cascade | High | High — built in |
 | Semantic | High | Medium — needs setup |
 | Cost-Aware | Highest | Low — no fallback |
@@ -102,7 +104,7 @@ Here's what exists in 2026. Split into two categories: gateways and routers.
 ### Gateways
 
 | Tool | Cost | Failover | Best For |
-| :--- | :--- | :--- | :--- |
+| :-- | :-- | :-- | :-- |
 | LiteLLM | Free OSS (self-hosted) | Yes | Control on a budget |
 | OpenRouter | 5.5% fee on top-ups | Yes | Fastest start |
 | Portkey | Free 10K req/mo; Pro $49/mo | Yes | Governance |
@@ -112,7 +114,7 @@ Here's what exists in 2026. Split into two categories: gateways and routers.
 ### Routers
 
 | Tool | Cost | Failover | Best For |
-| :--- | :--- | :--- | :--- |
+| :-- | :-- | :-- | :-- |
 | RouteLLM | Free OSS | No | Simple cost routing |
 | vLLM Semantic Router | Free OSS + GPU | Yes | High-volume serving |
 | NVIDIA Switchyard | Free OSS | Yes | Agent workflows |
@@ -126,7 +128,7 @@ Most teams need a gateway with routing built in, not a standalone router. LiteLL
 Savings numbers are real but come from specific setups. Here's what the data actually shows.
 
 | Source | Savings | Setup | Shows |
-| :--- | :--- | :--- | :--- |
+| :-- | :-- | :-- | :-- |
 | LiteLLM production | 51% → 60.7% | 450+ users, 270k requests | Savings grow with tuning |
 | LiteLLM production | 95% served by non-flagship | Auto-Router classification | Most requests are easy |
 | Subtask routing | 46% cheaper | Coding agent | Routing by task type works |
