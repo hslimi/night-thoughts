@@ -1,5 +1,7 @@
 ---
 title: "When AI Eats Itself: Understanding Model Collapse and AI Cannibalism"
+seoTitle: "Model Collapse Explained: When AI Trains on AI Data"
+seoDescription: "Why models trained on AI-generated text degrade, what researchers proved, signs it is already happening, and what can be done about it."
 datePublished: 2026-09-18T21:30:57.304Z
 cuid: cmu7h3fr400000agmd5mpbhg4
 slug: when-ai-eats-itself-understanding-model-collapse-and-ai-cannibalism
