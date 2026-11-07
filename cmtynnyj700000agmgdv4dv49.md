@@ -1,5 +1,7 @@
 ---
 title: "It Comes Out Talking and No One Knows Why"
+seoTitle: "It Comes Out Talking: Why No One Can Explain Modern AI"
+seoDescription: "Nate Soares' warning that AI works but no one knows why: testimony, breakouts, control limits, the pacing debate and the race between labs."
 datePublished: 2026-09-12T17:24:56.872Z
 cuid: cmtynnyj700000agmgdv4dv49
 slug: it-comes-out-talking-and-no-one-knows-why
