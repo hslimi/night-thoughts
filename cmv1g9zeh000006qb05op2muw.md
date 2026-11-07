@@ -776,7 +776,7 @@ sudo launchctl kickstart -k system/com.qwenpaw.app                           # r
 
 ---
 
-## Part 6: Verify Everything Survives a Reboot
+## Part 6: Does Everything Survive a Reboot?
 
 Restart your Mac:
 
@@ -811,7 +811,7 @@ All services should return healthy responses without any manual intervention.
 
 ---
 
-## Part 7: Remote Access from Anywhere
+## Part 7: How Do You Access the Server from Anywhere?
 
 This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailscale** provides encrypted SSH access to your Mac; **Cloudflare Tunnel** provides public HTTPS via your own domain. **Caddy** runs locally as a reverse proxy in front of both services.
 
@@ -1715,3 +1715,21 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 If you build this stack, tag me — I want to see what agents and local workflows you are running on your Mac. And if you are working on local LLM inference, Apple Silicon optimization, or self-hosted AI, let us talk in the comments or connect directly.
 
 — Haithem Slimi, [nightthoughts.me](http://nightthoughts.me) (blog) · nightthoughts.dev (work)
+
+## FAQ
+
+### Which Macs can run this setup?
+
+Apple Silicon Macs (M1 to M5) on macOS 15 Sequoia or later. MLX and oMLX require Apple Silicon.
+
+### What do MLX, oMLX and QwenPaw each do?
+
+MLX is Apple's machine-learning framework. oMLX is the inference server with an admin dashboard that serves local models. QwenPaw is the agent framework that runs on top of them.
+
+### Do the services come back after a reboot?
+
+Yes. Part 6 reboots the Mac and checks every service over SSH from another machine.
+
+### How do I reach the server remotely and securely?
+
+Tailscale gives you encrypted SSH access, Cloudflare Tunnel gives public HTTPS on your own domain, and Caddy runs locally as the reverse proxy in front of the services.
