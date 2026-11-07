@@ -6,7 +6,7 @@ datePublished: 2026-09-28T20:36:38.483Z
 cuid: cmulpk3vv00000agmdhdt6mr3
 slug: how-to-set-up-nvidia-api-keys-and-use-them-with-ollama-and-openclaw-on-a-mac-mini-part-1
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/8e99da3b-cfd2-4c1a-a7a5-88c6b6b16672.jpg
-tags: nvidia, llm, localai, ollama, openclaw
+tags: nvidia, llm, ollama, local-ai, openclaw
 
 ---
 
