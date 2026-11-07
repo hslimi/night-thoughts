@@ -14,7 +14,7 @@ This guide shows how to obtain an NVIDIA API key, run a local proxy that transla
 
 ## Before You Start: Ollama and OpenClaw Setup
 
-This guide assumes Ollama and OpenClaw are already installed, running, and configured on the Mac mini. If they are not, the foundation is covered in the previous guide: [I Turned My Mac Mini Into a Local AI Workstation — Here's Exactly How](https://nightthoughts.hashnode.dev/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how).
+This guide assumes Ollama and OpenClaw are already installed, running, and configured on the Mac mini. If they are not, the foundation is covered in the previous guide: [I Turned My Mac Mini Into a Local AI Workstation — Here's Exactly How](https://nightthoughts.me/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how).
 
 That guide covers:
 
