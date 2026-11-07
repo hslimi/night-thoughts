@@ -1,5 +1,7 @@
 ---
 title: "How a Laptop Learned to Run a Giant"
+seoTitle: "How to Run a 70B LLM on a Laptop: Quantization & Offloading"
+seoDescription: "Three tricks that let a 140 GB model run on 8-16 GB of VRAM: shrinking it, splitting the load between GPU and CPU, and doing less work."
 datePublished: 2026-10-04T10:27:15.014Z
 cuid: cmutofjcx000206pie5r1hyt7
 slug: how-a-laptop-learned-to-run-a-giant
