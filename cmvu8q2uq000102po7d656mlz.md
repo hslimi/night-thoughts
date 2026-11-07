@@ -24,7 +24,7 @@ Unstructured alert → typed incident report → independent schema validation
 
 This is an educational machine-learning experiment, not a production incident-management system.
 
-## What We Will Build
+## What Will We Build?
 
 The final pipeline looks like this:
 
@@ -926,7 +926,7 @@ def route_incident(alert):
 
 Notice what this function does **not** do: it does not execute `next_action`, restart a service, roll back a deployment, or modify infrastructure. Those decisions belong behind separate authorization and safety controls.
 
-## Actual Results
+## Did Fine-Tuning Work? Actual Results
 
 All values below come from the saved prediction, metric, metadata, and trainer-log files. The complete notebook, datasets, predictions, plotting source, and screenshots are in the [GitHub experiment folder](https://github.com/hslimi/night-thoughts/tree/main/experiments/incident-triage-unsloth).
 
@@ -1058,7 +1058,7 @@ The generated data and completed metrics are on Drive. Training checkpoints are 
 
 Keep the adapter and metrics, delete unneeded merged-model copies, and empty Drive trash if appropriate. Do not delete the adapter before verifying that it reloads.
 
-## Limitations
+## What Are the Limitations?
 
 This experiment has several important limits:
 
@@ -1079,6 +1079,25 @@ Colab supplies the temporary training environment; Unsloth supplies the model-lo
 The goal was not to build an autonomous site-reliability engineer. It was to test whether a small model could become a reliable component at one boundary of a larger system.
 
 A decreasing loss curve shows that training happened. Held-out behavioral metrics show what the adapter actually learned.
+
+
+## FAQ
+
+### Do I need a GPU to follow this tutorial?
+
+No local GPU is needed. Everything runs in Google Colab: you need a Google account, Colab access, some free Google Drive space and a modern browser. The run reported here used an NVIDIA RTX PRO 6000 Blackwell GPU.
+
+### Which model does the tutorial fine-tune?
+
+`unsloth/Qwen2.5-1.5B-Instruct`, loaded in 4-bit and trained with QLoRA (LoRA rank 16) for 200 steps on 1,500 synthetic incident examples.
+
+### What did fine-tuning actually improve?
+
+JSON and schema validity went from 0% to 100%, and service accuracy reached 97.5%. Severity accuracy reached only 42.5%, category and escalation 60%, next action 70%, and exact match stayed at 0%.
+
+### Is the fine-tuned model ready for real incident triage?
+
+No. The adapter learned the output format, not reliable triage. The data is synthetic, and the 100% unknown-category recall rests on only eight alerts. Keep the independent application-side validation from Part 14.
 
 ## Official Documentation
 
