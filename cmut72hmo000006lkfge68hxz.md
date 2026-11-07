@@ -64,4 +64,4 @@ These come up less often, but you might see them in the wild.
 
 ---
 
-*This glossary is part of the [**Big Models, Small Machines**](https://nightthoughts.hashnode.dev/series/big-models-small-machines) series.*
+*This glossary is part of the [**Big Models, Small Machines**](https://nightthoughts.me/series/big-models-small-machines) series.*
