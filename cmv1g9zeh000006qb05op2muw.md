@@ -1,5 +1,7 @@
 ---
 title: "Complete Guide: Always-On Mac Server with MLX, oMLX & QwenPaw"
+seoTitle: "Always-On Mac mini AI Server: MLX, oMLX & QwenPaw Guide"
+seoDescription: "Build a headless Mac mini AI server: local models via oMLX, QwenPaw as a service, Cloudflare Tunnel and Tailscale access. Survives reboots."
 datePublished: 2026-10-09T21:01:08.387Z
 cuid: cmv1g9zeh000006qb05op2muw
 slug: complete-guide-always-on-mac-server-with-mlx-omlx-qwenpaw
@@ -12,7 +14,7 @@ tags: cloudflare, ai, tailscale, mlx, macmini, qwenpaw, omlx
 
 This guide builds a headless, always-on Mac mini that survives reboot without any GUI intervention, serves local models through oMLX with persistent API keys, runs the QwenPaw agent framework as a system service, and exposes everything through Caddy + Cloudflare Tunnel with Tailscale for SSH (and optionally HTTPS) access. The whole stack runs at zero marginal inference cost and never sends data off the machine.
 
-* * *
+---
 
 ## Tested Environment
 
@@ -38,7 +40,7 @@ Everything in this guide was verified on the following setup. If your versions a
 
 > **Note:** Version numbers above reflect the state of the ecosystem as of **2026-10**, the date this guide was last verified end-to-end. Run `brew --version`, `uv --version`, or the relevant `--version` flag after each install to confirm what you have.
 
-* * *
+---
 
 ## Part 1: Prepare macOS for Headless Server Mode
 
@@ -83,7 +85,7 @@ Currently in use:
 ```
 
 > **Note:** On macOS Ventura (13) and later, `pmset` reports the disablesleep setting as `SleepDisabled 1` instead of `disablesleep 1`. This is expected — it means the same thing.
-> 
+>
 > The annotation `(sleep prevented by powerd, bluetoothd)` next to `sleep 0` is **informational, not an error**. It simply means that in addition to your `pmset` settings, system daemons are also actively preventing sleep. Your server will stay awake.
 
 ### 1.1b Prevent App Nap with caffeinate
@@ -172,18 +174,12 @@ This is a macOS security feature (TCC), and `sudo` alone does not bypass it. Fol
 
 **Step 1: Grant Full Disk Access to Terminal**
 
-1.  Open **System Settings**.
-    
-2.  Go to **Privacy & Security** → **Full Disk Access**.
-    
-3.  Click the **+** button.
-    
-4.  Navigate to **Applications** → **Utilities** and select **Terminal.app** (or your terminal of choice, e.g., iTerm).
-    
-5.  Toggle Terminal **on** in the list.
-    
-6.  **Quit Terminal completely** (`Cmd+Q`) and reopen it. The permission only takes effect for new sessions.
-    
+1. Open **System Settings**.
+2. Go to **Privacy & Security** → **Full Disk Access**.
+3. Click the **+** button.
+4. Navigate to **Applications** → **Utilities** and select **Terminal.app** (or your terminal of choice, e.g., iTerm).
+5. Toggle Terminal **on** in the list.
+6. **Quit Terminal completely** (`Cmd+Q`) and reopen it. The permission only takes effect for new sessions.
 
 **Step 2: Enable Remote Login**
 
@@ -209,12 +205,9 @@ Now you can SSH from another Mac: `ssh username@your-mac-ip`
 
 launchd user agents only start after a user logs in. Without auto-login, your services won't run after a reboot.
 
-1.  Open **System Settings** → **Users & Groups**
-    
-2.  Click **Automatic Login** → select your user account
-    
-3.  Enter your password when prompted
-    
+1. Open **System Settings** → **Users & Groups**
+2. Click **Automatic Login** → select your user account
+3. Enter your password when prompted
 
 > **Note:** FileVault must be OFF for auto-login to work. Go to **System Settings → Privacy & Security → FileVault** and turn it off if it's enabled. This is acceptable for a physically secure home server.
 
@@ -222,10 +215,8 @@ launchd user agents only start after a user logs in. Without auto-login, your se
 
 As you build this server, you'll encounter two types of background services. It's important to know the difference:
 
-*   **LaunchAgents** (`~/Library/LaunchAgents/`) run **only after you log in** to the Mac. The graphical user interface (`WindowServer` and `loginwindow`) must be running. If the Mac boots headless and fails to start the GUI, LaunchAgents never start. Examples in this guide: **caffeinate**.
-    
-*   **LaunchDaemons** (`/Library/LaunchDaemons/`) run **at system boot**, long before any user logs in. They run in the background and do not need a GUI. Examples in this guide: **Caddy**, **oMLX**, **QwenPaw**, and **cloudflared**.
-    
+- **LaunchAgents** (`~/Library/LaunchAgents/`) run **only after you log in** to the Mac. The graphical user interface (`WindowServer` and `loginwindow`) must be running. If the Mac boots headless and fails to start the GUI, LaunchAgents never start. Examples in this guide: **caffeinate**.
+- **LaunchDaemons** (`/Library/LaunchDaemons/`) run **at system boot**, long before any user logs in. They run in the background and do not need a GUI. Examples in this guide: **Caddy**, **oMLX**, **QwenPaw**, and **cloudflared**.
 
 **Why does this matter?** If your Mac mini reboots but the desktop session gets stuck (which happens on headless Macs), your LaunchAgents won't load. By installing the core external-access services (oMLX, Caddy, QwenPaw, and cloudflared) as LaunchDaemons, we guarantee you can reach the server from the internet even if the GUI hangs.
 
@@ -250,7 +241,7 @@ git clone https://github.com/thairc-dev/mac-server-mode.git && cd mac-server-mod
 
 A ⚡ icon appears in your menu bar. Press `Ctrl + Option + Cmd + S` to toggle server mode (screen off, system awake).
 
-* * *
+---
 
 ## Part 2: Install uv & Python 3.11
 
@@ -291,7 +282,7 @@ arm
 
 > **Critical:** If you see `i386` instead of `arm`, you have a Rosetta (x86) Python. Reinstall Python 3.11 through uv and start over.
 
-* * *
+---
 
 ## Part 3: Install MLX Framework
 
@@ -306,12 +297,12 @@ source ~/.mlx-venv/bin/activate && uv pip install mlx mlx-lm && python -c "impor
 **Expected output:** `Successfully installed mlx-x.x.x mlx-lm-x.x.x ...` followed by `0.32.x`.
 
 > **Note:** The top-level `mlx` module does **not** export `__version__`. If you try `python -c "import mlx; print(mlx.__version__)"`, you'll get `AttributeError: module 'mlx' has no attribute '__version__'`. The version attribute lives on `mlx.core`. Alternatively, you can read the version from package metadata:
-> 
+>
 > ```bash
 > python -c "import importlib.metadata as md; print(md.version('mlx'))"
 > ```
 
-* * *
+---
 
 ## Part 4: Install oMLX (Web Dashboard + Background Service)
 
@@ -529,7 +520,7 @@ Python  12345  night-thoughts  ...  TCP 127.0.0.1:8000 (LISTEN)
 ```
 
 > **A note on process names.** You'll see `Python` instead of `omlx` in the `lsof` output. That's because `/opt/homebrew/bin/omlx` is a Python shebang script — `lsof` reports the kernel's process name (the interpreter for shebang scripts), not the `argv[0]` basename. If you want the actual command name, run `ps -p 12345 -o comm,args` and you'll see `omlx-server` with the full path. Same process, different tools, different names. Don't be alarmed.
-> 
+>
 > **If** `bootstrap` **fails with** `5: Input/output error`**:** the previous instance hadn't fully exited when the new plist was loaded. The bounded polling loop above prevents this in normal use. If you hit it anyway, `sudo launchctl list | grep omlx` will show whether the label is still registered — wait 3 seconds and re-run the `bootstrap` line.
 
 ### 4.4b Upgrading oMLX Later (Homebrew + LaunchDaemon Notice)
@@ -538,23 +529,16 @@ oMLX is installed via Homebrew but runs under **our custom LaunchDaemon** (`com.
 
 `brew upgrade omlx` does **three** things:
 
-1.  It downloads and installs the new oMLX release into `/opt/homebrew/Cellar/omlx/<new-version>/`.
-    
-2.  It atomically repoints the stable symlink `/opt/homebrew/bin/omlx` to the new version.
-    
-3.  It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.omlx.server.plist`.
-    
+1. It downloads and installs the new oMLX release into `/opt/homebrew/Cellar/omlx/<new-version>/`.
+2. It atomically repoints the stable symlink `/opt/homebrew/bin/omlx` to the new version.
+3. It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.omlx.server.plist`.
 
 So immediately after `brew upgrade omlx` finishes, the following is true:
 
-*   `sudo launchctl list | grep omlx` still shows `com.omlx.server` running.
-    
-*   Your oMLX API still responds on `http://localhost:8000`.
-    
-*   But the running process is still executing the **old** binary image from memory.
-    
-*   The new version on disk is **not in use** until launchd restarts the process.
-    
+- `sudo launchctl list | grep omlx` still shows `com.omlx.server` running.
+- Your oMLX API still responds on `http://localhost:8000`.
+- But the running process is still executing the **old** binary image from memory.
+- The new version on disk is **not in use** until launchd restarts the process.
 
 Because our plist points to the symlink `/opt/homebrew/bin/omlx` (not a versioned Cellar path), the upgrade itself is safe — it will not break the daemon on next start. But you must **manually restart the daemon** for the new version to actually run.
 
@@ -575,12 +559,9 @@ curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models
 
 The expected output:
 
-*   `launchctl list` shows `com.omlx.server` with a PID and exit code `0`.
-    
-*   The error log shows a clean startup with the new version string.
-    
-*   The `curl` call returns a `200` JSON body like `{"object":"list","data":[...]}`, **not** `{"detail":"API key required"}` or a `401`.
-    
+- `launchctl list` shows `com.omlx.server` with a PID and exit code `0`.
+- The error log shows a clean startup with the new version string.
+- The `curl` call returns a `200` JSON body like `{"object":"list","data":[...]}`, **not** `{"detail":"API key required"}` or a `401`.
 
 **Do not use** `brew services restart omlx`**.** You removed the Homebrew-managed service in §4.4 on purpose. Using `brew services` at this point would recreate its own plist, reintroduce port conflicts, and potentially wipe configuration.
 
@@ -615,16 +596,11 @@ curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models
 
 ### 4.7 Download & Deploy a Model
 
-1.  In the admin dashboard (`http://localhost:8000/admin`), go to the **Models** section
-    
-2.  Search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
-    
-3.  Click **Download** — watch the progress bar
-    
-4.  Configure per-model settings (sampling parameters, context length, etc.)
-    
-5.  Click **Load** to start serving
-    
+1. In the admin dashboard (`http://localhost:8000/admin`), go to the **Models** section
+2. Search Hugging Face for MLX models (e.g., `mlx-community/Qwen3.5-4B-8bit`)
+3. Click **Download** — watch the progress bar
+4. Configure per-model settings (sampling parameters, context length, etc.)
+5. Click **Load** to start serving
 
 Verify the model is live:
 
@@ -643,7 +619,7 @@ curl -s -H "Authorization: Bearer $API_KEY" http://localhost:8000/v1/models
 
 ![oMLX admin dashboard with a model loaded and serving](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2cf4e346-d538-46b3-9247-bcad2487131a.png align="center")
 
-* * *
+---
 
 ## Part 5: Install QwenPaw (Agent Framework)
 
@@ -691,7 +667,7 @@ EOF
 ```
 
 > **If** `~/.qwenpaw/config.json` **already exists** — for example, if QwenPaw has written preferences or other settings — do **not** overwrite it with this heredoc. Use `jq` to update just the `api_key` field:
-> 
+>
 > ```bash
 > API_KEY=$(jq -r '.auth.api_key' ~/.omlx/settings.json)
 > jq --arg key "$API_KEY" '.model.api_key = $key' ~/.qwenpaw/config.json > ~/.qwenpaw/config.json.tmp && mv ~/.qwenpaw/config.json.tmp ~/.qwenpaw/config.json
@@ -798,7 +774,7 @@ sudo launchctl kickstart -k system/com.qwenpaw.app                           # r
 
 ![QwenPaw web console with an agent conversation open](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/f3ac7a7b-3fd4-48fd-8e72-b138b735fc34.png align="center")
 
-* * *
+---
 
 ## Part 6: Verify Everything Survives a Reboot
 
@@ -833,7 +809,7 @@ QwenPaw HTTP 200
 
 All services should return healthy responses without any manual intervention.
 
-* * *
+---
 
 ## Part 7: Remote Access from Anywhere
 
@@ -843,14 +819,10 @@ This part sets up secure access to both oMLX and QwenPaw from anywhere. **Tailsc
 
 If you don't already have a Tailscale account, sign up first. It's free for personal use and takes about a minute.
 
-1.  Go to [tailscale.com](https://tailscale.com/) and click **Get Started**.
-    
-2.  Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address.
-    
-3.  After signing in, choose **Personal use**.
-    
-4.  You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin).
-    
+1. Go to [tailscale.com](https://tailscale.com/) and click **Get Started**.
+2. Sign up using a **single sign-on (SSO) identity provider** — Google, GitHub, Microsoft, Apple, or a custom email address.
+3. After signing in, choose **Personal use**.
+4. You land on the **Admin Console** at [console.tailscale.com/admin](https://console.tailscale.com/admin).
 
 > **Tip:** The same account must be used on every device you want on your tailnet.
 
@@ -906,10 +878,8 @@ EOF
 
 Replace:
 
-*   `100.64.x.x` with the actual Tailscale IP from above
-    
-*   `your-macos-username` with the account you log in as on the Mac server
-    
+- `100.64.x.x` with the actual Tailscale IP from above
+- `your-macos-username` with the account you log in as on the Mac server
 
 **Verify:**
 
@@ -927,21 +897,23 @@ While SSH gives you terminal access, sometimes you need to see the actual macOS 
 
 1. On the Mac mini, open **System Settings → General → Sharing**.
 2. Toggle **Screen Sharing** to **ON**.
-3. Click the **(i)** icon next to Screen Sharing. 
+3. Click the **(i)** icon next to Screen Sharing.
 4. Ensure **"VNC viewers may control screen with password"** is checked, and set a strong password. *(You will need this password for Windows/Linux clients).*
 5. Note the **Local hostname** displayed at the top of the Sharing menu (e.g., `night-thoughts.local`).
 
 #### Step 2: Connect from macOS (Native)
 
-If you are connecting from another Mac on your tailnet, Apple's built-in Screen Sharing app is all you need. 
+If you are connecting from another Mac on your tailnet, Apple's built-in Screen Sharing app is all you need.
 
 **Option A: From Finder**
+
 1. Press `Cmd + K` to open "Connect to Server".
 2. Enter your Mac mini's Tailscale IP: `vnc://100.x.y.z` (replace with your actual Tailscale IP from `tailscale status`).
 3. If you have MagicDNS enabled, you can use the hostname instead: `vnc://night-thoughts.<your-tailnet>.ts.net`.
 4. Click **Connect** and enter your macOS login credentials.
 
 **Option B: From Terminal**
+
 ```bash
 open "vnc://100.x.y.z"
 ```
@@ -958,9 +930,10 @@ Windows does not have a built-in VNC client, so you need to install one. **RealV
 
 #### Step 4: Connect from Linux
 
-Linux users can use **RealVNC Viewer** (same as Windows) or **Remmina** (a popular open-source remote desktop client). 
+Linux users can use **RealVNC Viewer** (same as Windows) or **Remmina** (a popular open-source remote desktop client).
 
 **Using Remmina:**
+
 1. Install Remmina via your package manager (e.g., `sudo apt install remmina remmina-plugin-vnc`).
 2. Open Remmina and click the **+** button to create a new profile.
 3. Set **Protocol** to `VNC - Virtual Network Computing`.
@@ -979,10 +952,8 @@ If your Mac mini has no physical monitor attached, macOS may not generate a virt
 
 Tailscale Serve needs HTTPS certificates enabled for your tailnet before it can terminate TLS on port 443.
 
-1.  Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
-    
-2.  Under the **HTTPS Certificates** section, click **Enable HTTPS**.
-    
+1. Go to the [**DNS page**](https://console.tailscale.com/admin/dns) of the Tailscale admin console.
+2. Under the **HTTPS Certificates** section, click **Enable HTTPS**.
 
 > **If you enable this and later disable** `tailscale serve`**,** the certificates become inert. You can leave them enabled (harmless) or disable them on the same DNS page. They only matter if a `serve --https` or `funnel` rule exists.
 
@@ -1008,10 +979,8 @@ caddy version
 
 Caddy handles two routing modes at once:
 
-1.  **Subdomain routing** for Cloudflare — `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` each map to their service at the root.
-    
-2.  **Path routing** for Tailscale Serve (only if you enable §7.7) — a single hostname (`night-thoughts.<your-tailnet>.ts.net`) with `/omlx/*` and `/console/*` prefixes.
-    
+1. **Subdomain routing** for Cloudflare — `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` each map to their service at the root.
+2. **Path routing** for Tailscale Serve (only if you enable §7.7) — a single hostname (`night-thoughts.<your-tailnet>.ts.net`) with `/omlx/*` and `/console/*` prefixes.
 
 ```bash
 sudo mkdir -p /opt/homebrew/etc && sudo tee /opt/homebrew/etc/Caddyfile > /dev/null << 'EOF'
@@ -1183,7 +1152,7 @@ caddy   12345    yourname    ...  TCP *:9080 (LISTEN)
 ```
 
 > **After editing the Caddyfile**, you must reload Caddy with `sudo launchctl kickstart -k system/com.caddy.server`. The `kickstart -k` restarts the process with the new config file — you do **not** need `bootout` + `bootstrap` here because only an external file (the Caddyfile) changed, not the plist.
-> 
+>
 > **If** `bootstrap` **fails with** `5: Input/output error`**:** same race as §4.4 — wait 3 seconds and re-run the `bootstrap` line, or re-run the whole block (the polling loop will handle it).
 
 ### 7.6b Upgrading Caddy Later (Homebrew + LaunchDaemon Notice)
@@ -1192,23 +1161,16 @@ Caddy is installed via Homebrew but runs under **our custom LaunchDaemon** (`com
 
 `brew upgrade caddy` does **three** things:
 
-1.  It downloads and installs the new Caddy release into `/opt/homebrew/Cellar/caddy/<new-version>/`.
-    
-2.  It atomically repoints the stable symlink `/opt/homebrew/bin/caddy` to the new version.
-    
-3.  It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.caddy.server.plist`.
-    
+1. It downloads and installs the new Caddy release into `/opt/homebrew/Cellar/caddy/<new-version>/`.
+2. It atomically repoints the stable symlink `/opt/homebrew/bin/caddy` to the new version.
+3. It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.caddy.server.plist`.
 
 So immediately after `brew upgrade caddy` finishes, the following is true:
 
-*   `sudo launchctl list | grep caddy` still shows `com.caddy.server` running.
-    
-*   Your sites (`omlx.nightthoughts.dev`, `qwenpaw.nightthoughts.dev`, Tailscale Serve) continue to serve traffic without interruption.
-    
-*   But the running process is still executing the **old** binary image from memory.
-    
-*   The new version on disk is **not in use** until launchd restarts the process.
-    
+- `sudo launchctl list | grep caddy` still shows `com.caddy.server` running.
+- Your sites (`omlx.nightthoughts.dev`, `qwenpaw.nightthoughts.dev`, Tailscale Serve) continue to serve traffic without interruption.
+- But the running process is still executing the **old** binary image from memory.
+- The new version on disk is **not in use** until launchd restarts the process.
 
 Because our plist points to the symlink `/opt/homebrew/bin/caddy` (not a versioned Cellar path), the upgrade itself is safe — it will not break the daemon on next start. But you must **manually restart the daemon** for the new version to actually run.
 
@@ -1232,14 +1194,10 @@ curl -s -o /dev/null -w "Local → HTTP %{http_code}\n" http://localhost:9080/
 
 The expected output:
 
-*   `launchctl list` shows `com.caddy.server` with a PID and exit code `0`.
-    
-*   `lsof` shows Caddy listening on `*:9080`.
-    
-*   The error log contains no `loading Caddyfile` errors.
-    
-*   The local `curl` returns a non-`502` status (typically `302` for the oMLX redirect, or `200` for a proxied request).
-    
+- `launchctl list` shows `com.caddy.server` with a PID and exit code `0`.
+- `lsof` shows Caddy listening on `*:9080`.
+- The error log contains no `loading Caddyfile` errors.
+- The local `curl` returns a non-`502` status (typically `302` for the oMLX redirect, or `200` for a proxied request).
 
 **Do not use** `brew services restart caddy`**.** You removed the Homebrew-managed service in §7.6 on purpose. Using `brew services` would recreate its own plist, reintroduce port conflicts on 9080, and potentially overwrite your Caddyfile configuration path.
 
@@ -1259,14 +1217,14 @@ A full reboot also loads the new version (because launchd re-reads the plist and
 ### 7.7 Optional: Point Tailscale Serve at Caddy (Convenience — Bypasses Auth)
 
 > **Security note.** This step gives you HTTPS access to your services over your tailnet by **bypassing Caddy entirely**. Anyone on your tailnet — verified at the WireGuard layer, not by any password — can reach `https://<hostname>.<tailnet>.ts.net/` without going through Caddy's `basicauth` or the upstream service's own auth. This is fine if your tailnet contains only devices you personally own. If your tailnet contains shared devices, family machines, or other users, **skip this section** and use `ssh nt 'curl http://127.0.0.1:...'` to reach services instead.
-> 
+>
 > **DNS note.** Some users have seen MagicDNS conflict with Cloudflare-managed DNS on the local machine — `dig` resolves fine but `curl` returns `Could not resolve host`. If that happens, run `tailscale set --accept-dns=false` and flush the resolver:
-> 
+>
 > ```bash
 > tailscale set --accept-dns=false
 > sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 > ```
-> 
+>
 > If you enable this step now and decide to go SSH-only later, disable it with `tailscale serve reset` and remove the `:9080` block from the Caddyfile (§7.5).
 
 Tailscale Serve exposes your services to devices on your tailnet — encrypted, private, and without requiring a public domain.
@@ -1290,7 +1248,7 @@ https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
 ```
 
 > **Important — Tailscale DNS hijack:** If `dig` resolves your Cloudflare subdomains but `curl` from the server returns `Could not resolve host`, Tailscale's MagicDNS resolver is capturing all system DNS queries. Fix it with:
-> 
+>
 > ```bash
 > tailscale set --accept-dns=false
 > sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
@@ -1384,7 +1342,7 @@ QwenPaw HTTP 200
 ```
 
 > **Forgot the password?** Reset it with:
-> 
+>
 > ```bash
 > QWENPAW_AUTH_ENABLED=true qwenpaw auth reset-password
 > ```
@@ -1405,14 +1363,10 @@ The result:
 
 **Step 1: Add your domain to Cloudflare**
 
-1.  Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
-    
-2.  Click **Add a site** and enter `nightthoughts.dev`.
-    
-3.  Choose the **Free** plan.
-    
-4.  Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account.
-    
+1. Sign up at [cloudflare.com](https://cloudflare.com) (free tier is enough).
+2. Click **Add a site** and enter `nightthoughts.dev`.
+3. Choose the **Free** plan.
+4. Cloudflare will scan your existing DNS records and display **two nameservers** assigned to your account.
 
 **Step 2: Point the domain to Cloudflare at your registrar**
 
@@ -1420,16 +1374,11 @@ Cloudflare needs to be the authoritative DNS provider for your domain. This mean
 
 The process is the same for every registrar:
 
-1.  Log in to your registrar account and find the DNS or nameserver settings for `nightthoughts.dev`.
-    
-2.  Locate the current nameservers.
-    
-3.  **Delete** them.
-    
-4.  **Paste** the two Cloudflare nameservers.
-    
-5.  **Save** your changes.
-    
+1. Log in to your registrar account and find the DNS or nameserver settings for `nightthoughts.dev`.
+2. Locate the current nameservers.
+3. **Delete** them.
+4. **Paste** the two Cloudflare nameservers.
+5. **Save** your changes.
 
 > **Important:** If DNSSEC is enabled at your registrar, disable it before changing nameservers. DNSSEC conflicts with the new authoritative DNS provider.
 
@@ -1567,23 +1516,16 @@ cloudflared is installed via Homebrew but runs under **our custom LaunchDaemon**
 
 `brew upgrade cloudflared` does **three** things:
 
-1.  It downloads and installs the new cloudflared release into `/opt/homebrew/Cellar/cloudflared/<new-version>/`.
-    
-2.  It atomically repoints the stable symlink `/opt/homebrew/bin/cloudflared` to the new version.
-    
-3.  It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.cloudflare.cloudflared.plist`.
-    
+1. It downloads and installs the new cloudflared release into `/opt/homebrew/Cellar/cloudflared/<new-version>/`.
+2. It atomically repoints the stable symlink `/opt/homebrew/bin/cloudflared` to the new version.
+3. It **does not** restart your custom LaunchDaemon, and it **does not** touch `/Library/LaunchDaemons/com.cloudflare.cloudflared.plist`.
 
 So immediately after `brew upgrade cloudflared` finishes, the following is true:
 
-*   `sudo launchctl list | grep cloudflared` still shows `com.cloudflare.cloudflared` running.
-    
-*   Your public tunnels for `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` continue to work.
-    
-*   But the running process is still executing the **old** binary image from memory.
-    
-*   The new version on disk is **not in use** until launchd restarts the process.
-    
+- `sudo launchctl list | grep cloudflared` still shows `com.cloudflare.cloudflared` running.
+- Your public tunnels for `omlx.nightthoughts.dev` and `qwenpaw.nightthoughts.dev` continue to work.
+- But the running process is still executing the **old** binary image from memory.
+- The new version on disk is **not in use** until launchd restarts the process.
 
 Because our plist points to the symlink `/opt/homebrew/bin/cloudflared` (not a versioned Cellar path), the upgrade itself is safe — it will not break the tunnel on next start. But you must **manually restart the daemon** for the new version to actually run.
 
@@ -1603,12 +1545,9 @@ tail -30 /tmp/cloudflared.err.log
 
 The expected output:
 
-*   `launchctl list` shows `com.cloudflare.cloudflared` with a PID and exit code `0`.
-    
-*   The log shows a fresh health precheck and at least two `Registered tunnel connection connIndex=...` lines (typically `connIndex=0` and `connIndex=1`).
-    
-*   No repeating `use cloudflared tunnel run to start tunnel <UUID>` loop, and no `failed to connect` errors.
-    
+- `launchctl list` shows `com.cloudflare.cloudflared` with a PID and exit code `0`.
+- The log shows a fresh health precheck and at least two `Registered tunnel connection connIndex=...` lines (typically `connIndex=0` and `connIndex=1`).
+- No repeating `use cloudflared tunnel run to start tunnel <UUID>` loop, and no `failed to connect` errors.
 
 **Do not use** `sudo cloudflared service install`**.** As noted in Step 8, it writes a broken macOS plist that omits the `tunnel run` subcommand. Sticking with your custom LaunchDaemon is the correct upgrade path.
 
@@ -1707,7 +1646,7 @@ https://night-thoughts.<your-tailnet>.ts.net (tailnet only)
 ```
 
 > **If you skipped §7.7 (SSH-only),** `tailscale serve status` will print nothing. That's expected. Verify SSH-only access instead:
-> 
+>
 > ```bash
 > ssh nt 'curl -s -o /dev/null -w "oMLX: %{http_code}\n" http://127.0.0.1:8000/v1/models'
 > ```
@@ -1729,7 +1668,7 @@ curl -s -o /dev/null -w "Public oMLX:    HTTP %{http_code}\n" https://omlx.night
 curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.nightthoughts.dev/
 ```
 
-* * *
+---
 
 ## Troubleshooting Quick Reference
 
@@ -1768,11 +1707,11 @@ curl -s -o /dev/null -w "Public QwenPaw: HTTP %{http_code}\n" https://qwenpaw.ni
 | `dig` works but `curl` returns `Could not resolve host` | Tailscale MagicDNS is hijacking the system resolver. Run `tailscale set --accept-dns=false` then `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder` |
 | `ssh nt` returns `Could not resolve hostname` | Your `~/.ssh/config` entry is missing or malformed |
 | `ssh nt` returns `Permission denied` | Wrong username in `~/.ssh/config`. Verify with `whoami` on the server |
-| `tailscale serve status` **still shows a rule after** `tailscale serve reset` | Same-user identity mismatch, or a second `tailscale serve` process added a new rule. Re-run `tailscale serve reset`, then `tailscale debug prefs | grep -i serve` to check low-level state |
+| `tailscale serve status` **still shows a rule after** `tailscale serve reset` | Same-user identity mismatch, or a second `tailscale serve` process added a new rule. Re-run `tailscale serve reset`, then \`tailscale debug prefs |
 | **Decided to go SSH-only and want to remove the Caddy** `:9080` **block** | The block is only used by `tailscale serve` (§7.7). After `tailscale serve reset`, remove the block from `/opt/homebrew/etc/Caddyfile`, validate with `caddy validate --config /opt/homebrew/etc/Caddyfile`, then `sudo launchctl kickstart -k system/com.caddy.server` |
 
-* * *
+---
 
 If you build this stack, tag me — I want to see what agents and local workflows you are running on your Mac. And if you are working on local LLM inference, Apple Silicon optimization, or self-hosted AI, let us talk in the comments or connect directly.
 
-— Haithem Slimi, nightthoughts.me (blog) · nightthoughts.dev (work)
+— Haithem Slimi, [nightthoughts.me](http://nightthoughts.me) (blog) · nightthoughts.dev (work)
