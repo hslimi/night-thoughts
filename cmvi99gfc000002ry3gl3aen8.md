@@ -1,5 +1,7 @@
 ---
 title: "Technical Breakdown of Ornith-1.5-122B: Impressive Data, MoE Architecture, and Licensing Caveats"
+seoTitle: "Ornith-1.5-122B Review: MoE, Benchmarks and License Caveats"
+seoDescription: "Ornith-1.5-122B checked claim by claim: a MoE built on Qwen 3.5, benchmark fine print, when the single-DGX claim holds, and the MIT license detail."
 datePublished: 2026-10-21T15:16:51.461Z
 cuid: cmvi99gfc000002ry3gl3aen8
 slug: technical-breakdown-of-ornith-1-5-122b-impressive-data-moe-architecture-and-licensing-caveats
