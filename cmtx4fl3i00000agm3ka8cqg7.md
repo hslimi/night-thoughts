@@ -12,7 +12,7 @@ tags: tutorial, privacy, automation, beginners, llm
 
 ## OpenClaw Policies for WhatsApp, Telegram, Gmail, and Everything Else
 
-*This is the second article in a series. The first one,* [*I Turned My Mac Mini Into a Local AI Workstation*](https://nightthoughts.hashnode.dev/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how)*, covered how to set up the machine and give the agent access. This one covers how to keep that access under control.*
+*This is the second article in a series. The first one,* [*I Turned My Mac Mini Into a Local AI Workstation*](https://nightthoughts.me/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how)*, covered how to set up the machine and give the agent access. This one covers how to keep that access under control.*
 
 ---
 
