@@ -1,5 +1,7 @@
 ---
 title: "Plain English Glossary: AI Terms for the Rest of Us"
+seoTitle: "AI Glossary in Plain English: Parameters to Quantization"
+seoDescription: "Plain-English definitions of the AI terms you keep hearing: parameters, tokens, context, quantization, VRAM, MoE, inference and more."
 datePublished: 2026-10-04T02:21:12.800Z
 cuid: cmut72hmo000006lkfge68hxz
 slug: plain-english-glossary-ai-terms-for-the-rest-of-us
