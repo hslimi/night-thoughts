@@ -6,7 +6,7 @@ datePublished: 2026-10-07T02:19:16.945Z
 cuid: cmuxhbk8h000006l30rn35vmx
 slug: agent-orchestration-with-openclaw-a-multi-agent-blogging-system
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/8413823a-dd0f-45f0-963f-25225ce08a36.jpg
-tags: orchestration, ai-agents, ollama, local-llm, multi-agent, openclaw
+tags: orchestration, ai-agents, ollama, multi-agent, local-ai, openclaw
 
 ---
 
