@@ -1,5 +1,7 @@
 ---
 title: "Bigger Isn't Always Smarter"
+seoTitle: "Bigger Isn't Always Smarter: Why AI Model Size Matters Less"
+seoDescription: "The old rule said more parameters meant a smarter model. Why that rule broke, what 'smart' means now, and the question to ask instead."
 datePublished: 2026-10-04T09:33:44.309Z
 cuid: cmutmipyn000404l08p8cfw72
 slug: bigger-isn-t-always-smarter
