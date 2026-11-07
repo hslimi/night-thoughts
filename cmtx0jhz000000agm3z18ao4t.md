@@ -1,5 +1,7 @@
 ---
 title: "I Turned My Mac Mini Into a Local AI Workstation — Here's Exactly How"
+seoTitle: "Mac mini Local AI Setup: Ollama, OpenClaw & SearXNG"
+seoDescription: "Turn a Mac mini into an always-on local AI workstation with Ollama models, an OpenClaw agent and private SearXNG search. Every step and command."
 datePublished: 2026-09-11T13:49:51.452Z
 cuid: cmtx0jhz000000agm3z18ao4t
 slug: i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how
@@ -49,12 +51,9 @@ This guide was written and tested against the following versions on **October 1,
 
 ### Compatibility Notes
 
-*   **OpenClaw** `2026.9.7` **is the minimum for the official SearXNG plugin.** If you are pinned to an earlier release such as `2026.9.6`, the install command will fail with a plugin API version error. Either update OpenClaw with `openclaw update`, or use a community SearXNG plugin that targets the older API.
-    
-*   **Node.js 26 vs 22.** The article recommends Node 26 for faster gateway startup and lower memory use. Node 22.22.3 is the floor — OpenClaw refuses to start below it.
-    
-*   **SearXNG settings schema.** SearXNG validates its `settings.yml` against a schema on startup. The template in Part 8, Step 4 includes `use_default_settings`, `server.secret_key`, `search.formats`, and `doi_resolvers` because each of these is required by the current SearXNG schema. Older tutorials omit some of them and fail on newer releases.
-    
+- **OpenClaw** `2026.9.7` **is the minimum for the official SearXNG plugin.** If you are pinned to an earlier release such as `2026.9.6`, the install command will fail with a plugin API version error. Either update OpenClaw with `openclaw update`, or use a community SearXNG plugin that targets the older API.
+- **Node.js 26 vs 22.** The article recommends Node 26 for faster gateway startup and lower memory use. Node 22.22.3 is the floor — OpenClaw refuses to start below it.
+- **SearXNG settings schema.** SearXNG validates its `settings.yml` against a schema on startup. The template in Part 8, Step 4 includes `use_default_settings`, `server.secret_key`, `search.formats`, and `doi_resolvers` because each of these is required by the current SearXNG schema. Older tutorials omit some of them and fail on newer releases.
 
 > **Note:** If you are reading this months after publication, check `openclaw --version` and `openclaw plugins list` first. The plugin API moves faster than the core runtime, and the registry may have newer versions than what is documented here.
 
@@ -109,22 +108,14 @@ flowchart LR
 
 **How to read it:**
 
-*   **Ollama** serves local models on `localhost:11434`. OpenClaw talks to it over HTTP.
-    
-*   **Colima** runs a lightweight Linux VM that hosts the Docker daemon. It starts at boot via a system LaunchDaemon, before any user logs in.
-    
-*   **SearXNG** runs inside the Colima VM as a Docker container. OpenClaw queries it on `localhost:8888`. Queries never leave your network.
-    
-*   **OpenClaw Gateway** is the central agent runtime. It reads secrets from `~/.openclaw/.env` via SecretRefs.
-    
-*   **Telegram** is reached through the Bot API using the token stored in `.env`.
-    
-*   **WhatsApp** is reached through the official `@openclaw/whatsapp` plugin, which pairs via QR code, and uses `allowFrom` from `.env` to restrict senders.
-    
-*   **Tailscale Serve** provides the encrypted HTTPS endpoint that the OpenClaw mobile app connects to. The gateway itself stays bound to loopback; only the tailnet can reach it.
-    
-*   **Google Workspace Plugin** bridges OpenClaw to Gmail, Calendar, Drive, Contacts, Tasks, and Sheets. Credential and token paths are stored in `.env`.
-    
+- **Ollama** serves local models on `localhost:11434`. OpenClaw talks to it over HTTP.
+- **Colima** runs a lightweight Linux VM that hosts the Docker daemon. It starts at boot via a system LaunchDaemon, before any user logs in.
+- **SearXNG** runs inside the Colima VM as a Docker container. OpenClaw queries it on `localhost:8888`. Queries never leave your network.
+- **OpenClaw Gateway** is the central agent runtime. It reads secrets from `~/.openclaw/.env` via SecretRefs.
+- **Telegram** is reached through the Bot API using the token stored in `.env`.
+- **WhatsApp** is reached through the official `@openclaw/whatsapp` plugin, which pairs via QR code, and uses `allowFrom` from `.env` to restrict senders.
+- **Tailscale Serve** provides the encrypted HTTPS endpoint that the OpenClaw mobile app connects to. The gateway itself stays bound to loopback; only the tailnet can reach it.
+- **Google Workspace Plugin** bridges OpenClaw to Gmail, Calendar, Drive, Contacts, Tasks, and Sheets. Credential and token paths are stored in `.env`.
 
 > **Note:** The diagram is illustrative. The key point is that all core components—Ollama, Colima, SearXNG, OpenClaw, Tailscale, and the secrets file—live on the Mac mini.
 
@@ -475,14 +466,10 @@ That means the change is live. You do **not** need to restart.
 
 A restart is only required in these cases:
 
-*   **You edited** `~/.openclaw/.env`**.** The environment file is read once at process startup. Any new or changed variable needs a restart to take effect.
-    
-*   **You installed, updated, or removed a plugin.** New code has to be loaded into the running process.
-    
-*   **A config key is flagged** `restart-required`**.** The CLI will tell you when this is the case.
-    
-*   **You are troubleshooting a stuck pairing or authorization state.** A clean restart clears transient state.
-    
+- **You edited** `~/.openclaw/.env`**.** The environment file is read once at process startup. Any new or changed variable needs a restart to take effect.
+- **You installed, updated, or removed a plugin.** New code has to be loaded into the running process.
+- **A config key is flagged** `restart-required`**.** The CLI will tell you when this is the case.
+- **You are troubleshooting a stuck pairing or authorization state.** A clean restart clears transient state.
 
 Use `restart` rather than `stop` + `start`, and rather than a bare `openclaw gateway` (which errors if the gateway is already running):
 
@@ -513,12 +500,9 @@ Both channels are configured via `openclaw.json` (at `~/.openclaw/openclaw.json`
 
 The bot token comes from **@BotFather**, Telegram's official bot creation tool.
 
-1.  Open Telegram (mobile or desktop) and search for **@BotFather**. Confirm the handle is exactly `@BotFather` — there are impersonator accounts.
-    
-2.  Send `/newbot` and follow the prompts. You'll be asked for a bot name (display name) and a username (must end in `bot`, e.g., `my_openclaw_bot`).
-    
-3.  BotFather replies with a token that looks like `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`. Copy it.
-    
+1. Open Telegram (mobile or desktop) and search for **@BotFather**. Confirm the handle is exactly `@BotFather` — there are impersonator accounts.
+2. Send `/newbot` and follow the prompts. You'll be asked for a bot name (display name) and a username (must end in `bot`, e.g., `my_openclaw_bot`).
+3. BotFather replies with a token that looks like `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`. Copy it.
 
 ### Telegram: Store the Token as a Secret
 
@@ -649,12 +633,9 @@ This displays a QR code in your terminal. Current WhatsApp login is QR-based onl
 
 Open WhatsApp on your phone:
 
-*   Go to **Settings → Linked Devices**
-    
-*   Tap **Link a Device**
-    
-*   Scan the QR code displayed in your terminal
-    
+- Go to **Settings → Linked Devices**
+- Tap **Link a Device**
+- Scan the QR code displayed in your terminal
 
 **Step 3: Store your phone number as a secret**
 
@@ -700,50 +681,40 @@ openclaw config get channels.whatsapp
 
 How OpenClaw handles your first inbound message depends on which number you linked during QR pairing. There are two cases.
 
-* * *
+---
 
 **Case A — Self-chat mode (you linked your own personal number)**
 
 This is the most common first setup. You scanned the QR code with your personal WhatsApp, so OpenClaw is now linked to your own number, and you message *yourself*.
 
-1.  Open WhatsApp on your phone.
-    
-2.  Tap the **new chat** icon and find **yourself**. WhatsApp labels this thread **"Message yourself"** — it's usually the first entry, or you can search your own name/number.
-    
-3.  Send any message ("hello", `/start`, or a period).
-    
-4.  Because your own number is **allowed by default when no other** `allowFrom` **entries are configured**, OpenClaw processes the message directly. **No pairing code is generated.**
-    
-5.  OpenClaw **never auto-pairs outbound messages you send from your own linked device to yourself**, so you will not see a code prompt here — that's expected.
-    
+1. Open WhatsApp on your phone.
+2. Tap the **new chat** icon and find **yourself**. WhatsApp labels this thread **"Message yourself"** — it's usually the first entry, or you can search your own name/number.
+3. Send any message ("hello", `/start`, or a period).
+4. Because your own number is **allowed by default when no other** `allowFrom` **entries are configured**, OpenClaw processes the message directly. **No pairing code is generated.**
+5. OpenClaw **never auto-pairs outbound messages you send from your own linked device to yourself**, so you will not see a code prompt here — that's expected.
 
 If you don't get a reply, jump to the troubleshooting block below.
 
-* * *
+---
 
 **Case B — Separate dedicated number (you linked a second number)**
 
 Here, OpenClaw is linked to a *different* WhatsApp number, and you message it from your personal phone.
 
-1.  Open WhatsApp on your personal phone.
-    
-2.  Tap the **new chat** icon and search for the **OpenClaw-linked number** (the one you scanned the QR code with). Save it as a contact if it helps.
-    
-3.  Send any message.
-    
-4.  OpenClaw sees an unknown sender, holds the message, and replies with an **8-character pairing code** (valid for 1 hour).
-    
-5.  Approve the code from your Mac mini terminal:
-    
-    ```bash
-    openclaw pairing list whatsapp
-    openclaw pairing approve whatsapp <CODE>
-    ```
-    
-    Add `--notify` if you want the bot to send a confirmation back to the sender.
-    
+1. Open WhatsApp on your personal phone.
+2. Tap the **new chat** icon and search for the **OpenClaw-linked number** (the one you scanned the QR code with). Save it as a contact if it helps.
+3. Send any message.
+4. OpenClaw sees an unknown sender, holds the message, and replies with an **8-character pairing code** (valid for 1 hour).
+5. Approve the code from your Mac mini terminal:
 
-* * *
+   ```bash
+   openclaw pairing list whatsapp
+   openclaw pairing approve whatsapp <CODE>
+   ```
+
+   Add `--notify` if you want the bot to send a confirmation back to the sender.
+
+---
 
 **Troubleshooting (both cases)**
 
@@ -755,12 +726,9 @@ openclaw config get channels.whatsapp
 openclaw logs --follow
 ```
 
-*   Confirm the gateway is running.
-    
-*   Verify the number is in **E.164 format** (e.g., `+15555550123`) and bound in config.
-    
-*   Watch the logs for inbound activity while you send the message.
-    
+- Confirm the gateway is running.
+- Verify the number is in **E.164 format** (e.g., `+15555550123`) and bound in config.
+- Watch the logs for inbound activity while you send the message.
 
 Pending requests are **capped at 3 per channel** — additional requests are ignored until one expires or is approved.
 
@@ -870,10 +838,8 @@ gateway/tailscale serve enabled: https://night-thoughts.tail305232.ts.net/
 
 The OpenClaw mobile app connects over the tailnet, so your phone must be on the same tailnet as the Mac mini.
 
-*   **Android:** install **Tailscale** from the [Play Store](https://play.google.com/store/apps/details?id=com.tailscale.ipn).
-    
-*   **iOS:** install **Tailscale** from the [App Store](https://apps.apple.com/app/tailscale/id1470499037).
-    
+- **Android:** install **Tailscale** from the [Play Store](https://play.google.com/store/apps/details?id=com.tailscale.ipn).
+- **iOS:** install **Tailscale** from the [App Store](https://apps.apple.com/app/tailscale/id1470499037).
 
 Open the app and sign in with the **same Tailscale account** you used on the Mac mini. Toggle the VPN switch on. Your Mac mini should appear in the machine list with a green dot.
 
@@ -943,14 +909,10 @@ Docker Desktop on macOS is a GUI application. It does not start until a user log
 
 `colima-pulse` is a small script that installs and manages that LaunchDaemon. It handles:
 
-*   Starting Colima at boot, before login.
-    
-*   Waiting until Docker actually responds before continuing.
-    
-*   Recovering cleanly after a reboot or power loss.
-    
-*   Explicit-only reset (safe by default).
-    
+- Starting Colima at boot, before login.
+- Waiting until Docker actually responds before continuing.
+- Recovering cleanly after a reboot or power loss.
+- Explicit-only reset (safe by default).
 
 It uses **QEMU** rather than Apple's VZ framework because QEMU has proven more reliable for headless, pre-login startup.
 
@@ -1265,16 +1227,11 @@ The agent should invoke the `web_search` tool, query your local SearXNG instance
 
 ### How SearXNG on Colima Works
 
-*   **Transport:** OpenClaw calls SearXNG's native `format=json` endpoint. It is not doing HTML scraping.
-    
-*   **Network guard:** `http://` base URLs must target a trusted private or loopback host. Public hosts must use `https://`. Since `localhost` is a loopback address, your local setup passes this check.
-    
-*   **Auto-detection order:** SearXNG is checked **last** in auto-detection (order 200), after API-backed providers, DuckDuckGo, and Ollama Web Search. This is why Step 8's explicit `openclaw config set` is necessary — the auto-detector will not choose it for you if any other provider has credentials.
-    
-*   **No API key:** SearXNG works with any instance out of the box.
-    
-*   **Boot order:** Colima Pulse starts Colima before login. Docker starts. The `--restart unless-stopped` policy brings SearXNG up. By the time OpenClaw's gateway starts, SearXNG is already listening.
-    
+- **Transport:** OpenClaw calls SearXNG's native `format=json` endpoint. It is not doing HTML scraping.
+- **Network guard:** `http://` base URLs must target a trusted private or loopback host. Public hosts must use `https://`. Since `localhost` is a loopback address, your local setup passes this check.
+- **Auto-detection order:** SearXNG is checked **last** in auto-detection (order 200), after API-backed providers, DuckDuckGo, and Ollama Web Search. This is why Step 8's explicit `openclaw config set` is necessary — the auto-detector will not choose it for you if any other provider has credentials.
+- **No API key:** SearXNG works with any instance out of the box.
+- **Boot order:** Colima Pulse starts Colima before login. Docker starts. The `--restart unless-stopped` policy brings SearXNG up. By the time OpenClaw's gateway starts, SearXNG is already listening.
 
 ### Troubleshooting
 
@@ -1289,16 +1246,11 @@ openclaw plugins list
 openclaw logs --follow
 ```
 
-*   Confirm Colima is running (`colima status` shows `Running`).
-    
-*   Confirm the SearXNG container is up (`docker ps` shows it as `Up`).
-    
-*   Confirm SearXNG responds to `curl`.
-    
-*   Confirm the gateway is running and the SearXNG plugin is listed as `enabled`.
-    
-*   Watch the logs while you trigger a search to see where the chain broke.
-    
+- Confirm Colima is running (`colima status` shows `Running`).
+- Confirm the SearXNG container is up (`docker ps` shows it as `Up`).
+- Confirm SearXNG responds to `curl`.
+- Confirm the gateway is running and the SearXNG plugin is listed as `enabled`.
+- Watch the logs while you trigger a search to see where the chain broke.
 
 **Common SearXNG errors:**
 
@@ -1385,14 +1337,10 @@ This is the part that trips most people up. Here is the exact sequence:
 
 **2a. Create the project**
 
-*   Go to the [Google Cloud Console](https://console.cloud.google.com/)
-    
-*   Click the project dropdown at the top → **New Project**
-    
-*   Name it (e.g., `openclaw-workspace`) → **Create**
-    
-*   Select the new project from the dropdown
-    
+- Go to the [Google Cloud Console](https://console.cloud.google.com/)
+- Click the project dropdown at the top → **New Project**
+- Name it (e.g., `openclaw-workspace`) → **Create**
+- Select the new project from the dropdown
 
 **2b. Enable the required APIs**
 
@@ -1413,26 +1361,16 @@ Enable only the APIs for services you plan to use. You can always enable more la
 
 Go to **APIs & Services → OAuth consent screen**:
 
-*   Select **External** user type (unless you have a Google Workspace org)
-    
-*   Fill in: App name (e.g., "OpenClaw Agent"), User support email, Developer contact email
-    
-*   Click **Save and Continue**
-    
-*   On the **Scopes** page, add the scopes you need:
-    
-    *   `https://www.googleapis.com/auth/gmail.modify`
-        
-    *   `https://www.googleapis.com/auth/gmail.send`
-        
-    *   `https://www.googleapis.com/auth/calendar.events`
-        
-    *   (add Drive, Contacts, Tasks, Sheets scopes if using those services)
-        
-*   Click **Save and Continue**
-    
-*   On the **Test users** page, **add the Google account email that will use the agent**. This is critical — if the user is not listed as a test user, OAuth will fail with a `403 access_denied` error.
-    
+- Select **External** user type (unless you have a Google Workspace org)
+- Fill in: App name (e.g., "OpenClaw Agent"), User support email, Developer contact email
+- Click **Save and Continue**
+- On the **Scopes** page, add the scopes you need:
+  - `https://www.googleapis.com/auth/gmail.modify`
+  - `https://www.googleapis.com/auth/gmail.send`
+  - `https://www.googleapis.com/auth/calendar.events`
+  - (add Drive, Contacts, Tasks, Sheets scopes if using those services)
+- Click **Save and Continue**
+- On the **Test users** page, **add the Google account email that will use the agent**. This is critical — if the user is not listed as a test user, OAuth will fail with a `403 access_denied` error.
 
 The consent screen can stay in "Testing" status; you do not need to publish or verify the app.
 
@@ -1440,16 +1378,11 @@ The consent screen can stay in "Testing" status; you do not need to publish or v
 
 Go to **APIs & Services → Credentials**:
 
-*   Click **\+ Create Credentials → OAuth client ID**
-    
-*   Application type: **Desktop app**
-    
-*   Name: anything descriptive (e.g., "OpenClaw Workspace Plugin")
-    
-*   Click **Create**
-    
-*   Click **Download JSON** on the confirmation dialog — the file is named `client_secret_*.json`
-    
+- Click **\+ Create Credentials → OAuth client ID**
+- Application type: **Desktop app**
+- Name: anything descriptive (e.g., "OpenClaw Workspace Plugin")
+- Click **Create**
+- Click **Download JSON** on the confirmation dialog — the file is named `client_secret_*.json`
 
 ### Step 3: Place the Credentials File
 
@@ -1515,10 +1448,8 @@ If the same agent can both read untrusted email content **and** send messages, a
 
 The most valuable security boundary in this entire setup is splitting Google Workspace access across **two agents**:
 
-*   **Reader agent** — read-only tools. Processes untrusted email and calendar content.
-    
-*   **Sender agent** — read and send tools. Never touches untrusted content directly.
-    
+- **Reader agent** — read-only tools. Processes untrusted email and calendar content.
+- **Sender agent** — read and send tools. Never touches untrusted content directly.
 
 The reader agent summarizes or drafts. You review the output. The sender agent takes action only on what you approve.
 
@@ -1591,12 +1522,9 @@ The `deny` list ensures the sender never has a tool to fetch inbox content. If a
 
 #### How the boundary works
 
-*   **Reader** can search, read, and list Gmail, Calendar, Drive, Contacts, Tasks, and Sheets. It **cannot** send email, create events, or write files.
-    
-*   **Sender** can send email and create calendar events. It **cannot** read inbox content.
-    
-*   Each agent has its **own credential store** at `~/.openclaw/agents/<agentId>/agent/`. OAuth refresh tokens are not shared between agents — you authenticate each one separately.
-    
+- **Reader** can search, read, and list Gmail, Calendar, Drive, Contacts, Tasks, and Sheets. It **cannot** send email, create events, or write files.
+- **Sender** can send email and create calendar events. It **cannot** read inbox content.
+- Each agent has its **own credential store** at `~/.openclaw/agents/<agentId>/agent/`. OAuth refresh tokens are not shared between agents — you authenticate each one separately.
 
 #### Verify the tool policies
 
@@ -1729,17 +1657,14 @@ If the cron job fires but the agent turn fails with an error like:
 
 …the gateway process cannot resolve a SecretRef from `~/.openclaw/.env`. The most common causes, in order of likelihood:
 
-1.  **The gateway was not restarted after editing** `.env`**.** The file is read once at startup. Fix:
-    
-    ```bash
-    openclaw gateway stop
-    openclaw gateway restart
-    ```
-    
-2.  **The value in** `.env` **is wrapped in quotes.** Write `OLLAMA_API_KEY=ollama-local`, not `OLLAMA_API_KEY="ollama-local"`. The loader reads the raw text after `=`, so quotes become part of the value.
-    
-3.  **The variable name in** `--ref-id` **doesn't match the** `.env` **key.** Check with `openclaw config get models.providers.ollama.apiKey` and compare to the exact key in `~/.openclaw/.env`.
-    
+1. **The gateway was not restarted after editing** `.env`**.** The file is read once at startup. Fix:
+
+   ```bash
+   openclaw gateway stop
+   openclaw gateway restart
+   ```
+2. **The value in** `.env` **is wrapped in quotes.** Write `OLLAMA_API_KEY=ollama-local`, not `OLLAMA_API_KEY="ollama-local"`. The loader reads the raw text after `=`, so quotes become part of the value.
+3. **The variable name in** `--ref-id` **doesn't match the** `.env` **key.** Check with `openclaw config get models.providers.ollama.apiKey` and compare to the exact key in `~/.openclaw/.env`.
 
 Diagnose with:
 
