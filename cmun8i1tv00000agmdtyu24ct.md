@@ -1,5 +1,7 @@
 ---
 title: "The Secret Digital Workers Running the Internet: A Guide to Non-Human Identities"
+seoTitle: "Non-Human Identities (NHI) Explained: Securing Machine Keys"
+seoDescription: "What non-human identities are, where unmanaged machine keys hide, how attackers borrow trust, why AI agents raise the stakes, and the WEF model."
 datePublished: 2026-09-29T22:14:41.360Z
 cuid: cmun8i1tv00000agmdtyu24ct
 slug: the-secret-digital-workers-running-the-internet-a-guide-to-non-human-identities
