@@ -6,7 +6,7 @@ datePublished: 2026-10-09T05:45:20.752Z
 cuid: cmv0jk9jn000006ntalv28qqn
 slug: running-llms-locally-how-to-pick-the-right-tool-and-model-for-your-machine
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/fe942459-d087-49d0-9769-0ec5136af2f9.jpg
-tags: ai, llm, gguf, ollama, local-llm
+tags: ai, llm, gguf, ollama, local-ai
 
 ---
 
