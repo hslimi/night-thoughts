@@ -1,5 +1,7 @@
 ---
 title: "Teaching a Small Language Model to Triage Incidents: A Beginner’s Unsloth and QLoRA Tutorial"
+seoTitle: "Fine-Tune Qwen2.5 with Unsloth & QLoRA on Colab (Tutorial)"
+seoDescription: "Beginner tutorial: fine-tune a 1.5B model to turn incident alerts into strict JSON. Validity went 0% to 100%; label accuracy didn't. Code included."
 datePublished: 2026-10-30T00:35:01.434Z
 cuid: cmvu8q2uq000102po7d656mlz
 slug: teaching-a-small-language-model-to-triage-incidents-a-beginner-s-unsloth-and-qlora-tutorial
