@@ -1,5 +1,7 @@
 ---
 title: "Fast Brain, Slow Brain: A Beginner's Guide to System 1 and System 2 AI"
+seoTitle: "System 1 vs System 2 AI: Fast Decision Models like Jev"
+seoDescription: "A beginner's guide to fast decision models versus reasoning LLMs: what Jev does, cost and speed, real use cases, limits, and how to add it."
 datePublished: 2026-09-23T05:41:50.408Z
 cuid: cmudoe4kx00000bgm385w7dfa
 slug: fast-brain-slow-brain-a-beginner-s-guide-to-system-1-and-system-2-ai
