@@ -1,5 +1,7 @@
 ---
 title: "Building an AI Trading Team on Your Mac: A Deep Dive into TradingAgents with Gemini 3"
+seoTitle: "TradingAgents + Gemini 3 on a Mac: Multi-Agent Trading Setup"
+seoDescription: "Run the open-source TradingAgents framework on a Mac mini with Gemini 3, LangGraph Studio and uv, scheduled with launchd and sent to Telegram."
 datePublished: 2026-10-10T07:47:29.044Z
 cuid: cmv23d6r6000106kzewr5hjim
 slug: building-an-ai-trading-team-on-your-mac-a-deep-dive-into-tradingagents-with-gemini-3
@@ -12,9 +14,10 @@ tags: ai, python, trading, llm, langchain
 
 TradingAgents is an open-source multi-agent LLM framework that simulates a real-world trading firm. It deploys specialized agents — fundamental analysts, sentiment experts, technical analysts, researchers, traders, and risk managers — that collaboratively evaluate market conditions and debate optimal strategies before producing a final trading decision.
 
-Built on **LangGraph** for stateful orchestration, the framework supports multiple LLM providers including Google Gemini, OpenAI, Anthropic, and more. This guide walks you through a complete production-grade setup on a Mac Mini: **Gemini 3** as the inference backend, **LangGraph Studio** for visual debugging, **uv** for Python environment management, **yfinance** for market data, and a **`launchd` scheduled job** that runs the analysis twice daily and pushes the report to **Telegram**.
+Built on **LangGraph** for stateful orchestration, the framework supports multiple LLM providers including Google Gemini, OpenAI, Anthropic, and more. This guide walks you through a complete production-grade setup on a Mac Mini: **Gemini 3** as the inference backend, **LangGraph Studio** for visual debugging, **uv** for Python environment management, **yfinance** for market data, and a `launchd` **scheduled job** that runs the analysis twice daily and pushes the report to **Telegram**.
 
 **What you'll build:**
+
 - A Python 3.11 virtual environment managed by `uv`
 - TradingAgents with Gemini 3 models
 - A centralized `.env` file — one place for every secret and setting
@@ -22,12 +25,11 @@ Built on **LangGraph** for stateful orchestration, the framework supports multip
 - A `launchd` job running at 6:00 AM and 3:00 PM HKT
 - Automatic Telegram notifications after each run
 
-
 ## Project Layout
 
 Everything lives in a single repository with a predictable structure. All configuration is centralized in `.env`; the `launchd` job calls the wrapper script, which sources `.env` at runtime.
 
-```
+```plaintext
 ~/TradingAgents/
 ├── .env                     ← ALL configuration lives here
 ├── .venv/                   ← Python 3.11 virtual environment (uv-managed)
@@ -41,7 +43,6 @@ Everything lives in a single repository with a predictable structure. All config
 
 **Why this layout matters:** You only edit `.env` when you rotate an API key or change a model, and you only touch the plist when you change the schedule. Everything else is automated. The wrapper script exists specifically because `launchd` does not expand `$HOME` in plists and freezes its `EnvironmentVariables` at load time — the wrapper resolves `$HOME` at runtime and re-sources `.env` on every run.
 
-
 ## Architecture: How the Virtual Trading Firm Works
 
 TradingAgents mirrors a real trading firm's organizational structure, implemented as a LangGraph `StateGraph` where each agent is a node and edges define information flow.
@@ -49,7 +50,7 @@ TradingAgents mirrors a real trading firm's organizational structure, implemente
 **Four-layer workflow:**
 
 | Layer | Agents | Role | Think Level |
-|-------|--------|------|-------------|
+| --- | --- | --- | --- |
 | **Analyst Team** | Fundamentals, Sentiment, News, Technical | Gather data, produce initial reports | Quick Think |
 | **Researcher Debate** | Bull Researcher ↔ Bear Researcher | Structured debate on analyst findings | Deep Think |
 | **Trading** | Trader Agent | Composes reports into a trading plan | Deep Think |
@@ -60,7 +61,7 @@ Each analyst runs a conditional tool-call loop: the agent calls a data tool (e.g
 **What runs where:**
 
 | Layer | Location | Description |
-|-------|----------|-------------|
+| --- | --- | --- |
 | LangGraph orchestration | **Local** (Mac Mini) | State graph compilation, node routing, checkpoint persistence |
 | TradingAgents framework | **Local** | Agent definitions, tool nodes, memory logs |
 | yfinance data fetching | **Local** (network) | HTTP requests to Yahoo Finance APIs |
@@ -68,7 +69,6 @@ Each analyst runs a conditional tool-call loop: the agent calls a data tool (e.g
 | Telegram delivery | **Remote** (Telegram API) | HTTP POST to `api.telegram.org` — no local server needed |
 
 When you call `ta.propagate("NVDA", date)`, LangGraph compiles the graph locally, then streams execution node by node. Each agent node makes a remote API call to Gemini for reasoning, merges the response back into the shared `AgentState`, and LangGraph routes to the next node based on conditional logic. The final decision is written to disk as markdown and pushed to Telegram by a small wrapper script.
-
 
 ## Why Gemini 3
 
@@ -83,7 +83,6 @@ When you call `ta.propagate("NVDA", date)`, LangGraph compiles the graph locally
 - **Deep Think** — `gemini-3.8-flash` : Our most intelligent Flash model, engineered for long-horizon software engineering, autonomous agents, and complex enterprise workflows. Used for the Researcher debate, Trader, and Risk Management agents.
 - **Quick Think** — `gemini-3.1-flash-lite` : Frontier-class performance rivaling larger models at a fraction of the cost. Used for the four Analyst agents, which are high-throughput data gathering tasks.
 
-
 ## Step 1: Install Homebrew
 
 Homebrew is the missing package manager for macOS. Install it with the official one-liner:
@@ -94,7 +93,7 @@ Homebrew is the missing package manager for macOS. Install it with the official 
 
 **Expected output:** Installation progress messages, followed by:
 
-```
+```plaintext
 ==> Installation successful!
 ==> Homebrew has enabled anonymous aggregate formulae and cask analytics.
 ...
@@ -120,12 +119,12 @@ brew --version
 ```
 
 **Expected output:**
-```
+
+```plaintext
 Homebrew 4.x.x
 ```
 
 **Note:** If Homebrew is already installed, this command will detect it and skip installation. You can safely run it again.
-
 
 ## Step 2: Install uv
 
@@ -140,7 +139,8 @@ uv --version
 ```
 
 **Expected output:**
-```
+
+```plaintext
 uv 0.x.x
 ```
 
@@ -153,7 +153,8 @@ sudo systemsetup -gettimezone
 ```
 
 **Expected output:**
-```
+
+```plaintext
 Time Zone: Asia/Hong_Kong
 ```
 
@@ -173,7 +174,8 @@ source .venv/bin/activate
 ```
 
 **Expected output:**
-```
+
+```plaintext
 Using CPython 3.11.x
 Creating virtual environment at: .venv
 Activate with: source .venv/bin/activate
@@ -200,7 +202,8 @@ python -c "from langgraph.graph import StateGraph; print('LangGraph OK')"
 ```
 
 **Expected output:**
-```
+
+```plaintext
 TradingAgents OK
 LangGraph OK
 ```
@@ -328,7 +331,7 @@ Make it executable:
 chmod +x scripts/run_analysis.sh
 ```
 
-**Why the wrapper exists:** `launchd` does not expand `$HOME` in plist strings, and its `EnvironmentVariables` dict is static at load time. The wrapper resolves `$HOME` at runtime and sources `.env` fresh on every run. This means **you can rotate your Google API key or Telegram token by editing `.env` alone** — no plist reload required.
+**Why the wrapper exists:** `launchd` does not expand `$HOME` in plist strings, and its `EnvironmentVariables` dict is static at load time. The wrapper resolves `$HOME` at runtime and sources `.env` fresh on every run. This means **you can rotate your Google API key or Telegram token by editing** `.env` **alone** — no plist reload required.
 
 ## Step 9: Create the `trade.py` Script
 
@@ -439,7 +442,7 @@ Save and exit.
 
 **How the schedule works:** `StartCalendarInterval` uses the system timezone — which you verified is HKT in Step 3. `Hour 6` means 6:00 AM HKT, `Hour 15` means 3:00 PM HKT. If the Mac is asleep at those times, `launchd` coalesces the missed intervals and fires once on wake.
 
-**Why `RunAtLoad` is `false`:** Setting it to `true` would trigger a run immediately when the plist is loaded — including after every reboot. With `false`, the job only runs at the scheduled times.
+**Why** `RunAtLoad` **is** `false`**:** Setting it to `true` would trigger a run immediately when the plist is loaded — including after every reboot. With `false`, the job only runs at the scheduled times.
 
 ## Step 11: Load and Test the Job
 
@@ -476,7 +479,6 @@ launchctl unload ~/Library/LaunchAgents/com.tradingagents.schedule.plist
 launchctl load ~/Library/LaunchAgents/com.tradingagents.schedule.plist
 ```
 
-
 ## Checkpoint/Resume
 
 TradingAgents supports checkpointing to save state after each node to a per-ticker SQLite database. If a run crashes, it resumes from the last successful node instead of restarting.
@@ -492,7 +494,6 @@ config["checkpoint_enabled"] = True
 On resume, the framework prints `Resuming from step N for <TICKER> on <date>` instead of restarting from scratch. After successful completion, the checkpoint is automatically cleaned up.
 
 **CLI alternative:** The TradingAgents CLI accepts `--checkpoint` as a command-line argument.
-
 
 ## LangGraph Studio: Visual Debugging
 
@@ -532,7 +533,8 @@ langgraph dev
 ```
 
 **Expected output:**
-```
+
+```plaintext
 Server started at http://localhost:2024
 ```
 
@@ -541,7 +543,7 @@ Open Studio in your browser. Safari and Brave block plain HTTP on localhost — 
 ### What Studio Gives You
 
 | Feature | What It Does |
-|---------|--------------|
+| --- | --- |
 | **Interactive graph visualization** | See all nodes and edges rendered as a live graph |
 | **Step-by-step execution** | Pause at any node, inspect input state, then resume |
 | **State inspection** | View the full `AgentState` at any point — messages, reports, debate counts |
@@ -581,7 +583,6 @@ langgraph dev --debug-port 5678
 
 Then attach VS Code or PyCharm to port 5678.
 
-
 ## Data Vendors: yfinance and Alternatives
 
 TradingAgents ships with **yfinance** as the default data vendor. It requires no API keys and covers core stock APIs, technical indicators, fundamentals, and news.
@@ -600,7 +601,7 @@ config["data_vendors"] = {
 **Supported alternatives:**
 
 | Vendor | Category | API Key Required | Notes |
-|--------|----------|-----------------|-------|
+| --- | --- | --- | --- |
 | `alpha_vantage` | Core stock, fundamentals | Yes | Free tier: 25 requests/day |
 | `sec_edgar` | Fundamentals | No | SEC asks callers to identify themselves |
 | `fred` | Macro data | Yes | Federal Reserve economic data |
@@ -615,7 +616,6 @@ config["data_vendors"]["fundamental_data"] = "sec_edgar,yfinance"
 
 You can specify comma-separated fallback chains. If the first vendor is unavailable, the system automatically tries the next in the chain.
 
-
 ## Output: What You Actually Get
 
 When you call `ta.propagate("NVDA", today)`, you get two things back:
@@ -625,7 +625,7 @@ When you call `ta.propagate("NVDA", today)`, you get two things back:
 
 The `ta.save_reports(state, ticker)` call writes a **structured directory tree** of markdown files:
 
-```
+```plaintext
 trading_data/reports/NVDA/2026-10-10/
 ├── 1_analysts/
 │   ├── market.md
@@ -649,31 +649,28 @@ trading_data/reports/NVDA/2026-10-10/
 
 The Telegram script reads `5_portfolio/decision.md` and pushes it to your chat.
 
-
 ## Risks and Limitations
 
 | Risk | Severity | Mitigation |
-|------|----------|------------|
+| --- | --- | --- |
 | **Gemini rate limits** | High | Free tier is 15 RPM. A single trade run can exceed this. Enable billing or throttle with `max_debate_rounds = 1` |
 | **yfinance single point of failure** | Medium | Web scraping tool, subject to Yahoo page changes. Use fallback chains |
 | **Context growth during debate** | Medium | Set `max_debate_rounds` and `max_risk_discuss_rounds` conservatively |
 | **No broker execution** | — | TradingAgents is a research framework. It does not place real orders — output is a decision, not a trade |
-| **`launchd` timezone** | Low | Schedule uses system timezone. Verify with `sudo systemsetup -gettimezone` |
+| `launchd` **timezone** | Low | Schedule uses system timezone. Verify with `sudo systemsetup -gettimezone` |
 
 **Important disclaimer:** TradingAgents is designed for research purposes. Trading performance may vary based on many factors, including the chosen backbone language models, model temperature, trading periods, and data quality. It is not intended as financial, investment, or trading advice.
-
 
 ## Troubleshooting: When Things Fail
 
 | Symptom | Likely Cause | Fix |
-|---------|--------------|-----|
+| --- | --- | --- |
 | `launchctl start` runs but nothing happens | Wrapper script not executable | `chmod +x ~/TradingAgents/scripts/run_analysis.sh` |
 | Telegram message not received | `TELEGRAM_CHAT_ID` wrong | Message `@userinfobot` on Telegram to get your correct ID |
 | `GOOGLE_API_KEY not set` in logs | `.env` not sourced | Verify wrapper has `source "$ENV_FILE"` before running |
 | Analysis runs but no report files | `save_reports` not called | Ensure `ta.save_reports(state, ticker)` is in `trade.py` |
 | Job runs at wrong time | System timezone not HKT | `sudo systemsetup -settimezone Asia/Hong_Kong` |
 | `uv: command not found` in launchd logs | PATH not set | Use the venv Python directly (absolute path) |
-
 
 ## Conclusion
 
@@ -683,11 +680,12 @@ You now have a fully operational multi-agent trading firm running on your Mac, s
 - **Gemini 3** provides remote inference — `gemini-3.8-flash` for deep reasoning, `gemini-3.1-flash-lite` for high-throughput analysts
 - **yfinance** fetches market data with no API keys required
 - **LangGraph Studio** gives you step-by-step visual debugging
-- **`launchd`** runs the analysis at 6:00 AM and 3:00 PM HKT
+- `launchd` runs the analysis at 6:00 AM and 3:00 PM HKT
 - **Telegram** receives the final decision after each run
-- **One `.env` file** holds every secret — rotate keys without touching the plist
+- **One** `.env` **file** holds every secret — rotate keys without touching the plist
 
 **Next steps:**
+
 - Experiment with different Gemini model combinations for Quick Think and Deep Think
 - Add fallback data vendors (SEC EDGAR for fundamentals, Alpha Vantage for stock data)
 - Explore broker integration forks if you want live execution — but understand they are separate codebases
