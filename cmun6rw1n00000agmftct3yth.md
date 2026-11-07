@@ -1,5 +1,7 @@
 ---
 title: "Traditional Vector RAG vs. PageIndex: What's the Difference?"
+seoTitle: "Vector RAG vs PageIndex: Which Retrieval Should You Use?"
+seoDescription: "How PageIndex reads documents by their structure instead of chunking them into vectors, its benefits and limits, and when to use each one."
 datePublished: 2026-09-29T21:26:21.207Z
 cuid: cmun6rw1n00000agmftct3yth
 slug: traditional-vector-rag-vs-pageindex-what-s-the-difference
