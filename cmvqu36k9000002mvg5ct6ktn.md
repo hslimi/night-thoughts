@@ -6,7 +6,7 @@ datePublished: 2026-10-27T15:22:00.017Z
 cuid: cmvqu36k9000002mvg5ct6ktn
 slug: beyond-deepseek-and-qwen-five-teams-building-china-s-open-source-ai-foundations
 cover: https://cdn.hashnode.com/uploads/covers/6a92730f9a9aa7f72e74fdf4/a8c69d5f-4021-4c01-ae28-d6ce6d9d02b9.png
-tags: ai, machine-learning, china, open-source, llm
+tags: ai, opensource, machine-learning, china, llm
 
 ---
 
