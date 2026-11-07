@@ -1,5 +1,7 @@
 ---
 title: "Samsung's LittleBit Makes Giant AI Models Fit on Your Laptop"
+seoTitle: "Samsung LittleBit: Extreme LLM Compression for Laptops"
+seoDescription: "Samsung Research's peer-reviewed LittleBit method compresses large language models enough to run locally. How it works and what it changes."
 datePublished: 2026-10-08T12:21:46.286Z
 cuid: cmuzia7x2000007pc3zio0yyf
 slug: samsung-s-littlebit-makes-giant-ai-models-fit-on-your-laptop
