@@ -209,7 +209,7 @@ And if you want a memory layer that’s structured, SQL-native, action-aware, co
 
 - **Cognitive architecture for AI memory.** “Your Model Has Humanity’s Cortex. It Needs Its Own Hippocampus.” Medium. https://medium.com/codetodeploy/your-model-has-humanitys-cortex-it-needs-its-own-hippocampus-36a4b9676c8d
 
-- **Local AI workstation setup.** “I Turned My Mac Mini Into a Local AI Workstation — Here’s Exactly How.” Hashnode. https://nightthoughts.hashnode.dev/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how
+- **Local AI workstation setup.** “I Turned My Mac Mini Into a Local AI Workstation — Here’s Exactly How.” Hashnode. https://nightthoughts.me/i-turned-my-mac-mini-into-a-local-ai-workstation-here-s-exactly-how
 
 - **Memori overview.** Memori Labs. “Introducing Memori Cloud: Fully Hosted SQL-Native Memory Layer for AI Agents.” https://memorilabs.ai/blog/launching-memori-cloud/
 
