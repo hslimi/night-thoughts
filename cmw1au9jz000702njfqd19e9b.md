@@ -16,7 +16,7 @@ An expense tracker is a useful specification exercise because the first prompt s
 
 This walkthrough builds that application with GitHub Spec Kit and GitHub Copilot Chat in VS Code. It keeps the generated artifacts, test-first checkpoints, mistakes, convergence finding, and a real maintenance repair. The result is a small frontend application, not a financial service. The process is the product being examined.
 
-## 1\. Why “build me an expense tracker” is underspecified
+## 1\. Why is “build me an expense tracker” underspecified?
 
 A prompt such as “add expenses and show monthly totals” leaves important decisions unanswered.
 
@@ -319,7 +319,7 @@ The first verification verdict was **partial**: all behavior checks passed, but 
 
 ![The final verified bug report with passing contrast, test, build, browser, and scope checks](https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/19ff6199-4c12-4ef3-9777-c60532f7c081.png align="center")
 
-## 15\. What worked, what did not, and when the process is worth using
+## 15\. What worked, what did not, and when is Spec Kit worth using?
 
 The useful part was not a perfect prompt-to-code transformation. It was the number of assumptions that became reviewable before and after implementation.
 
@@ -382,3 +382,21 @@ The [experiment README](https://github.com/hslimi/night-thoughts/tree/main/exper
 - [bug assessment, fix, and verification](https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/.specify/bugs/muted-text-contrast/).
 
 Spec Kit’s value is not merely generating code. It makes intent, decisions, tasks, and verification visible and reviewable. Human judgement remains responsible for the result.
+
+## FAQ
+
+### What is GitHub Spec Kit?
+
+An open-source toolkit for spec-driven development. You write a constitution and a specification, clarify open questions, produce a plan and tasks, and then a coding agent implements them. This experiment used Spec Kit CLI 1.2.5 with GitHub Copilot in VS Code.
+
+### What was built in this experiment?
+
+A single-user expense tracker in React and TypeScript with Vite, tested with Vitest and Playwright, storing data in localStorage and using USD only.
+
+### When is Spec Kit worth the overhead?
+
+When requirements have meaningful edge cases, several people need to review intent, or maintenance must stay traceable. For a disposable prototype, the artifacts can cost more than they return.
+
+### What went wrong along the way?
+
+Copilot ran a prerequisite script from the wrong directory, some test locators were ambiguous, native `window.confirm` dialogs deadlocked Playwright, and the first analysis did not display its report.
