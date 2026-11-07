@@ -1,5 +1,7 @@
 ---
 title: "The Harness Is the Agent: Inside Google’s Harness²"
+seoTitle: "Google Harness²: When the Agent Harness Rewrites Itself"
+seoDescription: "Google Research's Harness² keeps model weights fixed and lets the harness improve itself. How the recursion works, the benchmarks, and caveats."
 datePublished: 2026-10-21T14:59:37.212Z
 cuid: cmvi8naew000809jtc1gmblr9
 slug: the-harness-is-the-agent-inside-google-s-harness
