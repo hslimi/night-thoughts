@@ -1,5 +1,7 @@
 ---
 title: "Beyond DeepSeek and Qwen: Five Teams Building China’s Open-Source AI Foundations"
+seoTitle: "China's Open-Source AI Beyond DeepSeek and Qwen: 5 Teams"
+seoDescription: "Shanghai AI Lab, BAAI, OpenBMB, ByteDance Seed and OpenCSG build the parsers, retrieval, RL and data tools underneath China's open-source AI."
 datePublished: 2026-10-27T15:22:00.017Z
 cuid: cmvqu36k9000002mvg5ct6ktn
 slug: beyond-deepseek-and-qwen-five-teams-building-china-s-open-source-ai-foundations
