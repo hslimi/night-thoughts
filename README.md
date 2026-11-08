@@ -1,12 +1,8 @@
 # Night Thoughts
 
-Reproducible companion experiments for technical essays on local AI, Apple Silicon, agents, and practical software systems.
+Applied AI, tested for real: reproducible experiments, honest results, no hype.
 
 The articles themselves live at **[nightthoughts.me](https://nightthoughts.me)**.
-
-## Start Here
-
-[Complete Guide: Always-On Mac Server with MLX, oMLX & QwenPaw](https://nightthoughts.me/complete-guide-always-on-mac-server-with-mlx-omlx-qwenpaw)
 
 ## What You Will Find
 
