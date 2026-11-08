@@ -1,0 +1,32 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "model": "anthropic/claude-sonnet-5-5",
+
+  "plugins": [
+    "opencode-model-router@2.9.1",
+    "opencode-runtime-fallback@0.3.1"
+  ],
+
+  "default_agent": "build",
+
+  "compaction": {
+    "auto": true,
+    "keep": { "tokens": 20000 },
+    "buffer": "20%"
+  },
+
+  "agents": {
+    "title": { "model": "anthropic/claude-haiku-5-5" }
+  },
+
+  // Ordered rules: the last matching rule wins.
+  "permissions": [
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "git status *", "effect": "allow" },
+    { "action": "shell", "resource": "git diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git push *", "effect": "deny" },
+    { "action": "shell", "resource": "git reset --hard *", "effect": "deny" },
+    { "action": "shell", "resource": "rm -rf *", "effect": "deny" }
+  ]
+}

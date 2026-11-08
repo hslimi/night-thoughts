@@ -1,0 +1,28 @@
+{
+  "draftId": "6ae62b9522949cf8d9ef1cb0",
+  "publicationId": "6a9439bd520526685ca0ce83",
+  "publicationUrl": "https://nightthoughts.me",
+  "editorUrl": "https://hashnode.com/draft/6ae62b9522949cf8d9ef1cb0",
+  "previewUrlReturnedByCli": null,
+  "title": "Beyond Vibe Coding: Building and Maintaining an Expense Tracker with GitHub Spec Kit",
+  "subtitle": "A practical walkthrough of specifications, clarification, quality gates, implementation, convergence, and structured bug fixing.",
+  "tags": [
+    "tutorial",
+    "ai",
+    "software-development",
+    "github",
+    "typescript"
+  ],
+  "coverImage": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/8733568d-2fbf-4c01-ac0c-a86d7497a70d.png",
+  "inlineImageCount": 17,
+  "contentSha256": "f329e4897545ab7b314a07dc0d0d9905d8fa52b21abc74dee0322eae3aa751d3",
+  "updatedAt": "2026-11-03T16:58:10.207Z",
+  "matchingDraftCount": 1,
+  "published": false,
+  "scheduledDate": null,
+  "isSubmittedForReview": false,
+  "bodyMatchesPreparedArticle": true,
+  "allInlineImagesUseHashnodeCdn": true,
+  "localOrPrivateReferencesFound": false,
+  "screenReaderVerificationClaimed": false
+}

@@ -1,0 +1,13 @@
+{
+  "timeout_seconds": 45,
+  "notify_on_fallback": true,
+  "agents": {
+    // build and plan run on the GLM orchestrator. No other low-cost model meets its context floor.
+    "build":      { "fallback_models": ["deepseek/deepseek-flash"] },
+    "plan":       { "fallback_models": ["deepseek/deepseek-flash"] },
+    "fast":       { "fallback_models": ["openrouter/deepseek/deepseek-v4.1-flash"] },
+    "medium":     { "fallback_models": ["deepseek/deepseek-flash", "openrouter/z-ai/glm-5.3-flash"] },
+    "heavy":      { "fallback_models": ["deepseek/deepseek-flash", "openrouter/z-ai/glm-5.3-flash"] },
+    "compaction": { "fallback_models": ["deepseek/deepseek-flash"] }
+  }
+}

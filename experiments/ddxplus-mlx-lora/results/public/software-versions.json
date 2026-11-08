@@ -1,0 +1,16 @@
+{
+  "python": "3.11.17",
+  "uv": "0.13.0",
+  "mlx": "0.32.4",
+  "mlx-lm": "0.32.2",
+  "numpy": "2.4.6",
+  "pandas": "3.1.0",
+  "transformers": "5.20.2",
+  "tokenizers": "0.23.3",
+  "safetensors": "0.8.0",
+  "huggingface-hub": "2.3.0",
+  "omlx": "0.7.0",
+  "qwenpaw": "2.2.2",
+  "hardware": "tested locally on Apple Silicon",
+  "qwenpaw_helper_python": "3.12.15"
+}

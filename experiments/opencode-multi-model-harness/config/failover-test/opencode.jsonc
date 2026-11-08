@@ -1,0 +1,16 @@
+// Project config for the failover tests. Place at <project>/.opencode/opencode.jsonc.
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "mock": {
+      "name": "Mock",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": { "baseURL": "http://127.0.0.1:8899/v1", "apiKey": "not-a-real-key" },
+      "models": {
+        "mock-429-after-tool": { "name": "Mock 429 after tool", "tool_call": true, "limit": { "context": 200000, "output": 8000 } },
+        "mock-503":            { "name": "Mock 503",            "tool_call": true, "limit": { "context": 200000, "output": 8000 } },
+        "mock-stall":          { "name": "Mock stall",          "tool_call": true, "limit": { "context": 200000, "output": 8000 } }
+      }
+    }
+  }
+}

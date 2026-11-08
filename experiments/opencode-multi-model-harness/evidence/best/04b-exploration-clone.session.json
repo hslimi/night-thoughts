@@ -1,0 +1,167 @@
+{
+ "info": {
+  "id": "ses_e538d3231ffdNlyehFmy27mQfg",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "claude-sonnet-5-5",
+   "providerID": "anthropic",
+   "variant": "default"
+  },
+  "cost": 0.050791174999999994,
+  "tokens": {
+   "input": 10,
+   "output": 1106,
+   "reasoning": 0,
+   "cache": {
+    "read": 14179,
+    "write": 15992
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793894567383,
+   "updated": 1793894587317,
+   "busy": 1793894567451,
+   "idle": 1793894587318,
+   "viewed": 1793894587318
+  },
+  "title": "[redacted:session-title:ses_e538d3231ffdNlyehFmy27mQfg]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e538d3231ffdNlyehFmy27mQfg]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac72cdce001WgxBQ5488ePoqK",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac72cdce001WgxBQ5488ePoqK"
+   },
+   "time": {
+    "created": 1793894567461
+   },
+   "text": "[redacted:text:msg_1ac72cdce001WgxBQ5488ePoqK]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac72ce28001Cs4PKw4UouoC3v",
+   "time": {
+    "created": 1793894567469,
+    "streamed": 1793894571980,
+    "completed": 1793894582219
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-sonnet-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "tool",
+     "id": "toolu_01QpQgB4yAbKGA9YB32PPMn2",
+     "name": "subagent",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac72ce28001Cs4PKw4UouoC3v"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac72ce28001Cs4PKw4UouoC3v]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac72ce28001Cs4PKw4UouoC3v"
+      }
+     },
+     "time": {
+      "created": 1793894570126,
+      "ran": 1793894571747,
+      "completed": 1793894582211
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_use",
+   "cost": 0.0379855,
+   "tokens": {
+    "input": 4,
+    "output": 253,
+    "reasoning": 0,
+    "cache": {
+     "read": 0,
+     "write": 14179
+    }
+   }
+  },
+  {
+   "id": "msg_1ac7307ce001t1mrzc24s3zdrm",
+   "time": {
+    "created": 1793894582224,
+    "streamed": 1793894587308,
+    "completed": 1793894587317
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-sonnet-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac7307ce001t1mrzc24s3zdrm]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.0127169,
+   "tokens": {
+    "input": 2,
+    "output": 843,
+    "reasoning": 0,
+    "cache": {
+     "read": 14179,
+     "write": 1146
+    }
+   }
+  },
+  {
+   "id": "msg_1ac731bb6002mzb82skSagl9f3",
+   "time": {
+    "created": 1793894587318
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

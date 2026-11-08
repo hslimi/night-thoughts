@@ -1,0 +1,171 @@
+{
+  "info": {
+    "id": "ses_e53d6cff9ffd4fNQefrohRyFzI",
+    "projectID": "[REDACTED]",
+    "agent": "build",
+    "model": {
+      "id": "anthropic/claude-sonnet-5.5",
+      "providerID": "openrouter",
+      "variant": "default"
+    },
+    "cost": 0.031703524999999996,
+    "tokens": {
+      "input": 8,
+      "output": 10,
+      "reasoning": 0,
+      "cache": {
+        "read": 1595,
+        "write": 13187
+      }
+    },
+    "outcome": "succeeded",
+    "time": {
+      "created": 1793889742860,
+      "updated": 1793889748128,
+      "busy": 1793889745174,
+      "idle": 1793889748131,
+      "viewed": 1793889748131
+    },
+    "title": "[redacted:session-title:ses_e53d6cff9ffd4fNQefrohRyFzI]",
+    "permissions": [
+      {
+        "action": "browser",
+        "resource": "*",
+        "effect": "allow"
+      },
+      {
+        "action": "skill",
+        "resource": "browser",
+        "effect": "allow"
+      }
+    ],
+    "location": {
+      "directory": "/[redacted:session-directory:ses_e53d6cff9ffd4fNQefrohRyFzI]"
+    }
+  },
+  "messages": [
+    {
+      "id": "msg_1ac2930060016C6ptGrdbgDoYh",
+      "metadata": {
+        "redacted": "message-metadata:msg_1ac2930060016C6ptGrdbgDoYh"
+      },
+      "time": {
+        "created": 1793889742931
+      },
+      "text": "[redacted:text:msg_1ac2930060016C6ptGrdbgDoYh]",
+      "files": [],
+      "agents": [],
+      "type": "user"
+    },
+    {
+      "id": "msg_1ac293058001bTUlKR6wEXhHBZ",
+      "time": {
+        "created": 1793889742949,
+        "completed": 1793889745160
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "glm-5.3-flash-free",
+        "providerID": "opencode",
+        "variant": "default"
+      },
+      "content": [],
+      "finish": "error",
+      "error": {
+        "type": "provider.free-limit",
+        "message": "Free usage limit reached. Connect a provider or subscribe to OpenCode Go to keep going, or switch models.",
+        "status": 429,
+        "response": {
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"FreeUsageLimitError\",\"message\":\"Free usage limit reached. Free models work in OpenCode (https://opencode.ai); subscribe to OpenCode Go to keep going: https://opencode.ai/go\"}}"
+        },
+        "retryAfterMs": 34735000
+      }
+    },
+    {
+      "id": "msg_1ac29390a001BcAnHEwc6h2fJv",
+      "time": {
+        "created": 1793889745162
+      },
+      "type": "idle",
+      "outcome": "failed",
+      "error": {
+        "type": "provider.free-limit",
+        "message": "Free usage limit reached. Connect a provider or subscribe to OpenCode Go to keep going, or switch models.",
+        "status": 429,
+        "response": {
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"FreeUsageLimitError\",\"message\":\"Free usage limit reached. Free models work in OpenCode (https://opencode.ai); subscribe to OpenCode Go to keep going: https://opencode.ai/go\"}}"
+        },
+        "retryAfterMs": 34735000
+      }
+    },
+    {
+      "id": "msg_1ac293913001LE1r0vLdpOo5Q4",
+      "time": {
+        "created": 1793889745171
+      },
+      "type": "model-switched",
+      "model": {
+        "id": "anthropic/claude-sonnet-5.5",
+        "providerID": "openrouter"
+      },
+      "previous": {
+        "id": "glm-5.3-flash-free",
+        "providerID": "opencode",
+        "variant": "default"
+      }
+    },
+    {
+      "id": "msg_1ac2939140011rZpSlSXDYxo5m",
+      "metadata": {
+        "redacted": "message-metadata:msg_1ac2939140011rZpSlSXDYxo5m"
+      },
+      "time": {
+        "created": 1793889745177
+      },
+      "text": "[redacted:text:msg_1ac2939140011rZpSlSXDYxo5m]",
+      "type": "user"
+    },
+    {
+      "id": "msg_1ac29391c001iHRSudVLFPpyXy",
+      "time": {
+        "created": 1793889745182,
+        "streamed": 1793889748126,
+        "completed": 1793889748128
+      },
+      "type": "assistant",
+      "agent": "build",
+      "model": {
+        "id": "anthropic/claude-sonnet-5.5",
+        "providerID": "openrouter",
+        "variant": "default"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "[redacted:text:msg_1ac29391c001iHRSudVLFPpyXy]"
+        }
+      ],
+      "finish": "stop",
+      "rawFinish": "end_turn",
+      "cost": 0.0316225,
+      "tokens": {
+        "input": 4,
+        "output": 4,
+        "reasoning": 0,
+        "cache": {
+          "read": 1595,
+          "write": 12566
+        }
+      }
+    },
+    {
+      "id": "msg_1ac2944a3001Kjd21PC8h1DJa3",
+      "time": {
+        "created": 1793889748131
+      },
+      "type": "idle",
+      "outcome": "succeeded"
+    }
+  ]
+}

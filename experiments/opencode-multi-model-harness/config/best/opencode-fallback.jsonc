@@ -1,0 +1,12 @@
+{
+  "timeout_seconds": 45,
+  "notify_on_fallback": true,
+  "agents": {
+    "build":      { "fallback_models": ["openrouter/anthropic/claude-sonnet-5.5"] },
+    "plan":       { "fallback_models": ["openrouter/anthropic/claude-sonnet-5.5"] },
+    "fast":       { "fallback_models": ["openrouter/anthropic/claude-haiku-5.5"] },
+    "medium":     { "fallback_models": ["openrouter/anthropic/claude-sonnet-5.5"] },
+    "heavy":      { "fallback_models": ["openrouter/anthropic/claude-opus-5.5"] },
+    "compaction": { "fallback_models": ["openrouter/anthropic/claude-sonnet-5.5"] }
+  }
+}

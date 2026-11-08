@@ -1,0 +1,85 @@
+{
+  "applicationURL": "http://127.0.0.1:4173/?demo=1",
+  "captures": [
+    {
+      "name": "10-desktop-dashboard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "crop": null,
+      "fictionalDemoData": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "11-expense-form",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "crop": {
+        "x": 180,
+        "y": 396,
+        "width": 1080,
+        "height": 289
+      },
+      "fictionalDemoData": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "12-category-filtering",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "crop": {
+        "x": 180,
+        "y": 601,
+        "width": 1080,
+        "height": 299
+      },
+      "fictionalDemoData": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "13-amount-validation",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "crop": {
+        "x": 180,
+        "y": 396,
+        "width": 1080,
+        "height": 330
+      },
+      "fictionalDemoData": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "14-deletion-confirmation",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "crop": {
+        "x": 485,
+        "y": 318,
+        "width": 470,
+        "height": 264
+      },
+      "fictionalDemoData": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "15-mobile-dashboard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "crop": null,
+      "fictionalDemoData": true,
+      "consoleErrors": []
+    }
+  ]
+}

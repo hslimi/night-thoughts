@@ -1,0 +1,539 @@
+{
+ "info": {
+  "id": "ses_e539be76dffdCrJ8kuXDfv7weN",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "claude-haiku-5-5",
+   "providerID": "anthropic",
+   "variant": "default"
+  },
+  "cost": 0.0017992150000000003,
+  "tokens": {
+   "input": 28,
+   "output": 688,
+   "reasoning": 525,
+   "cache": {
+    "read": 102804,
+    "write": 1295
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793893603484,
+   "updated": 1793893658494,
+   "busy": 1793893655397,
+   "idle": 1793893633172,
+   "viewed": 1793893633172
+  },
+  "title": "[redacted:session-title:ses_e539be76dffdCrJ8kuXDfv7weN]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e539be76dffdCrJ8kuXDfv7weN]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac641892001WrCqHC8Gn7H1ee",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac641892001WrCqHC8Gn7H1ee"
+   },
+   "time": {
+    "created": 1793893603545
+   },
+   "text": "[redacted:text:msg_1ac641892001WrCqHC8Gn7H1ee]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac6418dc001MrmVjEIS2X0sll",
+   "time": {
+    "created": 1793893603559,
+    "streamed": 1793893605270,
+    "completed": 1793893605304
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6418dc001MrmVjEIS2X0sll"
+     },
+     "time": {
+      "created": 1793893604447,
+      "completed": 1793893605022
+     }
+    },
+    {
+     "type": "tool",
+     "id": "toolu_01RRfPCe8MTqrXVMGGxrvmoo",
+     "name": "shell",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac6418dc001MrmVjEIS2X0sll"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac6418dc001MrmVjEIS2X0sll]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac6418dc001MrmVjEIS2X0sll"
+      }
+     },
+     "time": {
+      "created": 1793893605024,
+      "ran": 1793893605263,
+      "completed": 1793893605295
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_use",
+   "cost": 0.000259185,
+   "tokens": {
+    "input": 4,
+    "output": 91,
+    "reasoning": 121,
+    "cache": {
+     "read": 14141,
+     "write": 91
+    }
+   }
+  },
+  {
+   "id": "msg_1ac641fbb001lHMMXPbT3T3ZP9",
+   "time": {
+    "created": 1793893605309,
+    "streamed": 1793893606411,
+    "completed": 1793893606425
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac641fbb001lHMMXPbT3T3ZP9]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.000195645,
+   "tokens": {
+    "input": 2,
+    "output": 48,
+    "reasoning": 0,
+    "cache": {
+     "read": 14232,
+     "write": 233
+    }
+   }
+  },
+  {
+   "id": "msg_1ac64241c0015OpmfQNYuyW4Wy",
+   "time": {
+    "created": 1793893606428
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  },
+  {
+   "id": "msg_1ac644ab6001d566ljeeVqghLW",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac644ab6001d566ljeeVqghLW"
+   },
+   "time": {
+    "created": 1793893616348
+   },
+   "text": "[redacted:text:msg_1ac644ab6001d566ljeeVqghLW]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac644ade0017jsU80VpUWIK7C",
+   "time": {
+    "created": 1793893616353,
+    "streamed": 1793893617717,
+    "completed": 1793893617730
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "tool",
+     "id": "toolu_01R8wW557um9yktMgWz1g5SL",
+     "name": "shell",
+     "executed": false,
+     "state": {
+      "status": "error",
+      "input": {
+       "redacted": "tool-input:msg_1ac644ade0017jsU80VpUWIK7C"
+      },
+      "error": {
+       "type": "permission.rejected",
+       "message": "Permission denied: shell"
+      }
+     },
+     "time": {
+      "created": 1793893617466,
+      "ran": 1793893617707,
+      "completed": 1793893617713
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_use",
+   "cost": 0.000202675,
+   "tokens": {
+    "input": 4,
+    "output": 96,
+    "reasoning": 0,
+    "cache": {
+     "read": 14465,
+     "write": 77
+    }
+   }
+  },
+  {
+   "id": "msg_1ac645048001IxgKxK1zuCeMFA",
+   "time": {
+    "created": 1793893617739,
+    "streamed": 1793893619640,
+    "completed": 1793893619651
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac645048001IxgKxK1zuCeMFA"
+     },
+     "time": {
+      "created": 1793893618755,
+      "completed": 1793893618807
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac645048001IxgKxK1zuCeMFA]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.00026112,
+   "tokens": {
+    "input": 2,
+    "output": 150,
+    "reasoning": 45,
+    "cache": {
+     "read": 14542,
+     "write": 144
+    }
+   }
+  },
+  {
+   "id": "msg_1ac6457c5001z3X14ozTZu1iE1",
+   "time": {
+    "created": 1793893619653
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  },
+  {
+   "id": "msg_1ac6482c0001CB5192wYc808pi",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac6482c0001CB5192wYc808pi"
+   },
+   "time": {
+    "created": 1793893630693
+   },
+   "text": "[redacted:text:msg_1ac6482c0001CB5192wYc808pi]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac6482e7001tWOv8VnPcPw7Nk",
+   "time": {
+    "created": 1793893630698,
+    "streamed": 1793893633154,
+    "completed": 1793893633169
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac6482e7001tWOv8VnPcPw7Nk"
+     },
+     "time": {
+      "created": 1793893631594,
+      "completed": 1793893632663
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac6482e7001tWOv8VnPcPw7Nk]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.00033576,
+   "tokens": {
+    "input": 4,
+    "output": 140,
+    "reasoning": 182,
+    "cache": {
+     "read": 14686,
+     "write": 220
+    }
+   }
+  },
+  {
+   "id": "msg_1ac648c94001zAmnGsGvzVQTpL",
+   "time": {
+    "created": 1793893633172
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  },
+  {
+   "id": "msg_1ac64b4a00010rYceS9J7OmDi0",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac64b4a00010rYceS9J7OmDi0"
+   },
+   "time": {
+    "created": 1793893643467
+   },
+   "text": "[redacted:text:msg_1ac64b4a00010rYceS9J7OmDi0]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac64b4ce00136XMzaxBW0Xeea",
+   "time": {
+    "created": 1793893643480,
+    "streamed": 1793893645079,
+    "completed": 1793893646562
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac64b4ce00136XMzaxBW0Xeea"
+     },
+     "time": {
+      "created": 1793893644445,
+      "completed": 1793893645067
+     }
+    },
+    {
+     "type": "tool",
+     "id": "toolu_0148tZjtJngU8hysdphegTeT",
+     "name": "read",
+     "executed": false,
+     "state": {
+      "status": "error",
+      "input": {
+       "redacted": "tool-input:msg_1ac64b4ce00136XMzaxBW0Xeea"
+      },
+      "error": {
+       "type": "aborted",
+       "message": "The user declined this tool call"
+      }
+     },
+     "time": {
+      "created": 1793893645071,
+      "ran": 1793893645076,
+      "completed": 1793893646554
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "error",
+   "rawFinish": "tool_use",
+   "cost": 0.00026158500000000005,
+   "tokens": {
+    "input": 4,
+    "output": 67,
+    "reasoning": 70,
+    "cache": {
+     "read": 14906,
+     "write": 349
+    }
+   },
+   "error": {
+    "type": "aborted",
+    "message": "Step interrupted"
+   }
+  },
+  {
+   "id": "msg_1ac64e33e001JVzgUTNREebNMI",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac64e33e001JVzgUTNREebNMI"
+   },
+   "time": {
+    "created": 1793893655401
+   },
+   "text": "[redacted:text:msg_1ac64e33e001JVzgUTNREebNMI]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac64e36b0012Y7VYLhIeqODbX",
+   "time": {
+    "created": 1793893655406,
+    "streamed": 1793893657376,
+    "completed": 1793893658494
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac64e36b0012Y7VYLhIeqODbX"
+     },
+     "time": {
+      "created": 1793893656526,
+      "completed": 1793893657125
+     }
+    },
+    {
+     "type": "tool",
+     "id": "toolu_01PMYGCSbBXiWzoS9M7sCQFB",
+     "name": "shell",
+     "executed": false,
+     "state": {
+      "status": "error",
+      "input": {
+       "redacted": "tool-input:msg_1ac64e36b0012Y7VYLhIeqODbX"
+      },
+      "error": {
+       "type": "aborted",
+       "message": "The user declined this tool call"
+      }
+     },
+     "time": {
+      "created": 1793893657127,
+      "ran": 1793893657370,
+      "completed": 1793893658487
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "error",
+   "rawFinish": "tool_use",
+   "cost": 0.00026770000000000006,
+   "tokens": {
+    "input": 4,
+    "output": 90,
+    "reasoning": 107,
+    "cache": {
+     "read": 15255,
+     "write": 130
+    }
+   },
+   "error": {
+    "type": "aborted",
+    "message": "Step interrupted"
+   }
+  }
+ ]
+}

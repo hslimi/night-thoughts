@@ -1,0 +1,204 @@
+{
+ "info": {
+  "id": "ses_e539828d6ffdDr0gjj3FrmNGuR",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "claude-haiku-5-5",
+   "providerID": "anthropic",
+   "variant": "default"
+  },
+  "cost": 0.00076954,
+  "tokens": {
+   "input": 10,
+   "output": 538,
+   "reasoning": 114,
+   "cache": {
+    "read": 29004,
+    "write": 1220
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793893848886,
+   "updated": 1793893857608,
+   "busy": 1793893848943,
+   "idle": 1793893857609,
+   "viewed": 1793893857609
+  },
+  "title": "[redacted:session-title:ses_e539828d6ffdDr0gjj3FrmNGuR]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e539828d6ffdDr0gjj3FrmNGuR]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac67d729001NLKVRMw20kUbgs",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac67d729001NLKVRMw20kUbgs"
+   },
+   "time": {
+    "created": 1793893848946
+   },
+   "text": "[redacted:text:msg_1ac67d729001NLKVRMw20kUbgs]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac67d776001HFwGLQ1v1awC95",
+   "time": {
+    "created": 1793893848954,
+    "streamed": 1793893852549,
+    "completed": 1793893855991
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac67d776001HFwGLQ1v1awC95"
+     },
+     "time": {
+      "created": 1793893850728,
+      "completed": 1793893851083
+     }
+    },
+    {
+     "type": "tool",
+     "id": "toolu_01Y5Yu7dJSyMJfjxjDQ6LdUk",
+     "name": "subagent",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac67d776001HFwGLQ1v1awC95"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac67d776001HFwGLQ1v1awC95]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac67d776001HFwGLQ1v1awC95"
+      }
+     },
+     "time": {
+      "created": 1793893851329,
+      "ran": 1793893851746,
+      "completed": 1793893854702
+     }
+    },
+    {
+     "type": "tool",
+     "id": "toolu_01TwVPGG5yRAuXaScSami6FT",
+     "name": "subagent",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac67d776001HFwGLQ1v1awC95"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac67d776001HFwGLQ1v1awC95]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac67d776001HFwGLQ1v1awC95"
+      }
+     },
+     "time": {
+      "created": 1793893851747,
+      "ran": 1793893852312,
+      "completed": 1793893855985
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_use",
+   "cost": 0.0004179349999999999,
+   "tokens": {
+    "input": 4,
+    "output": 402,
+    "reasoning": 114,
+    "cache": {
+     "read": 14141,
+     "write": 145
+    }
+   }
+  },
+  {
+   "id": "msg_1ac67f2f9001n5miG6PlP46NWZ",
+   "time": {
+    "created": 1793893855995,
+    "streamed": 1793893857598,
+    "completed": 1793893857608
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac67f2f9001n5miG6PlP46NWZ]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.00032731,
+   "tokens": {
+    "input": 2,
+    "output": 126,
+    "reasoning": 0,
+    "cache": {
+     "read": 14286,
+     "write": 970
+    }
+   }
+  },
+  {
+   "id": "msg_1ac67f949002k2eB3TD6Rw2UgA",
+   "time": {
+    "created": 1793893857609
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

@@ -1,0 +1,1051 @@
+{
+  "documents": 49,
+  "occurrences": 149,
+  "uniqueRemoteUrls": 56,
+  "broken": [],
+  "results": [
+    {
+      "document": ".specify/extensions/bug/README.md",
+      "url": "https://github.com/github/spec-kit/blob/main/docs/extensions/api.md#hook-events",
+      "remote": "https://github.com/github/spec-kit/blob/main/docs/extensions/api.md",
+      "anchor": "hook-events",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": ".specify/extensions/bug/README.md",
+      "url": "https://github.com/example/repo/issues/1234",
+      "status": "illustrative example",
+      "ok": true
+    },
+    {
+      "document": "README.md",
+      "url": "./article/article.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/article.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./article/assets/",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets"
+    },
+    {
+      "document": "README.md",
+      "url": "./specs/001-expense-tracker/plan.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/plan.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/verification/environment.txt",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/verification/environment.txt"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/verification/production-browser.json",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/verification/production-browser.json"
+    },
+    {
+      "document": "README.md",
+      "url": "./.specify/memory/constitution.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": ".specify/memory/constitution.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./specs/001-expense-tracker/spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./specs/001-expense-tracker/tasks.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/tasks.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./specs/001-expense-tracker/analysis-remediation.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/analysis-remediation.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/workflow/convergence-first.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/convergence-first.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/workflow/convergence-final.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/convergence-final.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./.specify/bugs/muted-text-contrast/assessment.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": ".specify/bugs/muted-text-contrast/assessment.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./.specify/bugs/muted-text-contrast/fix.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": ".specify/bugs/muted-text-contrast/fix.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./.specify/bugs/muted-text-contrast/test.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": ".specify/bugs/muted-text-contrast/test.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/workflow/copilot-stage-log.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/copilot-stage-log.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/workflow/implementation-notes.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/implementation-notes.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/workflow/bug-test-initial-partial.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/bug-test-initial-partial.md"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/verification/screenshot-manifest.json",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/verification/screenshot-manifest.json"
+    },
+    {
+      "document": "README.md",
+      "url": "./evidence/verification/link-audit.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/verification/link-audit.md"
+    },
+    {
+      "document": "README.md",
+      "url": "https://github.com/github/spec-kit",
+      "remote": "https://github.com/github/spec-kit",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://code.visualstudio.com/docs/copilot/chat/copilot-chat",
+      "remote": "https://code.visualstudio.com/docs/copilot/chat/copilot-chat",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://react.dev/",
+      "remote": "https://react.dev/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://www.typescriptlang.org/",
+      "remote": "https://www.typescriptlang.org/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://vite.dev/",
+      "remote": "https://vite.dev/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://vitest.dev/",
+      "remote": "https://vitest.dev/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://testing-library.com/",
+      "remote": "https://testing-library.com/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://playwright.dev/",
+      "remote": "https://playwright.dev/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://developer.mozilla.org/",
+      "remote": "https://developer.mozilla.org/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "remote": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "https://python-pillow.org/",
+      "remote": "https://python-pillow.org/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "README.md",
+      "url": "http://localhost:5173/?demo=1",
+      "status": "runtime URL",
+      "ok": true
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/github/spec-kit",
+      "remote": "https://github.com/github/spec-kit",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/github/spec-kit/blob/main/docs/integrations/copilot.md",
+      "remote": "https://github.com/github/spec-kit/blob/main/docs/integrations/copilot.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.github.com/spec-kit/guides/bugfix.html",
+      "remote": "https://github.github.com/spec-kit/guides/bugfix.html",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/01-environment.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/01-environment.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/copilot-stage-log.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/copilot-stage-log.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/02-constitution.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/02-constitution.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/03-specification-clarification.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/03-specification-clarification.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/04-technical-plan.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/04-technical-plan.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/05-analysis-findings.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/05-analysis-findings.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/06-checklist-gate.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/06-checklist-gate.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/08-test-first-checkpoint.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/08-test-first-checkpoint.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/07-implementation-tasks.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/07-implementation-tasks.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/implementation-notes.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/implementation-notes.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/09-final-convergence.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/09-final-convergence.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/10-desktop-dashboard.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/10-desktop-dashboard.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/11-expense-form.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/11-expense-form.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/12-category-filtering.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/12-category-filtering.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/13-amount-validation.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/13-amount-validation.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/14-deletion-confirmation.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/14-deletion-confirmation.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/15-mobile-dashboard.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/15-mobile-dashboard.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/10-bug-assessment.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/10-bug-assessment.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "assets/11-bug-verification.png",
+      "status": "local target",
+      "ok": true,
+      "resolved": "article/assets/11-bug-verification.png"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/README.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/README.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/src/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/src/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/tests/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/tests/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/e2e/expenses.spec.ts",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/e2e/expenses.spec.ts",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/specs/001-expense-tracker/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/specs/001-expense-tracker/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/verification/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/verification/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/convergence-final.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/convergence-final.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/.specify/bugs/muted-text-contrast/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/.specify/bugs/muted-text-contrast/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "article/article.md",
+      "url": "https://github.com/hslimi/night-thoughts.git",
+      "remote": "https://github.com/hslimi/night-thoughts.git",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "evidence/verification/link-audit.md",
+      "url": "./link-audit-before.json",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/verification/link-audit-before.json"
+    },
+    {
+      "document": "evidence/verification/link-audit.md",
+      "url": "./link-audit-final.json",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/verification/link-audit-final.json"
+    },
+    {
+      "document": "evidence/workflow/analysis-attempts.md",
+      "url": "./analysis-original.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/analysis-original.md"
+    },
+    {
+      "document": "evidence/workflow/analysis-original.md",
+      "url": "../../.specify/memory/constitution.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": ".specify/memory/constitution.md"
+    },
+    {
+      "document": "evidence/workflow/analysis-original.md",
+      "url": "../../specs/001-expense-tracker/spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "evidence/workflow/analysis-original.md",
+      "url": "../../specs/001-expense-tracker/plan.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/plan.md"
+    },
+    {
+      "document": "evidence/workflow/analysis-original.md",
+      "url": "../../specs/001-expense-tracker/tasks.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/tasks.md"
+    },
+    {
+      "document": "evidence/workflow/analysis-original.md",
+      "url": "../../specs/001-expense-tracker/data-model.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/data-model.md"
+    },
+    {
+      "document": "evidence/workflow/analysis-original.md",
+      "url": "../../specs/001-expense-tracker/contracts/ui.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/contracts/ui.md"
+    },
+    {
+      "document": "evidence/workflow/analysis-original.md",
+      "url": "../../specs/001-expense-tracker/quickstart.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/quickstart.md"
+    },
+    {
+      "document": "evidence/workflow/convergence-final.md",
+      "url": "../../specs/001-expense-tracker/tasks.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/tasks.md"
+    },
+    {
+      "document": "evidence/workflow/convergence-first.md",
+      "url": "../../src/App.tsx",
+      "status": "local target",
+      "ok": true,
+      "resolved": "src/App.tsx"
+    },
+    {
+      "document": "evidence/workflow/convergence-first.md",
+      "url": "../../specs/001-expense-tracker/tasks.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/tasks.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../.specify/memory/constitution.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": ".specify/memory/constitution.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/checklists/requirements.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/checklists/requirements.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/plan.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/plan.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/research.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/research.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/data-model.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/data-model.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/quickstart.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/quickstart.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/contracts/ui.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/contracts/ui.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/checklists/quality.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/checklists/quality.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "../../specs/001-expense-tracker/tasks.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/tasks.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "./analysis-original.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/analysis-original.md"
+    },
+    {
+      "document": "evidence/workflow/copilot-stage-log.md",
+      "url": "./analysis-attempts.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/analysis-attempts.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/analysis-remediation.md",
+      "url": "../../evidence/workflow/analysis-original.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "evidence/workflow/analysis-original.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/analysis-remediation.md",
+      "url": "./plan.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/plan.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/analysis-remediation.md",
+      "url": "./spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/analysis-remediation.md",
+      "url": "./tasks.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/tasks.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/analysis-remediation.md",
+      "url": "./quickstart.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/quickstart.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/checklists/quality.md",
+      "url": "../spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/checklists/requirements.md",
+      "url": "../spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/plan.md",
+      "url": "./spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/quickstart.md",
+      "url": "./data-model.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/data-model.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/quickstart.md",
+      "url": "./contracts/ui.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/contracts/ui.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "./spec.md",
+      "status": "local target",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://react.dev/learn/thinking-in-react",
+      "remote": "https://react.dev/learn/thinking-in-react",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://vitest.dev/config/environment",
+      "remote": "https://vitest.dev/config/environment",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://testing-library.com/docs/guiding-principles/",
+      "remote": "https://testing-library.com/docs/guiding-principles/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://testing-library.com/docs/user-event/intro/",
+      "remote": "https://testing-library.com/docs/user-event/intro/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://playwright.dev/docs/intro",
+      "remote": "https://playwright.dev/docs/intro",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://playwright.dev/docs/emulation",
+      "remote": "https://playwright.dev/docs/emulation",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat",
+      "remote": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/date",
+      "remote": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/date",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse",
+      "remote": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "remote": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem",
+      "remote": "https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse",
+      "remote": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "./spec.md#requirements-mandatory",
+      "status": "local anchor",
+      "ok": true,
+      "resolved": "specs/001-expense-tracker/spec.md",
+      "anchor": "requirements-mandatory"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
+      "remote": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "specs/001-expense-tracker/research.md",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "remote": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/github/spec-kit",
+      "remote": "https://github.com/github/spec-kit",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/github/spec-kit/blob/main/docs/integrations/copilot.md",
+      "remote": "https://github.com/github/spec-kit/blob/main/docs/integrations/copilot.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.github.com/spec-kit/guides/bugfix.html",
+      "remote": "https://github.github.com/spec-kit/guides/bugfix.html",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b8b69e7e-8168-44be-82f5-134dcec9cd20.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b8b69e7e-8168-44be-82f5-134dcec9cd20.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/copilot-stage-log.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/copilot-stage-log.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/22eab54e-b21e-4ca2-ba13-1d9824fc0ac6.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/22eab54e-b21e-4ca2-ba13-1d9824fc0ac6.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4d14b216-debb-4161-982c-467be4a92421.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4d14b216-debb-4161-982c-467be4a92421.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/37273a15-4cec-43bb-a228-fd942566f621.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/37273a15-4cec-43bb-a228-fd942566f621.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d9a9b851-6981-4b2e-a638-8e4e6369747a.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d9a9b851-6981-4b2e-a638-8e4e6369747a.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/43ed912e-a0fe-4a76-9c6f-ea92ded5d5bc.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/43ed912e-a0fe-4a76-9c6f-ea92ded5d5bc.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b9c165d7-b6b6-4b97-9822-51fbd16fb661.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b9c165d7-b6b6-4b97-9822-51fbd16fb661.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/bb8127ed-c485-4d64-b788-409a13013b12.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/bb8127ed-c485-4d64-b788-409a13013b12.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/implementation-notes.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/implementation-notes.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4e782f62-86ae-4a32-a07d-d9867e9fc1c5.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4e782f62-86ae-4a32-a07d-d9867e9fc1c5.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4d8c05a0-2376-4634-a39b-2fce9ee2a620.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4d8c05a0-2376-4634-a39b-2fce9ee2a620.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/87472eaf-321b-4401-933b-865e37e51858.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/87472eaf-321b-4401-933b-865e37e51858.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/856982bd-d60c-41e0-84ad-f1eb27214f33.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/856982bd-d60c-41e0-84ad-f1eb27214f33.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/1ef2488f-61ae-4a56-8f45-22c7f2bc2fe1.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/1ef2488f-61ae-4a56-8f45-22c7f2bc2fe1.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d656aba4-2d54-4931-bf24-cc868aa4ca3d.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d656aba4-2d54-4931-bf24-cc868aa4ca3d.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2ac292b2-5d30-49fc-bf23-efdaaabc18b1.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2ac292b2-5d30-49fc-bf23-efdaaabc18b1.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e4a222ef-29f4-44ff-ae3d-0594d463a96a.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e4a222ef-29f4-44ff-ae3d-0594d463a96a.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/19ff6199-4c12-4ef3-9777-c60532f7c081.png",
+      "remote": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/19ff6199-4c12-4ef3-9777-c60532f7c081.png",
+      "ok": true,
+      "status": "HTTP 200"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/README.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/README.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/src/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/src/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/tests/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/tests/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/e2e/expenses.spec.ts",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/e2e/expenses.spec.ts",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/specs/001-expense-tracker/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/specs/001-expense-tracker/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/verification/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/verification/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/convergence-final.md",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/evidence/workflow/convergence-final.md",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/.specify/bugs/muted-text-contrast/",
+      "remote": "https://github.com/hslimi/night-thoughts/tree/main/experiments/spec-kit-expense-tracker/.specify/bugs/muted-text-contrast/",
+      "ok": true,
+      "status": "GitHub API"
+    },
+    {
+      "document": "Hashnode draft",
+      "url": "https://github.com/hslimi/night-thoughts.git",
+      "remote": "https://github.com/hslimi/night-thoughts.git",
+      "ok": true,
+      "status": "HTTP 200"
+    }
+  ]
+}

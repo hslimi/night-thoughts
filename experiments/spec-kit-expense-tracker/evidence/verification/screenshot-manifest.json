@@ -1,0 +1,146 @@
+[
+  {
+    "file": "article/assets/00-cover.png",
+    "width": 1600,
+    "height": 900,
+    "bytes": 346552,
+    "sha256": "b845706931df9ab85dbfbf891e644a1d5a2ab4824555400d22f0e3bf24d1b7b8",
+    "kind": "cover"
+  },
+  {
+    "file": "article/assets/01-environment.png",
+    "width": 1400,
+    "height": 660,
+    "bytes": 221008,
+    "sha256": "d62ecb80e1324e60ca15633826b2f85230b12aa6d5ebe61da6def814e321c5e6",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/02-constitution.png",
+    "width": 1400,
+    "height": 734,
+    "bytes": 378830,
+    "sha256": "12d824a21af84bb10990a7399f0be7b21c0efc2d8af92518f23c33900d2b28b0",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/03-specification-clarification.png",
+    "width": 1400,
+    "height": 660,
+    "bytes": 426881,
+    "sha256": "9fae392c799a193ac38781f7f024859c41c3c4fddd22304eea7dbde6d7fac3e2",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/04-technical-plan.png",
+    "width": 1400,
+    "height": 660,
+    "bytes": 468293,
+    "sha256": "f7111338e8fa5c89afdab4489235a521b8a66ead23aa0f8bd92fd8c4bbdd659a",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/05-analysis-findings.png",
+    "width": 1400,
+    "height": 660,
+    "bytes": 439717,
+    "sha256": "5dfe7bc93f5f67808c66653a9bca5a609de75e506c12343bd9a23c87dc3ad73d",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/06-checklist-gate.png",
+    "width": 1400,
+    "height": 565,
+    "bytes": 392633,
+    "sha256": "75ddfc73eadd77f6539deb7e9dd6d70e6f2a04f57e53947be05cd13cecfcc3fb",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/07-implementation-tasks.png",
+    "width": 1400,
+    "height": 565,
+    "bytes": 422097,
+    "sha256": "ee989639a44f80d3d27a9894c42ba49a7061da7a6b8124735af42c0f64613cd3",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/08-test-first-checkpoint.png",
+    "width": 1400,
+    "height": 592,
+    "bytes": 348781,
+    "sha256": "e1fbe76a185df6eef780bfa1ace36fb78ea52c41432189b062ce0822434cb83b",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/09-final-convergence.png",
+    "width": 1400,
+    "height": 855,
+    "bytes": 691205,
+    "sha256": "cb8cd1253b778e385416ce85e280efcf27b5ec9c3ba9024d51b69b586808ac4b",
+    "kind": "VS Code window capture"
+  },
+  {
+    "file": "article/assets/10-bug-assessment.png",
+    "width": 1400,
+    "height": 848,
+    "bytes": 557973,
+    "sha256": "55fd03c415f0f149bafbf43b8f238cac8c6a27a5494cc1e97308cb4a799cb1a1",
+    "kind": "application viewport"
+  },
+  {
+    "file": "article/assets/10-desktop-dashboard.png",
+    "width": 1440,
+    "height": 900,
+    "bytes": 153253,
+    "sha256": "7529eb9b83d5cd170d3afe543a01bbeaa1e8b32e7b6433de8b39ebd66b7fdadc",
+    "kind": "application viewport"
+  },
+  {
+    "file": "article/assets/11-bug-verification.png",
+    "width": 1400,
+    "height": 848,
+    "bytes": 508678,
+    "sha256": "3257820c2df78853bbde7bf138043766a0ed74b8b8506d4e8857f952a50401fc",
+    "kind": "application viewport"
+  },
+  {
+    "file": "article/assets/11-expense-form.png",
+    "width": 1080,
+    "height": 289,
+    "bytes": 25405,
+    "sha256": "c8b54ad88a9027cf2ac760311a43d31d39b4515d23c894a6e4177093436187eb",
+    "kind": "application viewport"
+  },
+  {
+    "file": "article/assets/12-category-filtering.png",
+    "width": 1080,
+    "height": 299,
+    "bytes": 24467,
+    "sha256": "7e1ab91c747a4c3672960894f8a9979e5834107bed75f7779cd95d41e1b59fbb",
+    "kind": "application viewport"
+  },
+  {
+    "file": "article/assets/13-amount-validation.png",
+    "width": 1080,
+    "height": 330,
+    "bytes": 25504,
+    "sha256": "f427c08a51fa4cde0c5b620b5d0c1e01eb6b9d35a2a40bd3895661ba0305c9a8",
+    "kind": "application viewport"
+  },
+  {
+    "file": "article/assets/14-deletion-confirmation.png",
+    "width": 470,
+    "height": 264,
+    "bytes": 25492,
+    "sha256": "de66c9f564ca02e486b8657bf01302163d58ae789b719925ea20344eb8df94e0",
+    "kind": "application viewport"
+  },
+  {
+    "file": "article/assets/15-mobile-dashboard.png",
+    "width": 390,
+    "height": 844,
+    "bytes": 90890,
+    "sha256": "8b0c8f96f4d81b90e47e6ea0a735eb91bbb57a65101a8801605b3568813129c8",
+    "kind": "application viewport"
+  }
+]

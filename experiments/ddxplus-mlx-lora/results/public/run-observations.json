@@ -1,0 +1,106 @@
+{
+  "official_dataset": {
+    "release": "DDXPlus Dataset English",
+    "files_md5": {
+      "release_evidences.json": "0660962abe0bbf99e1fb77188c253597",
+      "release_conditions.json": "a992eadcff3099dd72e1820fbd2115aa",
+      "release_train_patients.zip": "f75a78420ccb061951daa4db2d62139b",
+      "release_validate_patients.zip": "e4db88e9082f18410de6fd0cb7e74d18",
+      "release_test_patients.zip": "6fd53d331cf19ed4439bf4f46b92ee94"
+    },
+    "rows": {
+      "train": 1025602,
+      "validate": 132448,
+      "test": 134529
+    },
+    "extensionless_zip_members_verified": true,
+    "evidence_definitions": 223,
+    "pathologies": 49
+  },
+  "split_counts": {
+    "train": 1960,
+    "valid": 490,
+    "test": 490
+  },
+  "split_prompt_overlap": 0,
+  "test_prompts_and_targets_rebuilt_from_official_rows": 490,
+  "test_cases": 490,
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838",
+  "test_cases_with_two_reference_labels": [
+    "test-0027",
+    "test-0067",
+    "test-0133",
+    "test-0198",
+    "test-0261",
+    "test-0359",
+    "test-0366",
+    "test-0401",
+    "test-0420",
+    "test-0427"
+  ],
+  "generation": {
+    "max_tokens": 220,
+    "temperature": 0.0
+  },
+  "base_model_revision": "8b403126fc14f14cfc99bb4cfa72ecbc129ea677",
+  "evaluation_identity_provenance": {
+    "base": {
+      "identity_capture": "backfilled_from_preserved_artifacts"
+    },
+    "adapter": {
+      "identity_capture": "backfilled_from_preserved_artifacts"
+    },
+    "fused": {
+      "identity_capture": "backfilled_from_preserved_artifacts"
+    },
+    "fused-dequantized-full": {
+      "identity_capture": "backfilled_from_preserved_artifacts"
+    }
+  },
+  "identity_metadata_backfilled_after_generation": true,
+  "identity_backfill_disclosure": "Artifact and runtime identity were reconstructed from preserved artifacts; they were not captured during original generation.",
+  "no_generation_resume_checks": {
+    "base": {
+      "verified_responses_reused": 490,
+      "new_generation_performed": false,
+      "log_sha256": "1b1e7802d672c397474452ce2010bc83fed6977db47740f2560adcd2d545b80d"
+    },
+    "adapter": {
+      "verified_responses_reused": 490,
+      "new_generation_performed": false,
+      "log_sha256": "ea25cda8edf0936c81c697fce5e7ac93e7cb0b2451c4ce097d6b8ff20286bafc"
+    },
+    "fused-quantized-rejected": {
+      "verified_responses_reused": 490,
+      "new_generation_performed": false,
+      "log_sha256": "28f59ce8fbde37ce001c931147f9f94ade924dd27c10c9a50e1dc46baca6146c"
+    },
+    "fused-dequantized": {
+      "verified_responses_reused": 490,
+      "new_generation_performed": false,
+      "log_sha256": "708cbfd55f6e8ae8b87654121b21c0217c7a8a79d7ae43ff4e427f1f5631f62c"
+    }
+  },
+  "training": {
+    "first_reported_training_iteration": 10,
+    "first_reported_training_loss": 2.056,
+    "final_training_loss": 0.057,
+    "initial_validation_iteration": 1,
+    "initial_validation_loss": 2.257,
+    "validation_loss_at_iteration_200": 0.144,
+    "final_validation_loss": 0.064,
+    "batch_size_one_fallback_used": false,
+    "memory_pressure_configuration_change_used": false,
+    "peak_memory_measured": false,
+    "total_training_time_measured": false
+  },
+  "smoke_tests_are_not_final_benchmarks": true,
+  "fused_strict_identity_passed": false,
+  "fused_reviewed_differences_accepted": true,
+  "audit": {
+    "status": "passed",
+    "source": "results/local-artifact-audit.json",
+    "sha256": "b95570dbed42780e4cb2337cbdcdbc4f5df3d1e8d7fca4fba450688711462628"
+  },
+  "raw_full_responses_logs_and_private_service_state_published": false
+}

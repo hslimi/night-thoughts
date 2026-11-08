@@ -1,0 +1,654 @@
+{
+ "info": {
+  "id": "ses_e538f2cd6ffd5AOGSYLlKV7rf4",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "qwen/qwen3.6-35b-a3b",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.004017167,
+  "tokens": {
+   "input": 15010,
+   "output": 954,
+   "reasoning": 198,
+   "cache": {
+    "read": 59520,
+    "write": 0
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793894437685,
+   "updated": 1793894504992,
+   "busy": 1793894502512,
+   "idle": 1793894504994,
+   "viewed": 1793894504994
+  },
+  "title": "[redacted:session-title:ses_e538f2cd6ffd5AOGSYLlKV7rf4]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e538f2cd6ffd5AOGSYLlKV7rf4]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac70d329001hmbzNIDZ6VDfbj",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac70d329001hmbzNIDZ6VDfbj"
+   },
+   "time": {
+    "created": 1793894437748
+   },
+   "text": "[redacted:text:msg_1ac70d329001hmbzNIDZ6VDfbj]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac70d377001Gv4EWDWTNk5PBR",
+   "time": {
+    "created": 1793894437759,
+    "streamed": 1793894442828,
+    "completed": 1793894443962
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac70d377001Gv4EWDWTNk5PBR]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac70d377001Gv4EWDWTNk5PBR"
+     },
+     "time": {
+      "created": 1793894441146,
+      "completed": 1793894442819
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac70d377001Gv4EWDWTNk5PBR]"
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-89a488f852116b9e",
+     "name": "shell",
+     "executed": false,
+     "state": {
+      "status": "error",
+      "input": {
+       "redacted": "tool-input:msg_1ac70d377001Gv4EWDWTNk5PBR"
+      },
+      "error": {
+       "type": "aborted",
+       "message": "The user declined this tool call"
+      }
+     },
+     "time": {
+      "created": 1793894441172,
+      "ran": 1793894442822,
+      "completed": 1793894443953
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-a0d5aabedcba23d6",
+     "name": "read",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac70d377001Gv4EWDWTNk5PBR"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac70d377001Gv4EWDWTNk5PBR]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac70d377001Gv4EWDWTNk5PBR"
+      }
+     },
+     "time": {
+      "created": 1793894442069,
+      "ran": 1793894442823,
+      "completed": 1793894442834
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "error",
+   "rawFinish": "tool_calls",
+   "cost": 0.0010949,
+   "tokens": {
+    "input": 9833,
+    "output": 99,
+    "reasoning": 25,
+    "cache": {
+     "read": 0,
+     "write": 0
+    }
+   },
+   "error": {
+    "type": "aborted",
+    "message": "Step interrupted"
+   }
+  },
+  {
+   "id": "msg_1ac71455e001fAgzdSjN5oDUDS",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac71455e001fAgzdSjN5oDUDS"
+   },
+   "time": {
+    "created": 1793894466956
+   },
+   "text": "[redacted:text:msg_1ac71455e001fAgzdSjN5oDUDS]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac71458e0019yNzenLMy73XJm",
+   "time": {
+    "created": 1793894466960,
+    "streamed": 1793894470929,
+    "completed": 1793894470947
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac71458e0019yNzenLMy73XJm]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac71458e0019yNzenLMy73XJm"
+     },
+     "time": {
+      "created": 1793894468141,
+      "completed": 1793894470915
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac71458e0019yNzenLMy73XJm]"
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-94b94acc4418d3b7",
+     "name": "read",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac71458e0019yNzenLMy73XJm"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac71458e0019yNzenLMy73XJm]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac71458e0019yNzenLMy73XJm"
+      }
+     },
+     "time": {
+      "created": 1793894470267,
+      "ran": 1793894470922,
+      "completed": 1793894470935
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-bbcbb415f8b7568b",
+     "name": "read",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac71458e0019yNzenLMy73XJm"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac71458e0019yNzenLMy73XJm]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac71458e0019yNzenLMy73XJm"
+      }
+     },
+     "time": {
+      "created": 1793894470270,
+      "ran": 1793894470924,
+      "completed": 1793894470937
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_calls",
+   "cost": 0.0004424,
+   "tokens": {
+    "input": 545,
+    "output": 95,
+    "reasoning": 72,
+    "cache": {
+     "read": 9504,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac7155280010Gw7CUr8kTMbSJ",
+   "time": {
+    "created": 1793894470961,
+    "streamed": 1793894475741,
+    "completed": 1793894475805
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac7155280010Gw7CUr8kTMbSJ]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac7155280010Gw7CUr8kTMbSJ"
+     },
+     "time": {
+      "created": 1793894472368,
+      "completed": 1793894475729
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac7155280010Gw7CUr8kTMbSJ]"
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-85068a7da0a23480",
+     "name": "edit",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac7155280010Gw7CUr8kTMbSJ"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac7155280010Gw7CUr8kTMbSJ]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac7155280010Gw7CUr8kTMbSJ"
+      }
+     },
+     "time": {
+      "created": 1793894472869,
+      "ran": 1793894475736,
+      "completed": 1793894475751
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-8e6e9133b5aa65d0",
+     "name": "edit",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac7155280010Gw7CUr8kTMbSJ"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac7155280010Gw7CUr8kTMbSJ]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac7155280010Gw7CUr8kTMbSJ"
+      }
+     },
+     "time": {
+      "created": 1793894473956,
+      "ran": 1793894475737,
+      "completed": 1793894475748
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": [
+     "src/math.mjs",
+     "test/math.test.mjs"
+    ]
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_calls",
+   "cost": 0.0005623,
+   "tokens": {
+    "input": 880,
+    "output": 234,
+    "reasoning": 29,
+    "cache": {
+     "read": 9504,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac716822001lFej9RqdZ90PHa",
+   "time": {
+    "created": 1793894475813,
+    "streamed": 1793894478374,
+    "completed": 1793894478433
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac716822001lFej9RqdZ90PHa]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac716822001lFej9RqdZ90PHa"
+     },
+     "time": {
+      "created": 1793894476903,
+      "completed": 1793894478368
+     }
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-9650613fecebd078",
+     "name": "edit",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac716822001lFej9RqdZ90PHa"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac716822001lFej9RqdZ90PHa]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac716822001lFej9RqdZ90PHa"
+      }
+     },
+     "time": {
+      "created": 1793894477221,
+      "ran": 1793894478372,
+      "completed": 1793894478380
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": [
+     "test/math.test.mjs"
+    ]
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_calls",
+   "cost": 0.0005106,
+   "tokens": {
+    "input": 1182,
+    "output": 147,
+    "reasoning": 25,
+    "cache": {
+     "read": 9504,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac717266001tVIth2nTlqhVUp",
+   "time": {
+    "created": 1793894478441,
+    "streamed": 1793894480140,
+    "completed": 1793894481101
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac717266001tVIth2nTlqhVUp]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac717266001tVIth2nTlqhVUp"
+     },
+     "time": {
+      "created": 1793894479647,
+      "completed": 1793894480130
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac717266001tVIth2nTlqhVUp]"
+    },
+    {
+     "type": "tool",
+     "id": "chatcmpl-tool-bd8b787664b2425b",
+     "name": "shell",
+     "executed": false,
+     "state": {
+      "status": "completed",
+      "input": {
+       "redacted": "tool-input:msg_1ac717266001tVIth2nTlqhVUp"
+      },
+      "content": [
+       {
+        "type": "text",
+        "text": "[redacted:tool-output:msg_1ac717266001tVIth2nTlqhVUp]"
+       }
+      ],
+      "metadata": {
+       "redacted": "tool-metadata:msg_1ac717266001tVIth2nTlqhVUp"
+      }
+     },
+     "time": {
+      "created": 1793894479919,
+      "ran": 1793894480137,
+      "completed": 1793894481094
+     }
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "tool-calls",
+   "rawFinish": "tool_calls",
+   "cost": 0.0003377,
+   "tokens": {
+    "input": 323,
+    "output": 38,
+    "reasoning": 8,
+    "cache": {
+     "read": 10560,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac717cd10011Z5uh1rVflufV9",
+   "time": {
+    "created": 1793894481107,
+    "streamed": 1793894483273,
+    "completed": 1793894483285
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac717cd10011Z5uh1rVflufV9]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac717cd10011Z5uh1rVflufV9"
+     },
+     "time": {
+      "created": 1793894482027,
+      "completed": 1793894483270
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac717cd10011Z5uh1rVflufV9]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.000457,
+   "tokens": {
+    "input": 535,
+    "output": 144,
+    "reasoning": 11,
+    "cache": {
+     "read": 10560,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac7185580016d7QbmKwqfMKaT",
+   "time": {
+    "created": 1793894483288
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  },
+  {
+   "id": "msg_1ac71d04a0015cj1g9A1nR6QNm",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac71d04a0015cj1g9A1nR6QNm"
+   },
+   "time": {
+    "created": 1793894502515
+   },
+   "text": "[redacted:text:msg_1ac71d04a0015cj1g9A1nR6QNm]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac71d075001tLg72C1PWRSiPe",
+   "time": {
+    "created": 1793894502525,
+    "streamed": 1793894504980,
+    "completed": 1793894504992
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "qwen/qwen3.6-35b-a3b",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac71d075001tLg72C1PWRSiPe]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac71d075001tLg72C1PWRSiPe"
+     },
+     "time": {
+      "created": 1793894503544,
+      "completed": 1793894504976
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac71d075001tLg72C1PWRSiPe]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.0005998,
+   "tokens": {
+    "input": 1633,
+    "output": 193,
+    "reasoning": 28,
+    "cache": {
+     "read": 9504,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac71da22001IPr9Km0Is7IgIQ",
+   "time": {
+    "created": 1793894504994
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

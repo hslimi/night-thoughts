@@ -1,0 +1,115 @@
+{
+ "info": {
+  "id": "ses_e53ae557bffevcmySH4pedVMfY",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "claude-haiku-5-5",
+   "providerID": "anthropic",
+   "variant": "default"
+  },
+  "cost": 0.0021838,
+  "tokens": {
+   "input": 8,
+   "output": 193,
+   "reasoning": 132,
+   "cache": {
+    "read": 0,
+    "write": 16164
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793892395688,
+   "updated": 1793892399387,
+   "busy": 1793892395730,
+   "idle": 1793892399389,
+   "viewed": 1793892399389
+  },
+  "title": "[redacted:session-title:ses_e53ae557bffevcmySH4pedVMfY]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e53ae557bffevcmySH4pedVMfY]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac51aaca001nC1WYUIEXwuISQ",
+   "time": {
+    "created": 1793892395741
+   },
+   "text": "[redacted:text:msg_1ac51aaca001nC1WYUIEXwuISQ]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac51aae100153hLxLgQRoh6o3",
+   "time": {
+    "created": 1793892395752,
+    "streamed": 1793892399380,
+    "completed": 1793892399387
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "claude-haiku-5-5",
+    "providerID": "anthropic",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac51aae100153hLxLgQRoh6o3"
+     },
+     "time": {
+      "created": 1793892397608,
+      "completed": 1793892398419
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac51aae100153hLxLgQRoh6o3]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.0020179,
+   "tokens": {
+    "input": 4,
+    "output": 182,
+    "reasoning": 132,
+    "cache": {
+     "read": 0,
+     "write": 14884
+    }
+   }
+  },
+  {
+   "id": "msg_1ac51b91d001rErwbrih02RFLB",
+   "time": {
+    "created": 1793892399389
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

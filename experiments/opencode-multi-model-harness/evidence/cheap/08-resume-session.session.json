@@ -1,0 +1,188 @@
+{
+ "info": {
+  "id": "ses_e537650a3ffetyUAlN8QVYVtbj",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "z-ai/glm-5.3-flash",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.000820479,
+  "tokens": {
+   "input": 15996,
+   "output": 75,
+   "reasoning": 1033,
+   "cache": {
+    "read": 3290,
+    "write": 0
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793896066923,
+   "updated": 1793896098393,
+   "busy": 1793896089021,
+   "idle": 1793896098395,
+   "viewed": 1793896098395
+  },
+  "title": "[redacted:session-title:ses_e537650a3ffetyUAlN8QVYVtbj]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e537650a3ffetyUAlN8QVYVtbj]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac89af5b001t80uzA3YgaOIt4",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac89af5b001t80uzA3YgaOIt4"
+   },
+   "time": {
+    "created": 1793896066988
+   },
+   "text": "[redacted:text:msg_1ac89af5b001t80uzA3YgaOIt4]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac89afaf001GhyibJCcSE79Ar",
+   "time": {
+    "created": 1793896066994,
+    "streamed": 1793896074400,
+    "completed": 1793896074412
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "z-ai/glm-5.3-flash",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac89afaf001GhyibJCcSE79Ar]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac89afaf001GhyibJCcSE79Ar"
+     },
+     "time": {
+      "created": 1793896068028,
+      "completed": 1793896074395
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac89afaf001GhyibJCcSE79Ar]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.0003702,
+   "tokens": {
+    "input": 7352,
+    "output": 37,
+    "reasoning": 479,
+    "cache": {
+     "read": 1806,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac89ccae002L6IDWpOuZeQMAU",
+   "time": {
+    "created": 1793896074414
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  },
+  {
+   "id": "msg_1ac8a0597001XXrxSjcqxsfDNu",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac8a0597001XXrxSjcqxsfDNu"
+   },
+   "time": {
+    "created": 1793896089023
+   },
+   "text": "[redacted:text:msg_1ac8a0597001XXrxSjcqxsfDNu]",
+   "files": [],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac8a05c1001ZJrXhVzNL9Qtu2",
+   "time": {
+    "created": 1793896089028,
+    "streamed": 1793896098378,
+    "completed": 1793896098393
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "z-ai/glm-5.3-flash",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "[redacted:reasoning:msg_1ac8a05c1001ZJrXhVzNL9Qtu2]",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac8a05c1001ZJrXhVzNL9Qtu2"
+     },
+     "time": {
+      "created": 1793896090073,
+      "completed": 1793896098373
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac8a05c1001ZJrXhVzNL9Qtu2]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "stop",
+   "cost": 0.00040629,
+   "tokens": {
+    "input": 8427,
+    "output": 32,
+    "reasoning": 554,
+    "cache": {
+     "read": 1228,
+     "write": 0
+    }
+   }
+  },
+  {
+   "id": "msg_1ac8a2a5b002FRHnFtAqyg5vLL",
+   "time": {
+    "created": 1793896098395
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

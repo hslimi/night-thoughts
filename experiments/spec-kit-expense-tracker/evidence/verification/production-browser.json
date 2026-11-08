@@ -1,0 +1,71 @@
+{
+  "applicationURL": "http://127.0.0.1:4173",
+  "verifiedAt": "2026-11-02T23:58:07.169Z",
+  "browser": "Playwright Chromium",
+  "checks": [
+    "keyboard create and current-month total",
+    "integer-cent persistence after reload",
+    "negative, malformed, zero, and over-limit amounts rejected without writes",
+    "exact monthly and category totals",
+    "category filtering and amount sorting",
+    "edit updates and persists summaries",
+    "keyboard deletion cancel, focus containment, and focus restoration",
+    "confirmed permanent deletion, previous-record focus, and durable totals",
+    "Chromium accessibility tree exposes named primary controls",
+    "no page-level horizontal overflow at 1440x900",
+    "no page-level horizontal overflow at 768x1024",
+    "no page-level horizontal overflow at 390x844",
+    "failed write stays visible and later success saves the complete collection",
+    "malformed storage survives cancellation and resets only after informed confirmation",
+    "read failure announces the problem and retries without replacing data",
+    "no browser console errors or uncaught page errors"
+  ],
+  "namedAccessibilityControls": [
+    {
+      "role": "combobox",
+      "name": "Filter by category"
+    },
+    {
+      "role": "combobox",
+      "name": "Sort by"
+    },
+    {
+      "role": "combobox",
+      "name": "Sort direction"
+    },
+    {
+      "role": "button",
+      "name": "Show month picker Show month picker"
+    },
+    {
+      "role": "textbox",
+      "name": "Amount"
+    },
+    {
+      "role": "combobox",
+      "name": "Category"
+    },
+    {
+      "role": "textbox",
+      "name": "Note (optional)"
+    },
+    {
+      "role": "button",
+      "name": "Add expense"
+    },
+    {
+      "role": "button",
+      "name": "Show date picker Show date picker"
+    },
+    {
+      "role": "button",
+      "name": "Edit Coffee"
+    },
+    {
+      "role": "button",
+      "name": "Delete Coffee"
+    }
+  ],
+  "consoleErrors": [],
+  "screenReaderReview": "Not performed"
+}

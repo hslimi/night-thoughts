@@ -1,0 +1,127 @@
+{
+ "info": {
+  "id": "ses_e539e59a1ffdKMkKUjPMNPW7rU",
+  "projectID": "[REDACTED]",
+  "agent": "build",
+  "model": {
+   "id": "anthropic/claude-haiku-5.5",
+   "providerID": "openrouter",
+   "variant": "default"
+  },
+  "cost": 0.00069276,
+  "tokens": {
+   "input": 4800,
+   "output": 34,
+   "reasoning": 47,
+   "cache": {
+    "read": 14726,
+    "write": 200
+   }
+  },
+  "outcome": "succeeded",
+  "time": {
+   "created": 1793893443194,
+   "updated": 1793893445041,
+   "busy": 1793893443228,
+   "idle": 1793893445043,
+   "viewed": 1793893445043
+  },
+  "title": "[redacted:session-title:ses_e539e59a1ffdKMkKUjPMNPW7rU]",
+  "permissions": [
+   {
+    "action": "browser",
+    "resource": "*",
+    "effect": "allow"
+   },
+   {
+    "action": "skill",
+    "resource": "browser",
+    "effect": "allow"
+   }
+  ],
+  "location": {
+   "directory": "/[redacted:session-directory:ses_e539e59a1ffdKMkKUjPMNPW7rU]"
+  }
+ },
+ "messages": [
+  {
+   "id": "msg_1ac61a65e001z5hdRvk4hPcdjg",
+   "metadata": {
+    "redacted": "message-metadata:msg_1ac61a65e001z5hdRvk4hPcdjg"
+   },
+   "time": {
+    "created": 1793893443231
+   },
+   "text": "[redacted:text:msg_1ac61a65e001z5hdRvk4hPcdjg]",
+   "files": [
+    {
+     "data": "",
+     "mime": "application/pdf",
+     "source": {
+      "type": "inline"
+     },
+     "name": "[redacted:file-name:0]"
+    }
+   ],
+   "agents": [],
+   "type": "user"
+  },
+  {
+   "id": "msg_1ac61a6a3001th5bF9T1F1FwzO",
+   "time": {
+    "created": 1793893443244,
+    "streamed": 1793893445033,
+    "completed": 1793893445041
+   },
+   "type": "assistant",
+   "agent": "build",
+   "model": {
+    "id": "anthropic/claude-haiku-5.5",
+    "providerID": "openrouter",
+    "variant": "default"
+   },
+   "content": [
+    {
+     "type": "reasoning",
+     "text": "",
+     "native": {
+      "redacted": "reasoning-native:msg_1ac61a6a3001th5bF9T1F1FwzO"
+     },
+     "time": {
+      "created": 1793893444950,
+      "completed": 1793893445031
+     }
+    },
+    {
+     "type": "text",
+     "text": "[redacted:text:msg_1ac61a6a3001th5bF9T1F1FwzO]"
+    }
+   ],
+   "snapshot": {
+    "start": "[REDACTED]",
+    "end": "[REDACTED]",
+    "files": []
+   },
+   "finish": "stop",
+   "rawFinish": "end_turn",
+   "cost": 0.00067209,
+   "tokens": {
+    "input": 4796,
+    "output": 25,
+    "reasoning": 47,
+    "cache": {
+     "read": 14149,
+     "write": 120
+    }
+   }
+  },
+  {
+   "id": "msg_1ac61adb3001jQVUmKbAx7wUBH",
+   "time": {
+    "created": 1793893445043
+   },
+   "type": "idle",
+   "outcome": "succeeded"
+  }
+ ]
+}

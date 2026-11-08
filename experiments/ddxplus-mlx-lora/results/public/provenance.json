@@ -1,0 +1,213 @@
+{
+  "format_version": 1,
+  "status": "approved_for_experiment_branch_commit",
+  "generator": "package_results.py",
+  "source_code_sha256": {
+    ".gitignore": "1cb64afb288557237211ddf4c7e16869b2bccf0090487efe66b3201842ae8924",
+    "README.md": "77716aa2068c836987c45132e800233edddc5c9bbb67cdfc99216e4b7e57fdf2",
+    "requirements.txt": "8c5efadd0bcdf8118a2bad7c927893bccb3f528284db0dcb0165d0f81dca803d",
+    "render_svg.swift": "b4b35708be2ee97762de91aa7de1c6fad42fba33b1bfa7a4ac4b22b81962ccfa",
+    "evaluation/test_cases.sha256": "57278e43632ccee35b5c8098d21041078732c61a0a4843886add87ef13fa8930",
+    "analyze_results.py": "9417e3645e0930a27edbb146f047b4975a58b474219b406f5910c8d365ca6870",
+    "artifact_identity.py": "e59db390c9d84fb4eba84524c67b905840de512646c65f75d67d84d618e24e16",
+    "audit_run.py": "74d4afcf0d87146b8ec4915e4a2fb456e6244dfd35105125bdc9a9b9ecb6e90f",
+    "backfill_run_identity.py": "2507c3d1a1c76749ccf4ec66cf85d49472bfcec6ad4d7d1e861e6dbd9b97f9a8",
+    "deploy_omlx.py": "4df9ca8ca39703b382f7cd0a7c3192cc94861694e330f4149dc34a7ce5a5f57c",
+    "evaluate.py": "c1123b07135c254c25a14d09599d0d0f2ce66410626eb26449cf369c897c000c",
+    "evidence_ablation.py": "ca0f5e5597bf90b64eccde71ca7864c62ce9884486715bdb165c7be3876d6f54",
+    "experiment_config.py": "7a7a2b6f26104c482d23bd4f290fde9b294a079bf2beda494386e64a11c084e3",
+    "make_assets.py": "b7a28e699976961b3f62ab01a0538bb45c3e9285a9db7f9f986dbbb035e5c739",
+    "package_results.py": "8075574feae8d4ff2f20fa78b566aa0722946dcf49205fdcebf5fc01c317b578",
+    "prepare_ddxplus.py": "51e57dbd39859701de2149ba04bff67dfa7b95c559be0c5c5c23f8b76c6f8c4e",
+    "qwenpaw_model.py": "898b55c2325932a2546d0f62e14d08bd68ed163a561ef40c0291d29d81ac1575",
+    "qwenpaw_provider_state.py": "314968a4dea4e5116682e59cb967eab727599eeb61e1610e57cf34bc240f499c",
+    "verify_fusion.py": "e31e928e579ea0f884e08da28a9fa0a8ddf05aa0bf50193536001b2b6ad7563a"
+  },
+  "artifacts": {
+    "base.summary.json": {
+      "sha256": "51c80ec01fac2e71e48cde0a833c0727f62e0032b84d8e28d80fb384a42a83c8",
+      "local_sources": [
+        "results/base.summary.json"
+      ],
+      "local_source_sha256": {
+        "results/base.summary.json": "51c80ec01fac2e71e48cde0a833c0727f62e0032b84d8e28d80fb384a42a83c8"
+      }
+    },
+    "adapter.summary.json": {
+      "sha256": "79eb35d0103f06db53c185989da1de364f4d6b66816ec4d5d243b1890fa9b731",
+      "local_sources": [
+        "results/adapter.summary.json"
+      ],
+      "local_source_sha256": {
+        "results/adapter.summary.json": "79eb35d0103f06db53c185989da1de364f4d6b66816ec4d5d243b1890fa9b731"
+      }
+    },
+    "fused-dequantized.summary.json": {
+      "sha256": "6be79cddcb5f5341c75d70a2cd537c7dd0188687c204771fb8d70c1049c232b2",
+      "local_sources": [
+        "results/fused-dequantized-full.summary.json"
+      ],
+      "local_source_sha256": {
+        "results/fused-dequantized-full.summary.json": "6be79cddcb5f5341c75d70a2cd537c7dd0188687c204771fb8d70c1049c232b2"
+      }
+    },
+    "fused-quantized-rejected.summary.json": {
+      "sha256": "4feba867d33703e35e0d55c68b60973e6854724f2a9acb96f6f89cad9e6cd615",
+      "local_sources": [
+        "results/fused.summary.json"
+      ],
+      "local_source_sha256": {
+        "results/fused.summary.json": "4feba867d33703e35e0d55c68b60973e6854724f2a9acb96f6f89cad9e6cd615"
+      }
+    },
+    "training-config.json": {
+      "sha256": "a3d43a90d198e8843dd7935927f084d04af56b13ba5b9c875f8bd6af4ff998a4",
+      "local_sources": [
+        "results/training-config.json"
+      ],
+      "local_source_sha256": {
+        "results/training-config.json": "a3d43a90d198e8843dd7935927f084d04af56b13ba5b9c875f8bd6af4ff998a4"
+      }
+    },
+    "training-losses.json": {
+      "sha256": "7c31212835b978645219033597158f84700db0120ddbb3d048122a1cd26a2fff",
+      "local_sources": [
+        "results/training-losses.json"
+      ],
+      "local_source_sha256": {
+        "results/training-losses.json": "7c31212835b978645219033597158f84700db0120ddbb3d048122a1cd26a2fff"
+      }
+    },
+    "base-adapter-comparison.json": {
+      "sha256": "9fcf513847c4aed1d394b52d4f993272d9b575791519609fa11d86d1c6e75b84",
+      "local_sources": [
+        "results/base-adapter-comparison.json"
+      ],
+      "local_source_sha256": {
+        "results/base-adapter-comparison.json": "9fcf513847c4aed1d394b52d4f993272d9b575791519609fa11d86d1c6e75b84"
+      }
+    },
+    "adapter-fused-dequantized-comparison.json": {
+      "sha256": "1f93b70c9c71b5d182e391b6dcbaa17cf8e152d29a6cd7d00b27a104b71baf14",
+      "local_sources": [
+        "results/fused-dequantized-full-comparison.json"
+      ],
+      "local_source_sha256": {
+        "results/fused-dequantized-full-comparison.json": "1f93b70c9c71b5d182e391b6dcbaa17cf8e152d29a6cd7d00b27a104b71baf14"
+      }
+    },
+    "adapter-fused-quantized-rejected-comparison.json": {
+      "sha256": "c38ccd09483a79cefb4feb8ece6a2bf99969eeff756923f150ea51c81b199f8f",
+      "local_sources": [
+        "results/fused-comparison.json"
+      ],
+      "local_source_sha256": {
+        "results/fused-comparison.json": "c38ccd09483a79cefb4feb8ece6a2bf99969eeff756923f150ea51c81b199f8f"
+      }
+    },
+    "qualitative-examples.json": {
+      "sha256": "c85c189593aeb1c741ea93ef04139101d052a927087f8047634bc1667a8ed262",
+      "local_sources": [
+        "results/qualitative-examples.json"
+      ],
+      "local_source_sha256": {
+        "results/qualitative-examples.json": "c85c189593aeb1c741ea93ef04139101d052a927087f8047634bc1667a8ed262"
+      }
+    },
+    "evidence-ablation.json": {
+      "sha256": "13bcb06ff1520d72713f3f90231ebfde2eb231eb1041fb29ad00d78a6f4c1431",
+      "local_sources": [
+        "results/counterfactual.json"
+      ],
+      "local_source_sha256": {
+        "results/counterfactual.json": "13bcb06ff1520d72713f3f90231ebfde2eb231eb1041fb29ad00d78a6f4c1431"
+      }
+    },
+    "fused-response-differences.json": {
+      "sha256": "035704fc87011c1c36b8c23a58ce08ba48241ee63ab0cddf1a7dcfbdf2a9ea1c",
+      "local_sources": [
+        "results/fused-dequantized-full-response-differences.json"
+      ],
+      "local_source_sha256": {
+        "results/fused-dequantized-full-response-differences.json": "035704fc87011c1c36b8c23a58ce08ba48241ee63ab0cddf1a7dcfbdf2a9ea1c"
+      }
+    },
+    "fused-dequantized-deployment-review.json": {
+      "sha256": "657a385a6be4f6234303515371ea6708ef08383cc0b0bca387972cf38b9fadf1",
+      "local_sources": [
+        "results/fused-dequantized-full-deployment-review.json",
+        "results/fused-dequantized-full-response-differences.json"
+      ],
+      "local_source_sha256": {
+        "results/fused-dequantized-full-deployment-review.json": "cf2ed7f0569be90e1be15279721d98e122ce3f497602f2cf12dfebb82cb53ad9",
+        "results/fused-dequantized-full-response-differences.json": "035704fc87011c1c36b8c23a58ce08ba48241ee63ab0cddf1a7dcfbdf2a9ea1c"
+      }
+    },
+    "deployment-verification.json": {
+      "sha256": "461ac10a71f670fb324e10e7164c699308f28893cad438e66fc77d993a01c4b8",
+      "local_sources": [
+        "results/omlx-verification.json",
+        "results/omlx-selected-model.json",
+        "results/qwenpaw-console-verification.json",
+        "results/qwenpaw-console-message.txt",
+        "results/qwenpaw-rollback.json",
+        "results/qwenpaw-chat-rollback.json",
+        "results/qwenpaw-credential-sync.json"
+      ],
+      "local_source_sha256": {
+        "results/omlx-verification.json": "87390757e7152a2078095bcf2df7a263a8b493a3f752b17bfc1e1a5bda41a411",
+        "results/omlx-selected-model.json": "a74ae18007bcac861d990a67767ede18d886f7ae4ecafca386ed3d23d4aeda8e",
+        "results/qwenpaw-console-verification.json": "627543beffbd24d64b7a649b1b8b67a83d90c84b36dccb8720f0cb279feb44b3",
+        "results/qwenpaw-console-message.txt": "c1ec3e6c4b0b4c498693a41b60a49c92bc4e08a9b0c3ec333de3d102dc611730",
+        "results/qwenpaw-rollback.json": "5c08183dd4e727d8879114b8411793781d478f5bbd43504e18b3b10f8a7f9371",
+        "results/qwenpaw-chat-rollback.json": "a25b7927228a7226d2f3b284bfa2afbca7ff5dca00cae53aeddcc7af9b66e387",
+        "results/qwenpaw-credential-sync.json": "8ddd3ad4dda86686afe145a62f81759074198f03ec64c295e33b43c12bb12e87"
+      }
+    },
+    "software-versions.json": {
+      "sha256": "dfe4ad331f6ada7c888783fdcf6cc2e6a98723011c99513b2e81520c61217d4e",
+      "local_sources": [
+        "results/environment.json",
+        "requirements.txt"
+      ],
+      "local_source_sha256": {
+        "results/environment.json": "477bd47cea590ca137b42fbd9d280a56e39c49ae1227f38cf1bbe0e932d6f05f",
+        "requirements.txt": "8c5efadd0bcdf8118a2bad7c927893bccb3f528284db0dcb0165d0f81dca803d"
+      }
+    },
+    "run-observations.json": {
+      "sha256": "07bc2dc709bfbb843aec8806e473cb42e0f90db64ac81d2d729549e491121109",
+      "local_sources": [
+        "results/local-artifact-audit.json",
+        "results/training-config.json",
+        "results/training-losses.json",
+        "results/base.run.json",
+        "results/adapter.run.json",
+        "results/fused.run.json",
+        "results/fused-dequantized-full.run.json",
+        "results/logs/final-resume-base.log",
+        "results/logs/final-resume-adapter.log",
+        "results/logs/final-resume-fused-rejected-retry.log",
+        "results/logs/final-resume-fused-dequantized.log"
+      ],
+      "local_source_sha256": {
+        "results/local-artifact-audit.json": "b95570dbed42780e4cb2337cbdcdbc4f5df3d1e8d7fca4fba450688711462628",
+        "results/training-config.json": "a3d43a90d198e8843dd7935927f084d04af56b13ba5b9c875f8bd6af4ff998a4",
+        "results/training-losses.json": "7c31212835b978645219033597158f84700db0120ddbb3d048122a1cd26a2fff",
+        "results/base.run.json": "9917fd68f71846ccf9f3745638cb0bd5318093d60a44a4a1ba199cd91e1e5286",
+        "results/adapter.run.json": "74814babaaec638691c27e87052b319295bc1cc7d6a418957a67c8b31076ee17",
+        "results/fused.run.json": "db285387201c7938104ea9fa92a1d679101cd5062ce18857faac244662f41603",
+        "results/fused-dequantized-full.run.json": "3ddcda28a590a7a3b6690720c8e550ffb9c87d438afd222f79d848f1a051a7fe",
+        "results/logs/final-resume-base.log": "1b1e7802d672c397474452ce2010bc83fed6977db47740f2560adcd2d545b80d",
+        "results/logs/final-resume-adapter.log": "ea25cda8edf0936c81c697fce5e7ac93e7cb0b2451c4ce097d6b8ff20286bafc",
+        "results/logs/final-resume-fused-rejected-retry.log": "28f59ce8fbde37ce001c931147f9f94ade924dd27c10c9a50e1dc46baca6146c",
+        "results/logs/final-resume-fused-dequantized.log": "708cbfd55f6e8ae8b87654121b21c0217c7a8a79d7ae43ff4e427f1f5631f62c"
+      }
+    }
+  },
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838",
+  "test_data_and_full_response_files_excluded": true,
+  "model_weights_adapters_and_fused_models_excluded": true,
+  "raw_api_payloads_credentials_account_data_and_service_state_excluded": true,
+  "screenshots_and_unreviewed_raw_outputs_excluded": true
+}

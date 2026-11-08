@@ -1,0 +1,12 @@
+{"listening":8899}
+{"at":"2026-11-05T15:40:28.957Z","model":"mock-429-after-tool","call":1,"messages":2,"hasWrite":true}
+{"at":"2026-11-05T15:40:29.030Z","model":"mock-429-after-tool","call":2,"messages":4,"hasWrite":true}
+{"at":"2026-11-05T15:40:56.358Z","model":"mock-503","call":1,"messages":2,"hasWrite":true}
+{"at":"2026-11-05T15:41:19.008Z","model":"mock-stall","call":1,"messages":2,"hasWrite":true}
+{"at":"2026-11-05T15:42:37.208Z","model":"mock-503","call":2,"messages":2,"hasWrite":true}
+{"at":"2026-11-05T15:43:08.589Z","model":"mock-503","call":3,"messages":2,"hasWrite":true}
+{"at":"2026-11-05T15:58:44.233Z","model":"mock-503","call":4,"messages":2,"hasWrite":true}
+{"listening":8899}
+{"at":"2026-11-05T16:26:20.255Z","model":"mock-429-after-tool","call":1,"messages":2,"hasWrite":true}
+{"at":"2026-11-05T16:26:20.325Z","model":"mock-429-after-tool","call":2,"messages":4,"hasWrite":true}
+{"at":"2026-11-05T16:26:47.080Z","model":"mock-stall","call":1,"messages":2,"hasWrite":true}

@@ -1,0 +1,59 @@
+> spec-kit-expense-tracker@0.0.0 test:e2e
+> playwright test --grep native delete dialog|confirmed deletion
+
+[WebServer] (node:2742) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 2 workers
+
+(node:2744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2743) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [chromium] › e2e/expenses.spec.ts:233:1 › confirmed deletion follows visible order and falls back to Add expense (660ms)
+  ✘  1 [chromium] › e2e/expenses.spec.ts:186:1 › native delete dialog contains focus and cancellation restores the invoker (5.5s)
+
+
+  1) [chromium] › e2e/expenses.spec.ts:186:1 › native delete dialog contains focus and cancellation restores the invoker
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  getByRole('dialog', { name: /delete expense/i }).getByRole('button', { name: 'Cancel' })
+    Expected: focused
+    Received: inactive
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toBeFocused" getByRole('dialog', { name: /delete expense/i }).getByRole('button', { name: 'Cancel' }) with timeout 5000ms
+      - waiting for getByRole('dialog', { name: /delete expense/i }).getByRole('button', { name: 'Cancel' })
+        14 × locator resolved to <button type="button" class="secondary-button">Cancel</button>
+           - unexpected value "inactive"
+
+
+      218 |   await expect(confirm).toBeFocused();
+      219 |   await page.keyboard.press("Tab");
+    > 220 |   await expect(cancel).toBeFocused();
+          |                        ^
+      221 |   await page.keyboard.press("Escape");
+      222 |
+      223 |   await expect(dialog).toBeHidden();
+        at e2e/expenses.spec.ts:220:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/expenses-native-delete-dia-a99c5-lation-restores-the-invoker-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/expenses-native-delete-dia-a99c5-lation-restores-the-invoker-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/expenses-native-delete-dia-a99c5-lation-restores-the-invoker-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/expenses-native-delete-dia-a99c5-lation-restores-the-invoker-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/expenses.spec.ts:186:1 › native delete dialog contains focus and cancellation restores the invoker
+  1 passed (6.2s)
+<shellId: 47 completed with exit code 1>

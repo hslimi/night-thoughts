@@ -1,0 +1,46 @@
+
+> spec-kit-expense-tracker@0.0.0 test:e2e
+> playwright test
+
+[WebServer] (node:7404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 17 tests using 9 workers
+
+(node:7410) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7408) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7407) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7409) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7411) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7406) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7412) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7405) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7413) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [chromium] › e2e/expenses.spec.ts:46:1 › announces invalid amount input without adding an expense (646ms)
+  ✓   7 [chromium] › e2e/expenses.spec.ts:74:1 › an additional query parameter does not activate demo mode (744ms)
+  ✓   8 [chromium] › e2e/expenses.spec.ts:32:1 › creates an expense with the keyboard and restores it after reload (822ms)
+  ✓   5 [chromium] › e2e/expenses.spec.ts:150:1 › edits an expense with the keyboard and updates its selected month (881ms)
+  ✓   9 [chromium] › e2e/expenses.spec.ts:301:1 › deleting the expense being edited clears the draft and returns focus to Add expense (895ms)
+  ✓   1 [chromium] › e2e/expenses.spec.ts:196:1 › native delete dialog contains focus and cancellation restores the invoker (922ms)
+  ✓   3 [chromium] › e2e/expenses.spec.ts:80:1 › filters and stably sorts monthly expenses with the keyboard (966ms)
+  ✓   6 [chromium] › e2e/expenses.spec.ts:54:1 › exact demo mode is isolated and reload restores its deterministic records (967ms)
+  ✓   4 [chromium] › e2e/expenses.spec.ts:243:1 › confirmed deletion follows visible order and falls back to Add expense (1.0s)
+  ✓  11 [chromium] › e2e/expenses.spec.ts:387:1 › reports a storage read failure and retries without showing an empty fallback (634ms)
+  ✓  10 [chromium] › e2e/expenses.spec.ts:339:1 › deleting another record cancels the active edit before Add expense fallback (735ms)
+  ✓  15 [chromium] › e2e/expenses.spec.ts:539:1 › failed start fresh preserves malformed storage and keeps the warning visible (603ms)
+  ✓  14 [chromium] › e2e/expenses.spec.ts:515:1 › informed start fresh replaces malformed storage with an empty versioned envelope (638ms)
+  ✓  16 [chromium] › e2e/expenses.spec.ts:569:1 › exact demo mode makes no expense storage calls or storage listener registrations (571ms)
+  ✓  17 [chromium] › e2e/expenses.spec.ts:610:1 › dashboard has no page-level horizontal overflow at phone, tablet, and desktop sizes (603ms)
+  ✓  12 [chromium] › e2e/expenses.spec.ts:410:1 › retains failed-write work in memory and reload restores durable data (771ms)
+  ✓  13 [chromium] › e2e/expenses.spec.ts:460:1 › the next successful write persists the complete in-memory collection (783ms)
+
+  17 passed (2.5s)

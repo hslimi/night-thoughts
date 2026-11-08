@@ -1,0 +1,119 @@
+{
+  "sources": [
+    "results/base.jsonl",
+    "results/adapter.jsonl"
+  ],
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838",
+  "examples": {
+    "improved": {
+      "case_id": "test-0001",
+      "source_index": 77325,
+      "ground_truth": "Anemia",
+      "reference_top3": [
+        "Anemia",
+        "HIV (initial infection)",
+        "Cluster headache"
+      ],
+      "prompt": "Assess this synthetic patient case.\n\nAge: 78\n\nSex: Male\n\nSymptoms:\n- Do you have pain somewhere, related to your reason for consulting? Yes.\n- Characterize your pain: tugging\n- Characterize your pain: a cramp\n- Characterize your pain: exhausting\n- Do you feel pain somewhere? back of head\n- Do you feel pain somewhere? top of the head\n- Do you feel pain somewhere? temple(L)\n- How intense is the pain? 4\n- Does the pain radiate to another location? nowhere\n- How precisely is the pain located? 7\n- How fast did the pain appear? 3\n- Do you feel slightly dizzy or lightheaded? Yes.\n- Do you feel so tired that you are unable to do your usual activities or are you stuck in your bed all day long? Yes.\n- Have you recently had stools that were black (like coal)? Yes.\n- Is your skin much paler than usual? Yes.\n- Have you noticed light red blood or blood clots in your stool? Yes.\n\nAntecedents:\n- Do you have a poor diet? Yes.\n- Have you ever had a diagnosis of anemia? Yes.\n- Do you have any family members who have been diagnosed with anemia? Yes.\n- Are you taking any new oral anticoagulants ((NOACs)? Yes.\n- Have you traveled out of the country in the last 4 weeks? No\n- Is your BMI less than 18.5, or are you underweight? Yes.",
+      "base": {
+        "response": "Most likely pathology: Chronic rhinosinusitis\nDifferential diagnoses:\n1. Allergic sinusitis\n2. Chronic rhinosinusitis\n3. Boerhaave\n\nUncertainty: The patient's history of anemia and recent travel to a country outside the usual travel zone may be relevant to the differential diagnosis, but the current presentation does not strongly suggest any of these conditions. The patient's symptoms of pain, dizziness, fatigue, and recent changes in stool color are more consistent with chronic rhinosinusitis. However, the patient's BMI being less than 18.5 and recent travel to a country outside the usual travel zone may be relevant to the differential diagnosis.",
+        "most_likely": "Chronic rhinosinusitis",
+        "differential": [
+          "Allergic sinusitis",
+          "Chronic rhinosinusitis",
+          "Boerhaave"
+        ],
+        "structured": false,
+        "top1": false,
+        "top3": false,
+        "reference_overlap": 0
+      },
+      "adapter": {
+        "response": "Most likely pathology\nAnemia\n\nDifferential diagnoses\n1. Anemia\n2. Atrial fibrillation\n3. Anaphylaxis\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis.",
+        "most_likely": "Anemia",
+        "differential": [
+          "Anemia",
+          "Atrial fibrillation",
+          "Anaphylaxis"
+        ],
+        "structured": true,
+        "top1": true,
+        "top3": true,
+        "reference_overlap": 1
+      }
+    },
+    "shared_failure": {
+      "case_id": "test-0000",
+      "source_index": 125349,
+      "ground_truth": "URTI",
+      "reference_top3": [
+        "URTI",
+        "Bronchitis",
+        "Influenza"
+      ],
+      "prompt": "Assess this synthetic patient case.\n\nAge: 16\n\nSex: Male\n\nSymptoms:\n- Have you had significantly increased sweating? Yes.\n- Characterize your pain: NA\n- Do you feel pain somewhere? nowhere\n- How intense is the pain? 0\n- Does the pain radiate to another location? nowhere\n- How precisely is the pain located? 0\n- How fast did the pain appear? 0\n- Do you have a fever (either felt or measured with a thermometer)? Yes.\n- Do you have a sore throat? Yes.\n- Do you have nasal congestion or a clear runny nose? Yes.\n- Do you have a cough? Yes.\n\nAntecedents:\n- Have you been in contact with a person with similar symptoms in the past 2 weeks? Yes.\n- Do you live with 4 or more people? Yes.\n- Do you attend or work in a daycare? Yes.\n- Do you smoke cigarettes? Yes.\n- Have you traveled out of the country in the last 4 weeks? No\n- Are you exposed to secondhand cigarette smoke on a daily basis? Yes.",
+      "base": {
+        "response": "Most likely pathology: Acute laryngitis\nDifferential diagnoses: Acute laryngitis, Acute otitis media, Allergic sinusitis\nUncertainty: Boerhaave Syndrome",
+        "most_likely": "Acute laryngitis",
+        "differential": [
+          "Acute laryngitis",
+          "Acute otitis media",
+          "Allergic sinusitis"
+        ],
+        "structured": false,
+        "top1": false,
+        "top3": false,
+        "reference_overlap": 0
+      },
+      "adapter": {
+        "response": "Most likely pathology\nViral pharyngitis\n\nDifferential diagnoses\n1. Viral pharyngitis\n2. Possible NSTEMI / STEMI\n3. URTI\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis.",
+        "most_likely": "Viral pharyngitis",
+        "differential": [
+          "Viral pharyngitis",
+          "Possible NSTEMI / STEMI",
+          "URTI"
+        ],
+        "structured": true,
+        "top1": false,
+        "top3": true,
+        "reference_overlap": 1
+      }
+    },
+    "well_formatted_incorrect": {
+      "case_id": "test-0002",
+      "source_index": 17957,
+      "ground_truth": "Stable angina",
+      "reference_top3": [
+        "Unstable angina",
+        "Stable angina",
+        "Possible NSTEMI / STEMI"
+      ],
+      "prompt": "Assess this synthetic patient case.\n\nAge: 64\n\nSex: Male\n\nSymptoms:\n- Do you have pain somewhere, related to your reason for consulting? Yes.\n- Characterize your pain: tedious\n- Characterize your pain: exhausting\n- Do you feel pain somewhere? lower chest\n- Do you feel pain somewhere? side of the chest(R)\n- Do you feel pain somewhere? upper chest\n- Do you feel pain somewhere? breast(L)\n- Do you feel pain somewhere? epigastric\n- How intense is the pain? 5\n- Does the pain radiate to another location? biceps(L)\n- Does the pain radiate to another location? thyroid cartilage\n- Does the pain radiate to another location? thoracic spine\n- Does the pain radiate to another location? shoulder(R)\n- Does the pain radiate to another location? shoulder(L)\n- How precisely is the pain located? 7\n- How fast did the pain appear? 6\n- Do you have symptoms that are increased with physical exertion but alleviated with rest? Yes.\n\nAntecedents:\n- Are you significantly overweight compared to people of the same height as you? Yes.\n- Do you have high cholesterol or do you take medications to treat high cholesterol? Yes.\n- Do you smoke cigarettes? Yes.\n- Have you ever had a heart attack or do you have angina (chest pain)? Yes.\n- Have you traveled out of the country in the last 4 weeks? No\n- Do you have close family members who had a cardiovascular disease problem before the age of 50? Yes.",
+      "base": {
+        "response": "Most likely pathology: Acute pulmonary edema\n\nDifferential diagnoses:\n1. Acute pulmonary edema\n2. Acute laryngitis\n3. Acute bronchitis\n\nUncertainty: The patient's history of smoking and high cholesterol levels suggest a higher risk of cardiovascular issues, which could complicate the diagnosis. However, the patient's history of chest pain and other symptoms are more indicative of pulmonary issues. The location of the pain and the intensity suggest a more specific cause, making acute pulmonary edema the most likely diagnosis.",
+        "most_likely": "Acute pulmonary edema",
+        "differential": [
+          "Acute pulmonary edema",
+          "Acute laryngitis"
+        ],
+        "structured": false,
+        "top1": false,
+        "top3": false,
+        "reference_overlap": 0
+      },
+      "adapter": {
+        "response": "Most likely pathology\nUnstable angina\n\nDifferential diagnoses\n1. Unstable angina\n2. Possible NSTEMI / STEMI\n3. Stable angina\n\nUncertainty\nThis is a synthetic DDXPlus case. The output is an educational prediction, not a clinical diagnosis.",
+        "most_likely": "Unstable angina",
+        "differential": [
+          "Unstable angina",
+          "Possible NSTEMI / STEMI",
+          "Stable angina"
+        ],
+        "structured": true,
+        "top1": false,
+        "top3": true,
+        "reference_overlap": 3
+      }
+    }
+  }
+}

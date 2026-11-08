@@ -1,0 +1,47 @@
+{
+  "cases": 490,
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838",
+  "exact_response_matches": 486,
+  "exact_response_match_rate": 0.9918367346938776,
+  "most_likely_matches": 489,
+  "most_likely_match_rate": 0.9979591836734694,
+  "metrics": {
+    "top1_accuracy": {
+      "before": 0.926530612244898,
+      "after": 0.9285714285714286,
+      "change": 0.0020408163265306367
+    },
+    "top3_accuracy": {
+      "before": 0.9714285714285714,
+      "after": 0.9714285714285714,
+      "change": 0.0
+    },
+    "structured_response_rate": {
+      "before": 0.9979591836734694,
+      "after": 0.9979591836734694,
+      "change": 0.0
+    },
+    "mean_reference_overlap_at_3": {
+      "before": 2.0428571428571427,
+      "after": 2.048979591836735,
+      "change": 0.006122448979592132
+    }
+  },
+  "model_path": "fused/ddxplus-qwen-dequantized",
+  "base_model_revision": "8b403126fc14f14cfc99bb4cfa72ecbc129ea677",
+  "adapter_artifact_sha256": "30dc154d627bf3c96371511fed4614aeb0e2b36ee9e2b9f267b563c873d2ad49",
+  "fused_artifact_sha256": "759508f6382898d7b3a9e90a0b03946078a52b532613b125e2ba3c8d13bc5ec9",
+  "evaluation_identity_verified": true,
+  "status": "reviewed_with_differences",
+  "strict_identity_gate_passed": false,
+  "deployment_eligible": true,
+  "response_difference_count": 4,
+  "response_difference_rate": 0.00816326530612245,
+  "response_differences": "results/public/fused-response-differences.json",
+  "review_limits": {
+    "maximum_response_difference_rate": 0.02,
+    "maximum_absolute_top1_accuracy_change": 0.01,
+    "review_flag_supplied": true
+  },
+  "caveat": "Reviewed numerical differences are not exact equivalence or clinical validation."
+}

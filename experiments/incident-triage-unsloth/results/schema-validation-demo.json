@@ -1,0 +1,18 @@
+{
+  "unknown_category_route": {
+    "status": "request_more_context",
+    "report": {
+      "service": "unknown",
+      "severity": "sev3",
+      "category": "unknown",
+      "summary": "Workers are reporting slow queries and CPU errors",
+      "next_action": "request_more_context",
+      "escalate": false
+    }
+  },
+  "invalid_output_route": {
+    "status": "manual_review",
+    "reason": "The model output did not satisfy the incident schema.",
+    "raw_output": "```json\n{}\n```"
+  }
+}

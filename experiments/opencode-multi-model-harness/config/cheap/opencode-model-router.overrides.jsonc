@@ -1,0 +1,15 @@
+{
+  "activePreset": "cheap-open",
+  "activeMode": "normal",
+
+  "presets": {
+    "cheap-open": {
+      "fast":   { "readOnly": true, "model": "deepseek/deepseek-flash",
+                  "costRatio": 1, "steps": 30,  "description": "Exploration and bounded lookup" },
+      "medium": { "model": "openrouter/qwen/qwen3.6-35b-a3b",
+                  "costRatio": 2, "steps": 60,  "description": "Implementation and verification" },
+      "heavy":  { "model": "openrouter/qwen/qwen3.8-27b",
+                  "costRatio": 4, "steps": 100, "description": "Architecture and review" }
+    }
+  }
+}

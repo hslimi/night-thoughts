@@ -1,0 +1,38 @@
+{
+  "cases": 490,
+  "test_cases_sha256": "c5a5b94a3377c78b2ac1209899ca6e8d1df3a9aa25ce0a2e26ad33373f6c5838",
+  "exact_response_matches": 0,
+  "exact_response_match_rate": 0.0,
+  "most_likely_matches": 50,
+  "most_likely_match_rate": 0.10204081632653061,
+  "metrics": {
+    "top1_accuracy": {
+      "before": 0.10408163265306122,
+      "after": 0.926530612244898,
+      "change": 0.8224489795918367
+    },
+    "top3_accuracy": {
+      "before": 0.12857142857142856,
+      "after": 0.9714285714285714,
+      "change": 0.8428571428571429
+    },
+    "structured_response_rate": {
+      "before": 0.0,
+      "after": 0.9979591836734694,
+      "change": 0.9979591836734694
+    },
+    "mean_reference_overlap_at_3": {
+      "before": 0.20612244897959184,
+      "after": 2.0428571428571427,
+      "change": 1.8367346938775508
+    }
+  },
+  "top1_improved_cases": 404,
+  "top1_regressed_cases": 1,
+  "most_likely_disagreements": 440,
+  "qualitative_case_ids": {
+    "improved": "test-0001",
+    "shared_failure": "test-0000",
+    "well_formatted_incorrect": "test-0002"
+  }
+}

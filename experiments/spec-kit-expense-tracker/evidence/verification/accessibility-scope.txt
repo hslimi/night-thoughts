@@ -1,0 +1,7 @@
+Accessibility verification scope
+
+A VoiceOver review was not completed. No operating-system assistive technology was enabled.
+
+Accessibility evidence in this experiment is limited to automated semantic-role and accessible-name checks, accessibility-tree inspection where available, keyboard-only browser flows, native-dialog focus checks, responsive-layout checks, and calculated color-contrast checks.
+
+These checks do not establish screen-reader compatibility. No screen-reader verification is claimed.

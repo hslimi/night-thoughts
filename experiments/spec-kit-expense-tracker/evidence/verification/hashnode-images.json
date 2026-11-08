@@ -1,0 +1,20 @@
+{
+  "00-cover.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/8733568d-2fbf-4c01-ac0c-a86d7497a70d.png",
+  "01-environment.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b8b69e7e-8168-44be-82f5-134dcec9cd20.png",
+  "02-constitution.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/22eab54e-b21e-4ca2-ba13-1d9824fc0ac6.png",
+  "03-specification-clarification.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4d14b216-debb-4161-982c-467be4a92421.png",
+  "04-technical-plan.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/37273a15-4cec-43bb-a228-fd942566f621.png",
+  "05-analysis-findings.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d9a9b851-6981-4b2e-a638-8e4e6369747a.png",
+  "06-checklist-gate.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/43ed912e-a0fe-4a76-9c6f-ea92ded5d5bc.png",
+  "07-implementation-tasks.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/bb8127ed-c485-4d64-b788-409a13013b12.png",
+  "08-test-first-checkpoint.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/b9c165d7-b6b6-4b97-9822-51fbd16fb661.png",
+  "09-final-convergence.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4e782f62-86ae-4a32-a07d-d9867e9fc1c5.png",
+  "10-bug-assessment.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/e4a222ef-29f4-44ff-ae3d-0594d463a96a.png",
+  "10-desktop-dashboard.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/4d8c05a0-2376-4634-a39b-2fce9ee2a620.png",
+  "11-bug-verification.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/19ff6199-4c12-4ef3-9777-c60532f7c081.png",
+  "11-expense-form.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/87472eaf-321b-4401-933b-865e37e51858.png",
+  "12-category-filtering.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/856982bd-d60c-41e0-84ad-f1eb27214f33.png",
+  "13-amount-validation.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/1ef2488f-61ae-4a56-8f45-22c7f2bc2fe1.png",
+  "14-deletion-confirmation.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/d656aba4-2d54-4931-bf24-cc868aa4ca3d.png",
+  "15-mobile-dashboard.png": "https://cdn.hashnode.com/uploads/gql/6a92730f9a9aa7f72e74fdf4/2ac292b2-5d30-49fc-bf23-efdaaabc18b1.png"
+}
