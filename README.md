@@ -10,6 +10,10 @@ Each folder under [`experiments/`](experiments/) backs a published article with 
 
 Only experiments whose article is published appear here.
 
+## Products
+
+Experiments that prove themselves become private, commercially licensed tools at **[Night Thoughts Labs](https://github.com/nightthoughts-labs)**.
+
 ## Discussion
 
 Use the comments on nightthoughts.me or open a focused GitHub issue.
